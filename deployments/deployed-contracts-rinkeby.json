@@ -1,0 +1,29 @@
+{
+  "MintableERC721": {
+    "address": "0x6b81840bc2E607C1Ea099D7BD93957608CEB3947",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "WPUNKS": {
+    "address": "0x5b4FaC380a2A79EE0ddA713a31cbA7A74Cba7Cd0",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BAYC": {
+    "address": "0x6b81840bc2E607C1Ea099D7BD93957608CEB3947",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "ProxyAdmin": {
+    "address": "0x57310Fa646Ed3B45B3b70c70F23bf57d3E305F42",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BNFT": {
+    "address": "0x7354784A7A705963b484Fed3a903FF8c9b6Ec617",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BNFTRegistryImpl": {
+    "address": "0x05ef86a5B21B0420436a1d941D9C2D19b2982195"
+  },
+  "BNFTRegistry": {
+    "address": "0x683f73Ddb5272049e392603d55593511Fd503D61",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  }
+}

@@ -10,7 +10,7 @@ task("bend:mainnet", "Deploy full enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .addFlag("skipRegistry", "Skip addresses provider registration at Addresses Provider Registry")
   .setAction(async ({ verify, skipRegistry }, DRE) => {
-    const POOL_NAME = ConfigNames.Main;
+    const POOL_NAME = ConfigNames.Bend;
     await DRE.run("set-DRE");
     const poolConfig = loadPoolConfig(POOL_NAME);
 

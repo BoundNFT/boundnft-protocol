@@ -3,7 +3,6 @@ import { waitForTx } from "../../helpers/misc-utils";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
 import {
   getBNFTRegistryProxy,
-  getLendPoolAddressesProvider,
   getConfigMockedNfts,
 } from "../../helpers/contracts-getters";
 import { MintableERC721 } from "../../types/MintableERC721";

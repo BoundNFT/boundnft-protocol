@@ -41,6 +41,4 @@ task("dev:deploy-bnft-registry", "Deploy bnft registry for dev enviroment")
     );
 
     const bnftRegistry = await getBNFTRegistryProxy(bnftRegistryProxy.address);
-
-    await waitForTx(await addressesProvider.setBNFTRegistry(bnftRegistry.address));
   });
