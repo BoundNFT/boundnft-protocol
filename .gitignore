@@ -1,3 +1,5 @@
+.DS_Store
+
 .env
 #Buidler files
 cache
@@ -10,6 +12,12 @@ build/
 /types
 
 deployed-contracts.json
+/deployments/*
+!/deployments/deployed-contracts-main*.json
+!/deployments/deployed-contracts-rinkeby*.json
+
+/flattened
+bnft-flattened.zip
 
 coverage
 .coverage_artifacts

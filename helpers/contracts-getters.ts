@@ -7,9 +7,9 @@ import {
   BNFTProxyAdminFactory,
 } from "../types";
 import { IERC721DetailedFactory } from "../types/IERC721DetailedFactory";
-import { getEthersSigners, MockNftMap } from "./contracts-helpers";
+import { getEthersSigners, getParamPerNetwork, MockNftMap } from "./contracts-helpers";
 import { DRE, getDb, notFalsyOrZeroAddress, omit } from "./misc-utils";
-import { eContractid, PoolConfiguration, tEthereumAddress, NftContractId } from "./types";
+import { eContractid, PoolConfiguration, tEthereumAddress, NftContractId, eNetwork } from "./types";
 
 export const getFirstSigner = async () => (await getEthersSigners())[0];
 
@@ -18,6 +18,8 @@ export const getSecondSigner = async () => (await getEthersSigners())[1];
 export const getThirdSigner = async () => (await getEthersSigners())[2];
 
 export const getDeploySigner = async () => (await getEthersSigners())[0];
+
+export const getPoolOwnerSigner = async () => (await getEthersSigners())[0];
 
 export const getProxyAdminSigner = async () => (await getEthersSigners())[2];
 
@@ -47,7 +49,8 @@ export const getIErc721Detailed = async (address: tEthereumAddress) =>
   );
 
 export const getConfigMockedNfts = async (config: PoolConfiguration) => {
-  const tokenSymbols = Object.keys(config.NftsAssets);
+  const nftsAssets = getParamPerNetwork(config.NftsAssets, DRE.network.name as eNetwork);
+  const tokenSymbols = Object.keys(nftsAssets);
   const db = getDb(DRE.network.name);
   const tokens: MockNftMap = await tokenSymbols.reduce<Promise<MockNftMap>>(async (acc, tokenSymbol) => {
     const accumulator = await acc;

@@ -1,7 +1,9 @@
 import { task } from "hardhat/config";
-import { ConfigNames } from "../../helpers/configuration";
-import { getBNFTRegistryProxy, getLendPoolAddressesProvider } from "../../helpers/contracts-getters";
+import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
+import { getBNFTRegistryProxy } from "../../helpers/contracts-getters";
+import { getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { waitForTx } from "../../helpers/misc-utils";
+import { eNetwork } from "../../helpers/types";
 
 task("create-new-bnft", "Create BNFT for new nft asset")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
@@ -9,10 +11,15 @@ task("create-new-bnft", "Create BNFT for new nft asset")
   .setAction(async ({ pool, asset }, DRE) => {
     await DRE.run("set-DRE");
 
-    const addressesProvider = await getLendPoolAddressesProvider();
+    const network = <eNetwork>DRE.network.name;
+    const poolConfig = loadPoolConfig(pool);
 
-    const bnftRegistryProxyAddress = await addressesProvider.getBNFTRegistry();
+    const bnftRegistryProxyAddress = getParamPerNetwork(poolConfig.BNFTRegistry, network);
+    console.log("Pool config BNFTRegistry address:", bnftRegistryProxyAddress);
+
     const bnftRegistry = await getBNFTRegistryProxy(bnftRegistryProxyAddress);
+    console.log("BNFTRegistry address:", bnftRegistry.address);
+
     await waitForTx(await bnftRegistry.createBNFT(asset, []));
 
     const { bNftProxy } = await bnftRegistry.getBNFTAddresses(asset);
