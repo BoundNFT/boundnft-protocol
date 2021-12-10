@@ -1,0 +1,37 @@
+{
+  "MintableERC721": {
+    "address": "0x1eaA4a267eDcde0eB5e08D08810Aa1696b123a2D",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "WPUNKS": {
+    "address": "0xB4B4ead1A260F1572b88b9D8ABa5A152D166c104",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "BAYC": {
+    "address": "0xa05ffF82bcC0C599984b0839218DC6ee9328d1Fb",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "ProxyAdmin": {
+    "address": "0x025FE4760c6f14dE878C22cEb09A3235F16dAe53",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "BNFT": {
+    "address": "0xb38Ce645F2890a7820d322c1cE0774849489bB9d",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "BNFTRegistryImpl": {
+    "address": "0x5a60c5d89A0A0e08ae0CAe73453e3AcC9C335847"
+  },
+  "BNFTRegistry": {
+    "address": "0x4e07D87De1CF586D51C3665e6a4d36eB9d99a457",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MockFlashLoanReceiver": {
+    "address": "0x69D1108D37825212736aC101B445b6B57a390d13",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MockBNFTMinter": {
+    "address": "0x8b89F971cA1A5dE1B7df7f554a3024eE84FeeB05",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  }
+}

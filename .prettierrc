@@ -1,0 +1,17 @@
+{
+    "printWidth": 120,
+    "trailingComma": "es5",
+    "semi": true,
+    "tabWidth": 2,
+    "overrides": [
+      {
+        "files": "*.sol",
+        "options": {
+          "semi": true,
+          "printWidth": 120,
+          "explicitTypes": "always"
+        }
+      }
+    ]
+  }
+  
