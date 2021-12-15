@@ -11,6 +11,7 @@ export enum eEthereumNetwork {
   main = "main",
   coverage = "coverage",
   hardhat = "hardhat",
+  localhost = "localhost",
 }
 
 export enum BendPools {
@@ -43,11 +44,19 @@ export interface iNftCommon<T> {
 export interface iNftBase<T> {
   WPUNKS: T;
   BAYC: T;
+  DOODLE: T;
+  COOL: T;
+  MEEBITS: T;
+  MAYC: T;
 }
 
 export enum NftContractId {
   WPUNKS = "WPUNKS",
   BAYC = "BAYC",
+  DOODLE = "DOODLE",
+  COOL = "COOL",
+  MEEBITS = "MEEBITS",
+  MAYC = "MAYC",
 }
 
 export type iMultiPoolsNfts<T> = iNftCommon<T> | iBendPoolNfts<T>;
@@ -65,6 +74,7 @@ export interface iEthereumParamsPerNetwork<T> {
   [eEthereumNetwork.rinkeby]: T;
   [eEthereumNetwork.main]: T;
   [eEthereumNetwork.hardhat]: T;
+  [eEthereumNetwork.localhost]: T;
 }
 
 export interface iParamsPerPool<T> {

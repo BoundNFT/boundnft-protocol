@@ -20,6 +20,7 @@ export const CommonsConfig: ICommonConfiguration = {
   ProxyAdmin: {
     [eEthereumNetwork.coverage]: undefined,
     [eEthereumNetwork.hardhat]: undefined,
+    [eEthereumNetwork.localhost]: undefined,
     [eEthereumNetwork.rinkeby]: '0x57310Fa646Ed3B45B3b70c70F23bf57d3E305F42',
     [eEthereumNetwork.main]: undefined,
   },
@@ -27,12 +28,14 @@ export const CommonsConfig: ICommonConfiguration = {
   BNFTRegistry: {
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',
+    [eEthereumNetwork.localhost]: '',
     [eEthereumNetwork.rinkeby]: '0x683f73Ddb5272049e392603d55593511Fd503D61',
     [eEthereumNetwork.main]: '',
   },
   BNFTRegistryOwner: {
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',
+    [eEthereumNetwork.localhost]: '0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6',
     [eEthereumNetwork.rinkeby]: '0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6',
     [eEthereumNetwork.main]: '',
   },
@@ -40,6 +43,7 @@ export const CommonsConfig: ICommonConfiguration = {
   NftsAssets: {
     [eEthereumNetwork.coverage]: {},
     [eEthereumNetwork.hardhat]: {},
+    [eEthereumNetwork.localhost]: {},
     [eEthereumNetwork.main]: {},
     [eEthereumNetwork.rinkeby]: {},
   },
