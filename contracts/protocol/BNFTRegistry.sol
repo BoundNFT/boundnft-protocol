@@ -135,7 +135,7 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   }
 
   function _buildInitParams(address nftAsset, bytes memory params) internal view returns (bytes memory initParams) {
-    string memory bNftName = string(abi.encodePacked(namePrefix, " ", IERC721MetadataUpgradeable(nftAsset).name()));
+    string memory bNftName = string(abi.encodePacked(namePrefix, " ", IERC721MetadataUpgradeable(nftAsset).symbol()));
     string memory bNftSymbol = string(abi.encodePacked(symbolPrefix, IERC721MetadataUpgradeable(nftAsset).symbol()));
 
     initParams = abi.encodeWithSelector(IBNFT.initialize.selector, nftAsset, bNftName, bNftSymbol, params);

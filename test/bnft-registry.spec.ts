@@ -44,7 +44,7 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
 
     const testNftProxyInst = await getIErc721Detailed(nftAddrByAddr.bNftProxy);
 
-    const wantName = (await bnftRegistry.namePrefix()) + " " + (await testNftAsset.name());
+    const wantName = (await bnftRegistry.namePrefix()) + " " + (await testNftAsset.symbol());
     expect(wantName).to.equal(await testNftProxyInst.name());
 
     const wantSymbol = (await bnftRegistry.symbolPrefix()) + (await testNftAsset.symbol());
@@ -74,7 +74,7 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
 
     const testNftProxyInst = await getIErc721Detailed(bNftProxy);
 
-    const wantName = (await bnftRegistry.namePrefix()) + " " + (await testNftAsset.name());
+    const wantName = (await bnftRegistry.namePrefix()) + " " + (await testNftAsset.symbol());
     expect(wantName).to.equal(await testNftProxyInst.name());
 
     const wantSymbol = (await bnftRegistry.symbolPrefix()) + (await testNftAsset.symbol());
