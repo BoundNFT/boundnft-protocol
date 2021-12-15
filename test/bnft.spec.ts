@@ -18,10 +18,11 @@ makeSuite("BNFT", (testEnv: TestEnv) => {
     const { bayc, bBAYC, users } = testEnv;
 
     const baycName = await bayc.name();
-    const bBAYCName = await bBAYC.name();
-    expect(bBAYCName).to.be.equal(CommonsConfig.BNftNamePrefix + " " + baycName);
-
     const baycSymbol = await bayc.symbol();
+
+    const bBAYCName = await bBAYC.name();
+    expect(bBAYCName).to.be.equal(CommonsConfig.BNftNamePrefix + " " + baycSymbol);
+
     const bBAYCSymbol = await bBAYC.symbol();
     expect(bBAYCSymbol).to.be.equal(CommonsConfig.BNftSymbolPrefix + baycSymbol);
 
