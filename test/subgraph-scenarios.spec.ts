@@ -55,7 +55,7 @@ makeSuite("Subgraph tests", async (testEnv) => {
 
     console.log("stToken:", await stToken.name(), await stToken.symbol());
 
-    await waitForTx(await bnftRegistry.createBNFT(stToken.address, []));
+    await waitForTx(await bnftRegistry.createBNFT(stToken.address));
 
     const { bNftProxy } = await bnftRegistry.getBNFTAddresses(stToken.address);
     const bnftStToken = await getBNFT(bNftProxy);

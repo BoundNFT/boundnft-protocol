@@ -1,6 +1,6 @@
 {
   "MintableERC721": {
-    "address": "0x1eaA4a267eDcde0eB5e08D08810Aa1696b123a2D",
+    "address": "0x153a75c692b6f047974bc96e30d20546B0Bc2992",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "WPUNKS": {
@@ -12,26 +12,42 @@
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "ProxyAdmin": {
-    "address": "0x025FE4760c6f14dE878C22cEb09A3235F16dAe53",
+    "address": "0x2F7f69a3cd22FcfFB5E0C0fB7Ae5Eb278b3919Ff",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "BNFT": {
-    "address": "0xb38Ce645F2890a7820d322c1cE0774849489bB9d",
+    "address": "0x7ECdCa35F3B55acE694A7DA48a759444Fe81b943",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "BNFTRegistryImpl": {
-    "address": "0x5a60c5d89A0A0e08ae0CAe73453e3AcC9C335847"
+    "address": "0x69D1108D37825212736aC101B445b6B57a390d13"
   },
   "BNFTRegistry": {
-    "address": "0x4e07D87De1CF586D51C3665e6a4d36eB9d99a457",
+    "address": "0x8b89F971cA1A5dE1B7df7f554a3024eE84FeeB05",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "MockFlashLoanReceiver": {
-    "address": "0x69D1108D37825212736aC101B445b6B57a390d13",
+    "address": "0x6B8dcBD1bb131ED184221902df1Fe21019ccD7dc",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "MockBNFTMinter": {
-    "address": "0x294E11ac81ED4018d5dC0cc9618Ff2890acC8977",
+    "address": "0x82EEc0C56D8E48ae007bEb6A896B98Ade36BC51c",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "DOODLE": {
+    "address": "0x025FE4760c6f14dE878C22cEb09A3235F16dAe53",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "COOL": {
+    "address": "0xb2f97A3c2E48cd368901657e31Faaa93035CE390",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MEEBITS": {
+    "address": "0x5a60c5d89A0A0e08ae0CAe73453e3AcC9C335847",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MAYC": {
+    "address": "0x4e07D87De1CF586D51C3665e6a4d36eB9d99a457",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   }
 }

@@ -62,7 +62,7 @@ const buildTestEnv = async (deployer: Signer, secondaryWallet: Signer) => {
   //////////////////////////////////////////////////////////////////////////////
   console.log("-> Prepare bnft tokens...");
   for (const [nftSymbol, mockedNft] of Object.entries(mockNfts) as [string, MintableERC721][]) {
-    await waitForTx(await bnftRegistry.createBNFT(mockedNft.address, []));
+    await waitForTx(await bnftRegistry.createBNFT(mockedNft.address));
     const bnftAddresses = await bnftRegistry.getBNFTAddresses(mockedNft.address);
     console.log("createBNFT:", nftSymbol, bnftAddresses.bNftProxy, bnftAddresses.bNftImpl);
   }
