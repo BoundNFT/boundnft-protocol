@@ -119,12 +119,6 @@
         "internalType": "address",
         "name": "underlyingAsset",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "params",
-        "type": "bytes"
       }
     ],
     "name": "Initialized",
@@ -294,11 +288,6 @@
         "internalType": "string",
         "name": "bNftSymbol",
         "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "params",
-        "type": "bytes"
       }
     ],
     "name": "initialize",
