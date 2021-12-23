@@ -1,20 +1,18 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { ZERO_ADDRESS } from "../helpers/constants";
 import { deployMintableERC721, deployGenericBNFTImpl } from "../helpers/contracts-deployments";
-import { getIErc721Detailed } from "../helpers/contracts-getters";
+import { getBNFT, getIErc721Detailed } from "../helpers/contracts-getters";
 import { waitForTx } from "../helpers/misc-utils";
 
 const { expect } = require("chai");
 
 makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
-  const extraParams = "0x10";
-
   before(async () => {});
 
   it("Creates the BNFT for duplicate NFT asset", async () => {
     const { bnftRegistry, bayc } = testEnv;
 
-    await expect(bnftRegistry.createBNFT(bayc.address, extraParams)).to.be.revertedWith("BNFTR: asset exist");
+    await expect(bnftRegistry.createBNFT(bayc.address)).to.be.revertedWith("BNFTR: asset exist");
   });
 
   it("Creates the BNFT for nonexistent NFT asset", async () => {
@@ -24,7 +22,7 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
 
     const allProxyLenBefore = await bnftRegistry.allBNFTAssetLength();
 
-    await waitForTx(await bnftRegistry.createBNFT(testNftAsset.address, extraParams));
+    await waitForTx(await bnftRegistry.createBNFT(testNftAsset.address));
 
     const allProxyLenAfter = await bnftRegistry.allBNFTAssetLength();
 
@@ -60,7 +58,7 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
 
     const allProxyLenBefore = await bnftRegistry.allBNFTAssetLength();
 
-    await waitForTx(await bnftRegistry.createBNFTWithImpl(testNftAsset.address, testBNFTImpl.address, extraParams));
+    await waitForTx(await bnftRegistry.createBNFTWithImpl(testNftAsset.address, testBNFTImpl.address));
 
     const allProxyLenAfter = await bnftRegistry.allBNFTAssetLength();
 
@@ -86,7 +84,7 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
 
     const testBNFTImpl = await deployGenericBNFTImpl(false);
 
-    await expect(bnftRegistry.createBNFTWithImpl(bayc.address, testBNFTImpl.address, extraParams)).to.be.revertedWith(
+    await expect(bnftRegistry.createBNFTWithImpl(bayc.address, testBNFTImpl.address)).to.be.revertedWith(
       "BNFTR: asset exist"
     );
   });
@@ -123,7 +121,7 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
     const testBNFTImplNew = await deployGenericBNFTImpl(false);
     bnftRegistry.setBNFTGenericImpl(testBNFTImplNew.address);
 
-    await waitForTx(await bnftRegistry.createBNFT(testNftAsset.address, extraParams));
+    await waitForTx(await bnftRegistry.createBNFT(testNftAsset.address));
 
     const nftAddrByAddr = await bnftRegistry.getBNFTAddresses(testNftAsset.address);
     expect(nftAddrByAddr).to.not.equal(undefined);
@@ -133,5 +131,27 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
     expect(nftAddrByAddr.bNftImpl).to.not.equal(ZERO_ADDRESS);
     expect(nftAddrByAddr.bNftProxy).to.not.equal(nftAddrByAddr.bNftImpl);
     expect(nftAddrByAddr.bNftImpl).to.be.equal(testBNFTImplNew.address);
+  });
+
+  it("Add custom symbols to special NFTs", async () => {
+    const { bnftRegistry, bayc } = testEnv;
+
+    const testNftAsset = await deployMintableERC721(["testNftAsset", "TNFT"]);
+
+    await waitForTx(await bnftRegistry.addCustomeSymbols([testNftAsset.address], ["CTNFT"]));
+
+    const testBNFTImplNew = await deployGenericBNFTImpl(false);
+    bnftRegistry.setBNFTGenericImpl(testBNFTImplNew.address);
+
+    await waitForTx(await bnftRegistry.createBNFT(testNftAsset.address));
+
+    const nftAddrByAddr = await bnftRegistry.getBNFTAddresses(testNftAsset.address);
+    const bnftTest = await getBNFT(nftAddrByAddr.bNftProxy);
+
+    const wantSymbol = (await bnftRegistry.symbolPrefix()) + ("CTNFT");
+    expect(wantSymbol).to.equal(await bnftTest.symbol());
+
+    const wantName = (await bnftRegistry.namePrefix()) + " " + ("CTNFT");
+    expect(wantName).to.equal(await bnftTest.name());
   });
 });
