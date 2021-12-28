@@ -5,7 +5,7 @@ import { ICommonConfiguration, eEthereumNetwork } from '../helpers/types';
 // ----------------
 
 export const CommonsConfig: ICommonConfiguration = {
-  BNftNamePrefix: 'Bend promissory note',
+  BNftNamePrefix: 'BNFT promissory note',
   BNftSymbolPrefix: 'b',
 
   ProtocolGlobalParams: {
@@ -21,7 +21,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.coverage]: undefined,
     [eEthereumNetwork.hardhat]: undefined,
     [eEthereumNetwork.localhost]: undefined,
-    [eEthereumNetwork.rinkeby]: '0x57310Fa646Ed3B45B3b70c70F23bf57d3E305F42',
+    [eEthereumNetwork.rinkeby]: '',
     [eEthereumNetwork.main]: undefined,
   },
 
@@ -29,7 +29,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',
     [eEthereumNetwork.localhost]: '',
-    [eEthereumNetwork.rinkeby]: '0x683f73Ddb5272049e392603d55593511Fd503D61',
+    [eEthereumNetwork.rinkeby]: '',
     [eEthereumNetwork.main]: '',
   },
   BNFTRegistryOwner: {

@@ -20,7 +20,7 @@ task("create-new-bnft", "Create BNFT for new nft asset")
     const bnftRegistry = await getBNFTRegistryProxy(bnftRegistryProxyAddress);
     console.log("BNFTRegistry address:", bnftRegistry.address);
 
-    await waitForTx(await bnftRegistry.createBNFT(asset, []));
+    await waitForTx(await bnftRegistry.createBNFT(asset));
 
     const { bNftProxy } = await bnftRegistry.getBNFTAddresses(asset);
     const bnftConctract = await getIErc721Detailed(bNftProxy);

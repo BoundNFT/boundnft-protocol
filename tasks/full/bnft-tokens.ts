@@ -2,7 +2,7 @@ import { task } from "hardhat/config";
 import { waitForTx, notFalsyOrZeroAddress } from "../../helpers/misc-utils";
 import { eNetwork, eContractid } from "../../helpers/types";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
-import { getPoolOwnerSigner, getBNFTRegistryProxy } from "../../helpers/contracts-getters";
+import { getPoolOwnerSigner, getBNFTRegistryProxy, getBNFT } from "../../helpers/contracts-getters";
 import { getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { ZERO_ADDRESS } from "../../helpers/constants";
 import { deployGenericBNFTImpl } from "../../helpers/contracts-deployments";
@@ -36,7 +36,7 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
       let bnftAddresses = await bnftRegistryProxy.getBNFTAddresses(assetAddress);
       if (bnftAddresses.bNftProxy == undefined || !notFalsyOrZeroAddress(bnftAddresses.bNftProxy)) {
         console.log("Deploying new BNFT implementation for %s...", assetSymbol);
-        await waitForTx(await bnftRegistryProxy.createBNFT(assetAddress, []));
+        await waitForTx(await bnftRegistryProxy.createBNFT(assetAddress));
       } else {
         console.log("Upgrading exist BNFT implementation for %s", assetSymbol);
         await waitForTx(
@@ -44,12 +44,13 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
         );
       }
       bnftAddresses = await bnftRegistryProxy.getBNFTAddresses(assetAddress);
+      const bnftProxy = await getBNFT(bnftAddresses.bNftProxy);
       console.log(
-        "BNFT %s: asset.address:%s, proxy.address: %s, implementation.address: %s",
-        assetSymbol,
-        assetAddress,
+        "BNFT: name: %s, symbol: %s, proxy.address: %s, implementation.address: %s",
+        await bnftProxy.name(),
+        await bnftProxy.symbol(),
         bnftAddresses.bNftProxy,
-        bnftAddresses.bNftImpl
+        bnftAddresses.bNftImpl,
       );
     }
   });
