@@ -18,6 +18,7 @@ deployed-contracts.json
 
 /flattened
 bnft-flattened.zip
+bnft-protocol-flattened.tgz
 
 coverage
 .coverage_artifacts

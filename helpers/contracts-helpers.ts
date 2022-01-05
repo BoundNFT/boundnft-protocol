@@ -214,7 +214,7 @@ export const verifyContract = async (id: string, instance: Contract, args: (stri
     await verifyEtherscanContract(
       instance.address,
       args,
-      "contracts/libraries/proxy/BNFTUpgradeableProxy.sol:BNFTUpgradeableProxy"
+      "contracts/libraries/BNFTUpgradeableProxy.sol:BNFTUpgradeableProxy"
     );
   } else {
     await verifyEtherscanContract(instance.address, args);
