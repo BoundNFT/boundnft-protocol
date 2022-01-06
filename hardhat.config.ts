@@ -9,6 +9,8 @@ import { NETWORKS_RPC_URL, NETWORKS_DEFAULT_GAS, BLOCK_TO_FORK, buildForkConfig 
 
 require("dotenv").config();
 
+import 'global-agent/bootstrap';
+
 import "@typechain/hardhat";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-waffle";
