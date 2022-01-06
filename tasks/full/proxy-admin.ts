@@ -19,8 +19,10 @@ task("full:deploy-proxy-admin", "Deploy proxy admin contract")
       let proxyAdmin: BNFTProxyAdmin;
       const proxyAdminAddress = getParamPerNetwork(poolConfig.ProxyAdmin, network);
       if (proxyAdminAddress == undefined || !notFalsyOrZeroAddress(proxyAdminAddress)) {
+        console.log("Deploying new proxy admin...");
         proxyAdmin = await deployBNFTProxyAdmin(eContractid.ProxyAdmin, verify);
       } else {
+        console.log("Using proxy admin in pool config...");
         await insertContractAddressInDb(eContractid.ProxyAdmin, proxyAdminAddress);
         proxyAdmin = await getBNFTProxyAdminByAddress(proxyAdminAddress);
       }

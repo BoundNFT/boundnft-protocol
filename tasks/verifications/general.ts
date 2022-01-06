@@ -26,7 +26,7 @@ task("verify:general", "Verify general contracts at Etherscan")
       throw Error("Invalid proxy admin address in pool config");
     }
     const proxyAdmin = await getBNFTProxyAdminByAddress(proxyAdminAddress);
-    //await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
+    await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
 
     const bnftRegistryProxy = await getBNFTRegistryProxy();
 
@@ -34,11 +34,11 @@ task("verify:general", "Verify general contracts at Etherscan")
     const bnftGenericImpl = await getBNFT();
 
     // BNFT Registry implementation
-    console.log("\n- Verifying BNFT Registry Implementation...\n");
+    console.log("\n- Verifying BNFT Registry Implementation...\n", bnftRegistryImpl.address);
     await verifyContract(eContractid.BNFTRegistry, bnftRegistryImpl, []);
 
     // BNFT implementation
-    console.log("\n- Verifying BNFT Generic Implementation...\n");
+    console.log("\n- Verifying BNFT Generic Implementation...\n", bnftGenericImpl.address);
     await verifyContract(eContractid.BNFT, bnftGenericImpl, []);
 
     // BNFT Registry proxy
@@ -54,8 +54,8 @@ task("verify:general", "Verify general contracts at Etherscan")
       initEncodedData,
     ]);
 
-    // BNFT proxy
-    console.log("\n- Verifying BNFT Proxy...\n");
+    // All BNFT proxys
+    console.log("\n- Verifying All BNFT Proxys...\n");
     const allNFTAssets = await bnftRegistryProxy.getBNFTAssetList();
     for (const nftAsset of allNFTAssets) {
       const nftToken = await getIErc721Detailed(nftAsset);

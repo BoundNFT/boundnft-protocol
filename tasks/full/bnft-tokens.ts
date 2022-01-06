@@ -6,7 +6,7 @@ import { getPoolOwnerSigner, getBNFTRegistryProxy, getBNFT } from "../../helpers
 import { getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { ZERO_ADDRESS } from "../../helpers/constants";
 import { deployGenericBNFTImpl } from "../../helpers/contracts-deployments";
-import { BNFTRegistry } from "../../types";
+import { BNFT, BNFTRegistry } from "../../types";
 
 task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
@@ -28,10 +28,10 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
       bnftRegistryProxy = await getBNFTRegistryProxy();
     }
 
+    const bnftGenericImplAddress = await bnftRegistryProxy.bNftGenericImpl();
+    const bnftGenericImpl = await getBNFT(bnftGenericImplAddress);
+
     const nftsAssets = getParamPerNetwork(poolConfig.NftsAssets, network);
-
-    const bnftGenericImpl = await deployGenericBNFTImpl(verify);
-
     for (const [assetSymbol, assetAddress] of Object.entries(nftsAssets) as [string, string][]) {
       let bnftAddresses = await bnftRegistryProxy.getBNFTAddresses(assetAddress);
       if (bnftAddresses.bNftProxy == undefined || !notFalsyOrZeroAddress(bnftAddresses.bNftProxy)) {
@@ -50,7 +50,7 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
         await bnftProxy.name(),
         await bnftProxy.symbol(),
         bnftAddresses.bNftProxy,
-        bnftAddresses.bNftImpl,
+        bnftAddresses.bNftImpl
       );
     }
   });

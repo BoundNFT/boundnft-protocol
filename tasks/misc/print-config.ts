@@ -1,9 +1,14 @@
 import { task } from "hardhat/config";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
-import { getBNFTRegistryProxy, getIErc721Detailed } from "../../helpers/contracts-getters";
+import {
+  getBNFTProxyAdminById,
+  getBNFTRegistryProxy,
+  getBNFTUpgradeableProxy,
+  getIErc721Detailed,
+} from "../../helpers/contracts-getters";
 import { getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { DRE } from "../../helpers/misc-utils";
-import { eEthereumNetwork, eNetwork } from "../../helpers/types";
+import { eContractid, eEthereumNetwork, eNetwork } from "../../helpers/types";
 
 task("print-config", "Print config of all reserves and nfts")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
@@ -12,14 +17,17 @@ task("print-config", "Print config of all reserves and nfts")
     const network = process.env.FORK ? (process.env.FORK as eNetwork) : (localBRE.network.name as eNetwork);
     const poolConfig = loadPoolConfig(pool);
 
+    const proxyAdmin = await getBNFTProxyAdminById(eContractid.ProxyAdmin);
+
     const bnftRegistryAddress = getParamPerNetwork(poolConfig.BNFTRegistry, network);
     const bnftRegistry = await getBNFTRegistryProxy(bnftRegistryAddress);
 
     console.log("BNFT Registry:", bnftRegistry.address);
+    console.log("  - Implementation:", await proxyAdmin.getProxyImplementation(bnftRegistry.address));
     console.log("  - Owner:", await bnftRegistry.owner());
     console.log("  - Name Prefix:", await bnftRegistry.namePrefix());
     console.log("  - Symbol Prefix:", await bnftRegistry.symbolPrefix());
-    console.log("  - Generic Implementation:", await bnftRegistry.bNftGenericImpl());
+    console.log("  - BNFT Generic Implementation:", await bnftRegistry.bNftGenericImpl());
 
     const nftAssetList = await bnftRegistry.getBNFTAssetList();
 

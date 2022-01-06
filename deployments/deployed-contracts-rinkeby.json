@@ -12,18 +12,16 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "ProxyAdmin": {
-    "address": "0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+    "address": "0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B"
   },
   "BNFT": {
-    "address": "0x94441AAB5bE25690a17FE27f985c477F46Ca73d0",
+    "address": "0x45D5C01057F103Be06502ce8FBceb53397A6F7fa",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0x54EFFF4B7A8b4EfA6F0cBF0DBeb95EF43d2804E1"
+    "address": "0xbCb9655Dd248b4C55f4cC0324FD921f119ca8a95"
   },
   "BNFTRegistry": {
-    "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+    "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
   }
 }

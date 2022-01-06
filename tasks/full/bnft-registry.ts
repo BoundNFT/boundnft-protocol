@@ -7,11 +7,7 @@ import {
   deployBNFTUpgradeableProxy,
   deployGenericBNFTImpl,
 } from "../../helpers/contracts-deployments";
-import {
-  getBNFTRegistryProxy,
-  getBNFTUpgradeableProxy,
-  getBNFTProxyAdminById,
-} from "../../helpers/contracts-getters";
+import { getBNFTRegistryProxy, getBNFTUpgradeableProxy, getBNFTProxyAdminById } from "../../helpers/contracts-getters";
 import { getParamPerNetwork, insertContractAddressInDb } from "../../helpers/contracts-helpers";
 import { BNFTRegistry, BNFTUpgradeableProxy } from "../../types";
 
@@ -30,11 +26,6 @@ task("full:deploy-bnft-registry", "Deploy bnft registry for full enviroment")
     const bnftGenericImpl = await deployGenericBNFTImpl(verify);
 
     const bnftRegistryImpl = await deployBNFTRegistry(verify);
-    const initEncodedData = bnftRegistryImpl.interface.encodeFunctionData("initialize", [
-      bnftGenericImpl.address,
-      poolConfig.BNftNamePrefix,
-      poolConfig.BNftSymbolPrefix,
-    ]);
 
     let bnftRegistry: BNFTRegistry;
     let bnftRegistryProxy: BNFTUpgradeableProxy;
@@ -42,6 +33,12 @@ task("full:deploy-bnft-registry", "Deploy bnft registry for full enviroment")
     let bnftRegistryProxyAddress = getParamPerNetwork(poolConfig.BNFTRegistry, network);
     if (bnftRegistryProxyAddress == undefined || !notFalsyOrZeroAddress(bnftRegistryProxyAddress)) {
       console.log("Deploying new bnft registry proxy & implementation...");
+
+      const initEncodedData = bnftRegistryImpl.interface.encodeFunctionData("initialize", [
+        bnftGenericImpl.address,
+        poolConfig.BNftNamePrefix,
+        poolConfig.BNftSymbolPrefix,
+      ]);
 
       bnftRegistryProxy = await deployBNFTUpgradeableProxy(
         eContractid.BNFTRegistry,
@@ -65,6 +62,7 @@ task("full:deploy-bnft-registry", "Deploy bnft registry for full enviroment")
       );
 
       bnftRegistry = await getBNFTRegistryProxy(bnftRegistryProxy.address);
+      await waitForTx(await bnftRegistry.setBNFTGenericImpl(bnftGenericImpl.address));
     }
 
     console.log("BNFT Registry: proxy %s, implementation %s", bnftRegistry.address, bnftRegistryImpl.address);
