@@ -17,13 +17,13 @@ This repository contains the smart contracts source code and configuration for B
 
 ## What is BNFT?
 
-BNFT is a promissory note NFT collateral protocol where lending protocols can participate as minters.
+BNFT is a Best NFT Promissory Note protocol where lending protocols can participate as minters.
 
 ## Documentation
 
-The documentation of BNFT Protocol is in the following [BNFT documentation](https://docs.bnft.org/developers) link. At the documentation you can learn more about the protocol, see the contract interfaces, integration guides and audits.
+The documentation of BNFT Protocol is in the following [BNFT documentation](https://docs.bnftdao.org) link. At the documentation you can learn more about the protocol, see the contract interfaces, integration guides and audits.
 
-For getting the latest contracts addresses, please check the [Deployed contracts](https://docs.bnft.org/developers/deployed-contracts/deployed-contracts) page at the documentation to stay up to date.
+For getting the latest contracts addresses, please check the [Deployed contracts](https://docs.bnftdao.org/deployed-contracts/deployed-contracts) page at the documentation to stay up to date.
 
 A more detailed and technical description of the protocol can be found in this repository, [here](./bnft-v1-whitepaper.pdf)
 
@@ -32,7 +32,7 @@ TODO
 
 ## Connect with the community
 
-You can join at the [Discord](https://bnft.org/discord) channel or at the [Governance Forum](https://governance.bnft.org/) for asking questions about the protocol or talk about BNFT with other peers.
+You can join at the [Discord](https://bnftdao.org/discord) channel or at the [Governance Forum](https://governance.bnftdao.org/) for asking questions about the protocol or talk about BNFT with other peers.
 
 ## Getting Started
 
@@ -102,6 +102,9 @@ docker-compose up
 # Open another tab or terminal
 docker-compose exec contracts-env bash
 
+# Install dependencies
+npm install --force
+
 # A new Bash terminal is prompted, connected to the container
 npm run test
 ```
@@ -118,8 +121,11 @@ docker-compose up
 # Open another tab or terminal
 docker-compose exec contracts-env bash
 
+# Install dependencies
+npm install --force
+
 # Runing NPM task
-# npm run xxx
+npm run xxx
 ```
 
 ### Localhost deployment

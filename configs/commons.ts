@@ -21,7 +21,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.coverage]: undefined,
     [eEthereumNetwork.hardhat]: undefined,
     [eEthereumNetwork.localhost]: undefined,
-    [eEthereumNetwork.rinkeby]: '',
+    [eEthereumNetwork.rinkeby]: '0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B',
     [eEthereumNetwork.main]: undefined,
   },
 
@@ -29,7 +29,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',
     [eEthereumNetwork.localhost]: '',
-    [eEthereumNetwork.rinkeby]: '',
+    [eEthereumNetwork.rinkeby]: '0xB873F088EB721261bc88BbC739B5C794e02e414b',
     [eEthereumNetwork.main]: '',
   },
   BNFTRegistryOwner: {

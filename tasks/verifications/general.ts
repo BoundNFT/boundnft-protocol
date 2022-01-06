@@ -1,7 +1,12 @@
 import { task } from "hardhat/config";
 import { loadPoolConfig, ConfigNames } from "../../helpers/configuration";
 import {
-  getBNFTUpgradeableProxy, getBNFT, getBNFTRegistryImpl, getBNFTRegistryProxy,
+  getBNFTUpgradeableProxy,
+  getBNFT,
+  getBNFTRegistryImpl,
+  getBNFTRegistryProxy,
+  getIErc721Detailed,
+  getBNFTProxyAdminByAddress,
 } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress } from "../../helpers/misc-utils";
@@ -14,6 +19,13 @@ task("verify:general", "Verify general contracts at Etherscan")
     await localDRE.run("set-DRE");
     const network = localDRE.network.name as eNetwork;
     const poolConfig = loadPoolConfig(pool);
+
+    // Proxy Admin
+    const proxyAdminAddress = getParamPerNetwork(poolConfig.ProxyAdmin, network);
+    if (proxyAdminAddress == undefined || !notFalsyOrZeroAddress(proxyAdminAddress)) {
+      throw Error("Invalid proxy admin address in pool config");
+    }
+    const proxyAdmin = await getBNFTProxyAdminByAddress(proxyAdminAddress);
 
     const bnftRegistryProxy = await getBNFTRegistryProxy();
 
@@ -30,9 +42,41 @@ task("verify:general", "Verify general contracts at Etherscan")
       await verifyContract(eContractid.BNFT, bnftGenericImpl, []);
     }
 
-    // Lend Pool proxy
+    // BNFT Registry proxy
     console.log("\n- Verifying BNFT Registry Proxy...\n");
-    await verifyContract(eContractid.BNFTUpgradeableProxy, bnftRegistryProxy, []);
+    const initEncodedData = bnftRegistryImpl.interface.encodeFunctionData("initialize", [
+      bnftGenericImpl.address,
+      poolConfig.BNftNamePrefix,
+      poolConfig.BNftSymbolPrefix,
+    ]);
+    await verifyContract(eContractid.BNFTUpgradeableProxy, bnftRegistryProxy, [
+      bnftRegistryImpl.address,
+      proxyAdmin.address,
+      initEncodedData,
+    ]);
+
+    // BNFT proxy
+    console.log("\n- Verifying BNFT Proxy...\n");
+    const allNFTAssets = await bnftRegistryProxy.getBNFTAssetList();
+    for (const nftAsset of allNFTAssets) {
+      const nftToken = await getIErc721Detailed(nftAsset);
+      const nftSymbol = await nftToken.symbol();
+
+      console.log(`\n- Verifying BNFT Proxy for ${nftSymbol} ...\n`);
+
+      const bnftAddresses = await bnftRegistryProxy.getBNFTAddresses(nftAsset);
+      const bnftTokenProxy = await getBNFTUpgradeableProxy(bnftAddresses.bNftProxy);
+      const initEncodedData = bnftGenericImpl.interface.encodeFunctionData("initialize", [
+        nftAsset,
+        poolConfig.BNftNamePrefix + " " + nftSymbol,
+        poolConfig.BNftSymbolPrefix + nftSymbol,
+      ]);
+      await verifyContract(eContractid.BNFTUpgradeableProxy, bnftTokenProxy, [
+        bnftGenericImpl.address,
+        bnftRegistryProxy.address,
+        initEncodedData,
+      ]);
+    }
 
     console.log("Finished verifications.");
   });

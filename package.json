@@ -1,5 +1,5 @@
 {
-  "name": "@bend/bnft-protocol",
+  "name": "@bnft/bnft-protocol",
   "version": "1.0.0",
   "description": "BNFT Protocol smart contracts",
   "files": [
@@ -7,7 +7,7 @@
     "artifacts"
   ],
   "scripts": {
-    "run-env": "npm i && tail -f /dev/null",
+    "run-env": "npm i --force && tail -f /dev/null",
     "hardhat": "hardhat",
     "hardhat:node": "hardhat node",
     "hardhat:localhost": "hardhat --network localhost",
