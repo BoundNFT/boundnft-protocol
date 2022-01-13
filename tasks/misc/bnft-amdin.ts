@@ -8,14 +8,10 @@ import { OwnableUpgradeableFactory } from "../../types/OwnableUpgradeableFactory
 
 task("admin:transfer-owner", "Transfer ownership")
   .addFlag("verify", "Verify contracts at Etherscan")
-  .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .addParam("contract", "Contract address")
   .addParam("target", "Target owner address")
   .setAction(async ({ verify, pool, contract, target }, DRE) => {
     await DRE.run("set-DRE");
-
-    const network = DRE.network.name as eNetwork;
-    const poolConfig = loadPoolConfig(pool);
 
     const contractInst = OwnableUpgradeableFactory.connect(contract, await getDeploySigner());
     const currentOwnerAddress = await contractInst.owner();
@@ -29,7 +25,7 @@ task("admin:claim-airdrop-erc20", "Doing claim airdrop for dev enviroment")
   .addParam("nftAsset", "Address of ERC721 contract")
   .addParam("airToken", "Address of ERC20 contract")
   .addParam("target", "Address of target user")
-  .addParam("amount", "Amount of target user")
+  .addParam("amount", "Amount of target user in decimals")
   .setAction(async ({ nftAsset, airToken, target, amount }, localBRE) => {
     await localBRE.run("set-DRE");
 

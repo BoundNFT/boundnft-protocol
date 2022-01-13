@@ -15,17 +15,17 @@
     "address": "0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B"
   },
   "BNFT": {
-    "address": "0x03D984E4CFD32077d9DEc2e68ed13EEB344A1145",
+    "address": "0xa7e842d5e85284c0da225FC75cc44d2E21736376",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0xC44402B6EA4bEeA027747A37ab3931F6162AA1A2"
+    "address": "0x2dC8b1C0934eA80110C6BCe29eDbF87D9c81e6d8"
   },
   "BNFTRegistry": {
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
   },
   "MockAirdrop": {
-    "address": "0x25AB6F8044d2396BAC4894F7293487755a3658aF",
+    "address": "0x321799b29C62d155f72faC40d7C7Cf6fc341f11a",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
