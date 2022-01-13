@@ -59,7 +59,7 @@ export const deployMintableERC1155 = async (args: [], verify?: boolean): Promise
     verify
   );
 
-export const deployMockAirdrop = async (args: [], verify?: boolean): Promise<MockAirdrop> =>
+export const deployMockAirdrop = async (args: [string], verify?: boolean): Promise<MockAirdrop> =>
   withSaveAndVerify(
     await new MockAirdropFactory(await getFirstSigner()).deploy(...args),
     eContractid.MockAirdrop,

@@ -41,12 +41,8 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
       } else {
         console.log("Upgrading exist BNFT implementation for %s", assetSymbol);
 
-        const initEncodedData = bnftGenericImpl.interface.encodeFunctionData("initOwner", [registryOwner]);
-
         await waitForTx(
-          await bnftRegistryProxy
-            .connect(ownerSigner)
-            .upgradeBNFTWithImpl(assetAddress, bnftGenericImpl.address, initEncodedData)
+          await bnftRegistryProxy.connect(ownerSigner).upgradeBNFTWithImpl(assetAddress, bnftGenericImpl.address, [])
         );
       }
       bnftAddresses = await bnftRegistryProxy.getBNFTAddresses(assetAddress);

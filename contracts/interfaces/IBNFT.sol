@@ -101,7 +101,7 @@ interface IBNFT {
   function claimERC721Airdrop(
     address token,
     address to,
-    uint256 tokenId
+    uint256[] calldata ids
   ) external;
 
   function claimERC1155Airdrop(

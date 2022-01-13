@@ -23,5 +23,9 @@
   },
   "BNFTRegistry": {
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
+  },
+  "MockAirdrop": {
+    "address": "0x25AB6F8044d2396BAC4894F7293487755a3658aF",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

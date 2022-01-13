@@ -1,12 +1,19 @@
 import { task } from "hardhat/config";
-import { deployAllMockNfts } from "../../helpers/contracts-deployments";
+import { deployAllMockNfts, deployMockBNFTMinter } from "../../helpers/contracts-deployments";
 import { getDeploySigner, getIErc721Detailed, getMintableERC721 } from "../../helpers/contracts-getters";
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
+import { eNetwork } from "../../helpers/types";
 
 task("dev:deploy-mock-nfts", "Deploy mock nfts for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
     await localBRE.run("set-DRE");
+
+    const network = localBRE.network.name as eNetwork;
+    if (network.includes("main")) {
+      throw new Error("Mocks not used at mainnet configuration.");
+    }
+
     await deployAllMockNfts(verify);
   });
 
@@ -16,6 +23,11 @@ task("dev:mint-mock-nfts", "Deploy mock nfts for dev enviroment")
   .addOptionalParam("target", "Address of target user")
   .setAction(async ({ token, ids, target }, localBRE) => {
     await localBRE.run("set-DRE");
+    const network = localBRE.network.name as eNetwork;
+    if (network.includes("main")) {
+      throw new Error("Mocks not used at mainnet configuration.");
+    }
+
     const deployerSinger = await getDeploySigner();
     const deployerAddress = await deployerSinger.getAddress();
 

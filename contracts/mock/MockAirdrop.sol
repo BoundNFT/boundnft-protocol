@@ -4,58 +4,65 @@ pragma solidity ^0.8.0;
 import "./MintableERC20.sol";
 import "./MintableERC721.sol";
 import "./MintableERC1155.sol";
-
+import "../interfaces/IBNFTRegistry.sol";
+import "../interfaces/IBNFT.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 
 contract MockAirdrop {
+  IBNFTRegistry public bnftRegistry;
+
   MintableERC20 public erc20;
-  mapping(address => mapping(uint256 => uint256)) public erc20Mints;
-
   MintableERC721 public erc721;
-  mapping(address => mapping(uint256 => uint256)) public erc721Mints;
-
   MintableERC1155 public erc1155;
-  mapping(address => mapping(uint256 => uint256)) public erc1155Mints;
 
-  constructor() {
-    erc20 = new MintableERC20("BNFT Mock Airdrop ERC20", "AD20", 18);
-    erc721 = new MintableERC721("BNFT Mock Airdrop ERC721", "AD721");
+  mapping(address => mapping(uint256 => bool)) public airdrops;
+
+  constructor(address bnftRegistry_) {
+    bnftRegistry = IBNFTRegistry(bnftRegistry_);
+
+    erc20 = new MintableERC20("BNFT Mock Airdrop ERC20", "BMAD20", 18);
+    erc721 = new MintableERC721("BNFT Mock Airdrop ERC721", "BMAD721");
     erc1155 = new MintableERC1155();
   }
 
-  function airdropERC20(address nftAsset, uint256 tokenId) public {
-    require(msg.sender == IERC721(nftAsset).ownerOf(tokenId), "caller is not nft owner");
-    require(erc20Mints[nftAsset][tokenId] == 0, "nft token has airdroped");
-
-    erc20Mints[nftAsset][tokenId] = 1000 * 10**18;
-
-    erc20.mint(erc20Mints[nftAsset][tokenId]);
-
-    erc20.transfer(msg.sender, erc20Mints[nftAsset][tokenId]);
+  function applyAirdrop(address nftAsset, uint256 tokenId) public {
+    _airdrop(nftAsset, tokenId, true);
   }
 
-  function airdropERC721(address nftAsset, uint256 tokenId) public {
-    require(msg.sender == IERC721(nftAsset).ownerOf(tokenId), "caller is not nft owner");
-    require(erc721Mints[nftAsset][tokenId] == 0, "nft token has airdroped");
+  function snapshotAirdrop(address nftAsset, uint256 tokenId) public {
+    _airdrop(nftAsset, tokenId, false);
+  }
 
-    erc721Mints[nftAsset][tokenId] = 1;
+  function _airdrop(
+    address nftAsset,
+    uint256 tokenId,
+    bool isApplied
+  ) internal {
+    require(false == airdrops[nftAsset][tokenId], "nft has been airdroped");
+
+    (address bnftProxy, ) = bnftRegistry.getBNFTAddresses(nftAsset);
+    require(bnftProxy != address(0), "bnft not created");
+
+    require(bnftProxy == IERC721(nftAsset).ownerOf(tokenId), "bnft is not nft owner");
+
+    address to = bnftProxy;
+    if (isApplied) {
+      require(msg.sender == IERC721(bnftProxy).ownerOf(tokenId), "caller is not bnft owner");
+      to = msg.sender;
+    }
+
+    airdrops[nftAsset][tokenId] = true;
+
+    erc20.mint(1000 * 10**18);
+    erc20.transfer(to, 1000 * 10**18);
 
     erc721.mint(tokenId);
+    erc721.safeTransferFrom(address(this), to, tokenId);
 
-    erc721.safeTransferFrom(address(this), msg.sender, tokenId);
-  }
-
-  function airdropERC1155(address nftAsset, uint256 tokenId) public {
-    require(msg.sender == IERC721(nftAsset).ownerOf(tokenId), "caller is not nft owner");
-    require(erc1155Mints[nftAsset][tokenId] == 0, "nft token has airdroped");
-
-    erc1155Mints[nftAsset][tokenId] = 10;
-
-    erc1155.mint(tokenId, erc1155Mints[nftAsset][tokenId]);
-
-    erc1155.safeTransferFrom(address(this), msg.sender, tokenId, erc721Mints[nftAsset][tokenId], new bytes(0));
+    erc1155.mint(tokenId, 10);
+    erc1155.safeTransferFrom(address(this), to, tokenId, 10, new bytes(0));
   }
 
   function onERC721Received(

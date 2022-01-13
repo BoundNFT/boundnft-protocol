@@ -75,7 +75,7 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
     ).to.be.revertedWith("BNFT: caller is not the owner");
 
     await expect(
-      bBAYC.connect(user2.signer).claimERC721Airdrop(mockERC721Instance.address, user0.address, "1")
+      bBAYC.connect(user2.signer).claimERC721Airdrop(mockERC721Instance.address, user0.address, ["1"])
     ).to.be.revertedWith("BNFT: caller is not the owner");
 
     await expect(
@@ -95,7 +95,7 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
       "BNFT: token can not be underlying asset"
     );
 
-    await expect(bBAYC.connect(ownerSinger).claimERC721Airdrop(bayc.address, user0.address, "1")).to.be.revertedWith(
+    await expect(bBAYC.connect(ownerSinger).claimERC721Airdrop(bayc.address, user0.address, ["1"])).to.be.revertedWith(
       "BNFT: token can not be underlying asset"
     );
 
@@ -118,7 +118,7 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
     expect(await mockERC20Instance.balanceOf(user5.address)).to.be.equal("1000");
 
     await waitForTx(
-      await bBAYC.connect(ownerSinger).claimERC721Airdrop(mockERC721Instance.address, user5.address, "1")
+      await bBAYC.connect(ownerSinger).claimERC721Airdrop(mockERC721Instance.address, user5.address, ["1"])
     );
     expect(await mockERC721Instance.ownerOf("1")).to.be.equal(user5.address);
 

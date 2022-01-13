@@ -44,15 +44,6 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   /**
-   * @dev Initializes the owner of the bNFT.
-   * CAUTION: Only used in upgrading for old testnet contracts.
-   */
-  function initOwner(address owner_) public {
-    require(_owner == address(0), "BNFT: owner has initialized");
-    _transferOwnership(owner_);
-  }
-
-  /**
    * @dev Returns the address of the current owner.
    */
   function owner() public view virtual returns (address) {
@@ -202,10 +193,12 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   function claimERC721Airdrop(
     address token,
     address to,
-    uint256 tokenId
+    uint256[] calldata ids
   ) external override onlyOwner {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
-    IERC721Upgradeable(token).safeTransferFrom(address(this), to, tokenId);
+    for (uint256 i = 0; i < ids.length; i++) {
+      IERC721Upgradeable(token).safeTransferFrom(address(this), to, ids[i]);
+    }
   }
 
   function claimERC1155Airdrop(
