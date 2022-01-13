@@ -1,6 +1,4 @@
-import {
-  PoolConfiguration,
-} from "./types";
+import { PoolConfiguration } from "./types";
 import BendConfig from "../configs/bend";
 import { CommonsConfig } from "../configs/commons";
 

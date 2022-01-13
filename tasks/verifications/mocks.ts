@@ -1,8 +1,6 @@
 import { task } from "hardhat/config";
 import { loadPoolConfig, ConfigNames } from "../../helpers/configuration";
-import {
-  getAllMockedNfts,
-} from "../../helpers/contracts-getters";
+import { getAllMockedNfts } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { eContractid, eNetwork, ICommonConfiguration } from "../../helpers/types";
 

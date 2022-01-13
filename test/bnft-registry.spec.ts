@@ -148,10 +148,10 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
     const nftAddrByAddr = await bnftRegistry.getBNFTAddresses(testNftAsset.address);
     const bnftTest = await getBNFT(nftAddrByAddr.bNftProxy);
 
-    const wantSymbol = (await bnftRegistry.symbolPrefix()) + ("CTNFT");
+    const wantSymbol = (await bnftRegistry.symbolPrefix()) + "CTNFT";
     expect(wantSymbol).to.equal(await bnftTest.symbol());
 
-    const wantName = (await bnftRegistry.namePrefix()) + " " + ("CTNFT");
+    const wantName = (await bnftRegistry.namePrefix()) + " " + "CTNFT";
     expect(wantName).to.equal(await bnftTest.name());
   });
 });

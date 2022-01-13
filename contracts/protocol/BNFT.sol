@@ -7,33 +7,85 @@ import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import {ERC721EnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import {IERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import {IERC721MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
 import {IERC721ReceiverUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import {IERC1155ReceiverUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155ReceiverUpgradeable.sol";
 
 /**
  * @title BNFT contract
  * @dev Implements the methods for the bNFT protocol
  **/
-contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
+contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable, IERC1155ReceiverUpgradeable {
   address private _underlyingAsset;
   // Mapping from token ID to minter address
   mapping(uint256 => address) private _minters;
+  address private _owner;
 
   /**
    * @dev Initializes the bNFT
-   * @param underlyingAsset The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)
+   * @param underlyingAsset_ The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)
    */
   function initialize(
-    address underlyingAsset,
+    address underlyingAsset_,
     string calldata bNftName,
-    string calldata bNftSymbol
+    string calldata bNftSymbol,
+    address owner_
   ) external override initializer {
     __ERC721_init(bNftName, bNftSymbol);
 
-    _underlyingAsset = underlyingAsset;
+    _underlyingAsset = underlyingAsset_;
 
-    emit Initialized(underlyingAsset);
+    _transferOwnership(owner_);
+
+    emit Initialized(underlyingAsset_);
+  }
+
+  /**
+   * @dev Returns the address of the current owner.
+   */
+  function owner() public view virtual returns (address) {
+    return _owner;
+  }
+
+  /**
+   * @dev Throws if called by any account other than the owner.
+   */
+  modifier onlyOwner() {
+    require(owner() == _msgSender(), "BNFT: caller is not the owner");
+    _;
+  }
+
+  /**
+   * @dev Leaves the contract without owner. It will not be possible to call
+   * `onlyOwner` functions anymore. Can only be called by the current owner.
+   *
+   * NOTE: Renouncing ownership will leave the contract without an owner,
+   * thereby removing any functionality that is only available to the owner.
+   */
+  function renounceOwnership() public virtual onlyOwner {
+    _transferOwnership(address(0));
+  }
+
+  /**
+   * @dev Transfers ownership of the contract to a new account (`newOwner`).
+   * Can only be called by the current owner.
+   */
+  function transferOwnership(address newOwner) public virtual onlyOwner {
+    require(newOwner != address(0), "BNFT: new owner is the zero address");
+    _transferOwnership(newOwner);
+  }
+
+  /**
+   * @dev Transfers ownership of the contract to a new account (`newOwner`).
+   * Internal function without access restriction.
+   */
+  function _transferOwnership(address newOwner) internal virtual {
+    address oldOwner = _owner;
+    _owner = newOwner;
+    emit OwnershipTransferred(oldOwner, newOwner);
   }
 
   /**
@@ -74,7 +126,7 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
     require(_exists(tokenId), "BNFT: nonexist token");
     require(_minters[tokenId] == _msgSender(), "BNFT: caller is not minter");
 
-    address owner = ERC721Upgradeable.ownerOf(tokenId);
+    address tokenOwner = ERC721Upgradeable.ownerOf(tokenId);
 
     IERC721Upgradeable(_underlyingAsset).safeTransferFrom(address(this), _msgSender(), tokenId);
 
@@ -82,7 +134,7 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
 
     delete _minters[tokenId];
 
-    emit Burn(_msgSender(), _underlyingAsset, tokenId, owner);
+    emit Burn(_msgSender(), _underlyingAsset, tokenId, tokenOwner);
   }
 
   /**
@@ -125,14 +177,37 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
   /**
    * @dev See {IERC721Metadata-tokenURI}.
    */
-  function tokenURI(uint256 tokenId)
-    public
-    view
-    virtual
-    override(ERC721Upgradeable, IERC721MetadataUpgradeable)
-    returns (string memory)
-  {
+  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
     return IERC721MetadataUpgradeable(_underlyingAsset).tokenURI(tokenId);
+  }
+
+  function claimERC20Airdrop(
+    address token,
+    address to,
+    uint256 amount
+  ) external override onlyOwner {
+    require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
+    IERC20Upgradeable(token).transfer(to, amount);
+  }
+
+  function claimERC721Airdrop(
+    address token,
+    address to,
+    uint256 tokenId
+  ) external override onlyOwner {
+    require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
+    IERC721Upgradeable(token).safeTransferFrom(address(this), to, tokenId);
+  }
+
+  function claimERC1155Airdrop(
+    address token,
+    address to,
+    uint256[] calldata ids,
+    uint256[] calldata amounts,
+    bytes calldata data
+  ) external override onlyOwner {
+    require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
+    IERC1155Upgradeable(token).safeBatchTransferFrom(address(this), to, ids, amounts, data);
   }
 
   function onERC721Received(
@@ -148,6 +223,36 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
     return IERC721ReceiverUpgradeable.onERC721Received.selector;
   }
 
+  function onERC1155Received(
+    address operator,
+    address from,
+    uint256 id,
+    uint256 value,
+    bytes calldata data
+  ) external pure override returns (bytes4) {
+    operator;
+    from;
+    id;
+    value;
+    data;
+    return IERC1155ReceiverUpgradeable.onERC1155Received.selector;
+  }
+
+  function onERC1155BatchReceived(
+    address operator,
+    address from,
+    uint256[] calldata ids,
+    uint256[] calldata values,
+    bytes calldata data
+  ) external pure override returns (bytes4) {
+    operator;
+    from;
+    ids;
+    values;
+    data;
+    return IERC1155ReceiverUpgradeable.onERC1155BatchReceived.selector;
+  }
+
   /**
    * @dev See {IBNFT-minterOf}.
    */
@@ -158,20 +263,23 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
   }
 
   /**
+   * @dev See {IBNFT-underlyingAsset}.
+   */
+  function underlyingAsset() external view override returns (address) {
+    return _underlyingAsset;
+  }
+
+  /**
    * @dev Being non transferrable, the bNFT token does not implement any of the
    * standard ERC721 functions for transfer and allowance.
    **/
-  function approve(address to, uint256 tokenId) public virtual override(ERC721Upgradeable, IERC721Upgradeable) {
+  function approve(address to, uint256 tokenId) public virtual override {
     to;
     tokenId;
     revert("APPROVAL_NOT_SUPPORTED");
   }
 
-  function setApprovalForAll(address operator, bool approved)
-    public
-    virtual
-    override(ERC721Upgradeable, IERC721Upgradeable)
-  {
+  function setApprovalForAll(address operator, bool approved) public virtual override {
     operator;
     approved;
     revert("APPROVAL_NOT_SUPPORTED");
@@ -181,7 +289,7 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
     address from,
     address to,
     uint256 tokenId
-  ) public virtual override(ERC721Upgradeable, IERC721Upgradeable) {
+  ) public virtual override {
     from;
     to;
     tokenId;
@@ -192,7 +300,7 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
     address from,
     address to,
     uint256 tokenId
-  ) public virtual override(ERC721Upgradeable, IERC721Upgradeable) {
+  ) public virtual override {
     from;
     to;
     tokenId;
@@ -204,7 +312,7 @@ contract BNFT is ERC721EnumerableUpgradeable, IBNFT {
     address to,
     uint256 tokenId,
     bytes memory _data
-  ) public virtual override(ERC721Upgradeable, IERC721Upgradeable) {
+  ) public virtual override {
     from;
     to;
     tokenId;

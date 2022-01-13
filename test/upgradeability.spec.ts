@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { makeSuite, TestEnv } from "./helpers/make-suite";
 import { getFirstSigner } from "../helpers/contracts-getters";
 import { BNFT, BNFTFactory } from "../types";
+import { ZERO_ADDRESS } from "../helpers/constants";
 
 makeSuite("Upgradeability", (testEnv: TestEnv) => {
   let newBNFTInstance: BNFT;
@@ -13,9 +14,9 @@ makeSuite("Upgradeability", (testEnv: TestEnv) => {
   it("Tries to upgrade the BAYC implementation with a different address than the owner", async () => {
     const { bnftRegistry, bayc, users } = testEnv;
 
-    await expect(bnftRegistry.connect(users[1].signer).upgradeBNFTWithImpl(bayc.address, newBNFTInstance.address, [])).to.be.revertedWith(
-      ""
-    );
+    await expect(
+      bnftRegistry.connect(users[1].signer).upgradeBNFTWithImpl(bayc.address, newBNFTInstance.address, [])
+    ).to.be.revertedWith("");
   });
 
   it("Upgrades the BAYC implementation ", async () => {

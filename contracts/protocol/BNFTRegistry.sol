@@ -81,10 +81,12 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   /**
    * @dev See {IBNFTRegistry-createBNFTWithImpl}.
    */
-  function createBNFTWithImpl(
-    address nftAsset,
-    address bNftImpl
-  ) external override onlyOwner returns (address bNftProxy) {
+  function createBNFTWithImpl(address nftAsset, address bNftImpl)
+    external
+    override
+    onlyOwner
+    returns (address bNftProxy)
+  {
     _requireAddressIsERC721(nftAsset);
     require(bNftImpl != address(0), "BNFTR: implement is zero address");
     require(bNftProxys[nftAsset] == address(0), "BNFTR: asset exist");
@@ -124,15 +126,12 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   function addCustomeSymbols(address[] memory nftAssets_, string[] memory symbols_) external override onlyOwner {
     require(nftAssets_.length == symbols_.length, "BNFTR: inconsistent parameters");
 
-    for (uint256 i=0; i<nftAssets_.length; i++) {
+    for (uint256 i = 0; i < nftAssets_.length; i++) {
       customSymbols[nftAssets_[i]] = symbols_[i];
     }
   }
 
-  function _createProxyAndInitWithImpl(
-    address nftAsset,
-    address bNftImpl
-  ) internal returns (address bNftProxy) {
+  function _createProxyAndInitWithImpl(address nftAsset, address bNftImpl) internal returns (address bNftProxy) {
     bytes memory initParams = _buildInitParams(nftAsset);
 
     BNFTUpgradeableProxy proxy = new BNFTUpgradeableProxy(bNftImpl, address(this), initParams);
@@ -152,7 +151,7 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     string memory bNftName = string(abi.encodePacked(namePrefix, " ", nftSymbol));
     string memory bNftSymbol = string(abi.encodePacked(symbolPrefix, nftSymbol));
 
-    initParams = abi.encodeWithSelector(IBNFT.initialize.selector, nftAsset, bNftName, bNftSymbol);
+    initParams = abi.encodeWithSelector(IBNFT.initialize.selector, nftAsset, bNftName, bNftSymbol, owner());
   }
 
   function _requireAddressIsERC721(address nftAsset) internal view {

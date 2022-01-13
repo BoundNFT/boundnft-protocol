@@ -79,12 +79,7 @@ export const getBNFTProxyAdminByAddress = async (address: tEthereumAddress) =>
   BNFTProxyAdminFactory.connect(address, await getFirstSigner());
 
 export const getBNFTProxyAdminById = async (id: string) =>
-  BNFTProxyAdminFactory.connect(
-    (
-      await getDb(DRE.network.name).get(`${id}`).value()
-    ).address,
-    await getFirstSigner()
-  );
+  BNFTProxyAdminFactory.connect((await getDb(DRE.network.name).get(`${id}`).value()).address, await getFirstSigner());
 
 export const getBNFTRegistryImpl = async (address?: tEthereumAddress) => {
   return await BNFTRegistryFactory.connect(

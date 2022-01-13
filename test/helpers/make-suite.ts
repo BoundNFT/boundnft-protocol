@@ -1,11 +1,6 @@
 import { evmRevert, evmSnapshot, DRE, getNowTimeInSeconds } from "../../helpers/misc-utils";
 import { Signer } from "ethers";
-import {
-  getBNFT,
-  getMintableERC721,
-  getBNFTRegistryProxy,
-  getIErc721Detailed,
-} from "../../helpers/contracts-getters";
+import { getBNFT, getMintableERC721, getBNFTRegistryProxy, getIErc721Detailed } from "../../helpers/contracts-getters";
 import { eEthereumNetwork, eNetwork, tEthereumAddress } from "../../helpers/types";
 import { MintableERC721 } from "../../types/MintableERC721";
 import { BNFT } from "../../types/BNFT";
@@ -16,9 +11,7 @@ import bignumberChai from "chai-bignumber";
 import { getEthersSigners, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { solidity } from "ethereum-waffle";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import {
-  BNFTRegistry,
-} from "../../types";
+import { BNFTRegistry } from "../../types";
 import MainConfig from "../../configs/bend";
 import { getAllNftAddresses } from "../../helpers/mock-helpers";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
@@ -78,7 +71,7 @@ export async function initializeMakeSuite() {
   testEnv.bnftRegistry = await getBNFTRegistryProxy();
 
   // NFT Tokens
-  let allBNftTokens : {nftAddress: string, nftSymbol: string, bNftAddress: string}[] = [];
+  let allBNftTokens: { nftAddress: string; nftSymbol: string; bNftAddress: string }[] = [];
   const allNftAssets = await testEnv.bnftRegistry.getBNFTAssetList();
   for (const nftAsset of allNftAssets) {
     const { bNftProxy, bNftImpl } = await testEnv.bnftRegistry.getBNFTAddresses(nftAsset);
@@ -86,7 +79,7 @@ export async function initializeMakeSuite() {
     allBNftTokens.push({
       nftAddress: nftAsset,
       bNftAddress: bNftProxy,
-      nftSymbol: await nftToken.symbol()
+      nftSymbol: await nftToken.symbol(),
     });
   }
 

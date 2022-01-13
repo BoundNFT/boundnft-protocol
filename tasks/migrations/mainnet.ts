@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 import { checkVerification } from "../../helpers/etherscan-verification";
-import { ConfigNames, } from "../../helpers/configuration";
+import { ConfigNames } from "../../helpers/configuration";
 import { printContracts } from "../../helpers/misc-utils";
 import { getDeploySigner } from "../../helpers/contracts-getters";
 import { formatEther } from "@ethersproject/units";

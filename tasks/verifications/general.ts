@@ -29,6 +29,7 @@ task("verify:general", "Verify general contracts at Etherscan")
     await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
 
     const bnftRegistryProxy = await getBNFTRegistryProxy();
+    const registryOwnerAddress = await bnftRegistryProxy.owner();
 
     const bnftRegistryImpl = await getBNFTRegistryImpl();
     const bnftGenericImpl = await getBNFT();
@@ -71,6 +72,7 @@ task("verify:general", "Verify general contracts at Etherscan")
         nftAsset,
         poolConfig.BNftNamePrefix + " " + nftSymbol,
         poolConfig.BNftSymbolPrefix + nftSymbol,
+        registryOwnerAddress,
       ]);
       await verifyContract(eContractid.BNFTUpgradeableProxy, bnftTokenProxy, [
         bnftGenericImpl.address,

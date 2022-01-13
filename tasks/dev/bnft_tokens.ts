@@ -1,10 +1,7 @@
 import { task } from "hardhat/config";
 import { waitForTx } from "../../helpers/misc-utils";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
-import {
-  getBNFTRegistryProxy,
-  getConfigMockedNfts,
-} from "../../helpers/contracts-getters";
+import { getBNFTRegistryProxy, getConfigMockedNfts } from "../../helpers/contracts-getters";
 import { MintableERC721 } from "../../types/MintableERC721";
 
 task("dev:deploy-bnft-tokens", "Deploy bnft tokens for dev enviroment")

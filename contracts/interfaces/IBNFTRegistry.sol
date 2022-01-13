@@ -34,10 +34,7 @@ interface IBNFTRegistry {
    * @param nftAsset The address of the underlying asset of the BNFT
    * @param bNftImpl The address of the deployed implement of the BNFT
    **/
-  function createBNFTWithImpl(
-    address nftAsset,
-    address bNftImpl
-  ) external returns (address bNftProxy);
+  function createBNFTWithImpl(address nftAsset, address bNftImpl) external returns (address bNftProxy);
 
   /**
    * @dev Update bNFT proxy to an new deployed implement, then initialize it

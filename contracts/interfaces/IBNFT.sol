@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity ^0.8.0;
 
-import {IERC721EnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721EnumerableUpgradeable.sol";
-import {IERC721MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol";
-import {IERC721ReceiverUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
-
-interface IBNFT is IERC721MetadataUpgradeable, IERC721ReceiverUpgradeable, IERC721EnumerableUpgradeable {
+interface IBNFT {
   /**
    * @dev Emitted when an bNFT is initialized
-   * @param underlyingAsset The address of the underlying asset
+   * @param underlyingAsset_ The address of the underlying asset
    **/
-  event Initialized(address indexed underlyingAsset);
+  event Initialized(address indexed underlyingAsset_);
+
+  /**
+   * @dev Emitted when the ownership is transferred
+   * @param oldOwner The address of the old owner
+   * @param newOwner The address of the new owner
+   **/
+  event OwnershipTransferred(address oldOwner, address newOwner);
 
   /**
    * @dev Emitted on mint
@@ -41,12 +44,13 @@ interface IBNFT is IERC721MetadataUpgradeable, IERC721ReceiverUpgradeable, IERC7
 
   /**
    * @dev Initializes the bNFT
-   * @param underlyingAsset The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)
+   * @param underlyingAsset_ The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)
    */
   function initialize(
-    address underlyingAsset,
+    address underlyingAsset_,
     string calldata bNftName,
-    string calldata bNftSymbol
+    string calldata bNftSymbol,
+    address airdropAdmin_
   ) external;
 
   /**
@@ -88,6 +92,26 @@ interface IBNFT is IERC721MetadataUpgradeable, IERC721ReceiverUpgradeable, IERC7
     bytes calldata params
   ) external;
 
+  function claimERC20Airdrop(
+    address token,
+    address to,
+    uint256 amount
+  ) external;
+
+  function claimERC721Airdrop(
+    address token,
+    address to,
+    uint256 tokenId
+  ) external;
+
+  function claimERC1155Airdrop(
+    address token,
+    address to,
+    uint256[] calldata ids,
+    uint256[] calldata amounts,
+    bytes calldata data
+  ) external;
+
   /**
    * @dev Returns the owner of the `nftTokenId` token.
    *
@@ -97,4 +121,9 @@ interface IBNFT is IERC721MetadataUpgradeable, IERC721ReceiverUpgradeable, IERC7
    * @param tokenId token id of the underlying asset of NFT
    */
   function minterOf(uint256 tokenId) external view returns (address);
+
+  /**
+   * @dev Returns the address of the underlying asset.
+   */
+  function underlyingAsset() external view returns (address);
 }

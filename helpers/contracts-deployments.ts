@@ -1,16 +1,10 @@
 import { Contract } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
 import { DRE, notFalsyOrZeroAddress } from "./misc-utils";
-import {
-  tEthereumAddress,
-  eContractid,
-  NftContractId,
-  PoolConfiguration,
-  eEthereumNetwork,
-} from "./types";
+import { tEthereumAddress, eContractid, NftContractId, PoolConfiguration, eEthereumNetwork } from "./types";
 import { MockContract } from "ethereum-waffle";
 import { ConfigNames, loadPoolConfig } from "./configuration";
-import { getFirstSigner } from "./contracts-getters";
+import { getDeploySigner, getFirstSigner } from "./contracts-getters";
 import { ZERO_ADDRESS } from "./constants";
 import {
   MintableERC721,
@@ -21,12 +15,12 @@ import {
   MockFlashLoanReceiverFactory,
   BNFTUpgradeableProxyFactory,
   BNFTProxyAdminFactory,
+  MintableERC20Factory,
+  MintableERC20,
+  MintableERC1155,
+  MintableERC1155Factory,
 } from "../types";
-import {
-  withSaveAndVerify,
-  registerContractInJsonDb,
-  insertContractAddressInDb,
-} from "./contracts-helpers";
+import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const readArtifact = async (id: string) => {
@@ -39,10 +33,26 @@ export const deployBNFTRegistry = async (verify?: boolean) => {
   return withSaveAndVerify(bnftRegistryImpl, eContractid.BNFTRegistry, [], verify);
 };
 
+export const deployMintableERC20 = async (args: [string, string, string], verify?: boolean): Promise<MintableERC20> =>
+  withSaveAndVerify(
+    await new MintableERC20Factory(await getDeploySigner()).deploy(...args),
+    eContractid.MintableERC20,
+    args,
+    verify
+  );
+
 export const deployMintableERC721 = async (args: [string, string], verify?: boolean): Promise<MintableERC721> =>
   withSaveAndVerify(
     await new MintableERC721Factory(await getFirstSigner()).deploy(...args),
     eContractid.MintableERC721,
+    args,
+    verify
+  );
+
+export const deployMintableERC1155 = async (args: [], verify?: boolean): Promise<MintableERC1155> =>
+  withSaveAndVerify(
+    await new MintableERC1155Factory(await getFirstSigner()).deploy(...args),
+    eContractid.MintableERC1155,
     args,
     verify
   );

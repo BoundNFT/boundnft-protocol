@@ -19,7 +19,9 @@ export enum BendPools {
 }
 
 export enum eContractid {
+  MintableERC20 = "MintableERC20",
   MintableERC721 = "MintableERC721",
+  MintableERC1155 = "MintableERC1155",
   Proxy = "Proxy",
   BNFTUpgradeableProxy = "BNFTUpgradeableProxy",
   ProxyAdmin = "ProxyAdmin", //BNFT(Registry)
@@ -100,12 +102,11 @@ export interface ICommonConfiguration {
 
   BNFTRegistry: iParamsPerNetwork<tEthereumAddress | undefined>;
   BNFTRegistryOwner: iParamsPerNetwork<tEthereumAddress | undefined>;
-  
+
   NftsAssets: iParamsPerNetwork<SymbolMap<tEthereumAddress>>;
 }
 
-export interface IBendConfiguration extends ICommonConfiguration {
-}
+export interface IBendConfiguration extends ICommonConfiguration {}
 
 export interface ITokenAddress {
   [token: string]: tEthereumAddress;

@@ -7,10 +7,7 @@ import {
   deployGenericBNFTImpl,
   deployBNFTUpgradeableProxy,
 } from "../../helpers/contracts-deployments";
-import {
-  getBNFTRegistryProxy,
-  getBNFTProxyAdminById,
-} from "../../helpers/contracts-getters";
+import { getBNFTRegistryProxy, getBNFTProxyAdminById } from "../../helpers/contracts-getters";
 
 task("dev:deploy-bnft-registry", "Deploy bnft registry for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
