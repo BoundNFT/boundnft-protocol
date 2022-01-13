@@ -27,6 +27,7 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
       // get from db
       bnftRegistryProxy = await getBNFTRegistryProxy();
     }
+    const registryOwner = await bnftRegistryProxy.owner();
 
     const bnftGenericImplAddress = await bnftRegistryProxy.bNftGenericImpl();
     const bnftGenericImpl = await getBNFT(bnftGenericImplAddress);
@@ -39,8 +40,13 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
         await waitForTx(await bnftRegistryProxy.createBNFT(assetAddress));
       } else {
         console.log("Upgrading exist BNFT implementation for %s", assetSymbol);
+
+        const initEncodedData = bnftGenericImpl.interface.encodeFunctionData("initOwner", [registryOwner]);
+
         await waitForTx(
-          await bnftRegistryProxy.connect(ownerSigner).upgradeBNFTWithImpl(assetAddress, bnftGenericImpl.address, [])
+          await bnftRegistryProxy
+            .connect(ownerSigner)
+            .upgradeBNFTWithImpl(assetAddress, bnftGenericImpl.address, initEncodedData)
         );
       }
       bnftAddresses = await bnftRegistryProxy.getBNFTAddresses(assetAddress);

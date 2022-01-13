@@ -15,11 +15,11 @@
     "address": "0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B"
   },
   "BNFT": {
-    "address": "0x45D5C01057F103Be06502ce8FBceb53397A6F7fa",
+    "address": "0x03D984E4CFD32077d9DEc2e68ed13EEB344A1145",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0xbCb9655Dd248b4C55f4cC0324FD921f119ca8a95"
+    "address": "0xC44402B6EA4bEeA027747A37ab3931F6162AA1A2"
   },
   "BNFTRegistry": {
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
