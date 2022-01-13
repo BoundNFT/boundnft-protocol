@@ -19,6 +19,8 @@ import {
   MintableERC20,
   MintableERC1155,
   MintableERC1155Factory,
+  MockAirdrop,
+  MockAirdropFactory,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
@@ -53,6 +55,14 @@ export const deployMintableERC1155 = async (args: [], verify?: boolean): Promise
   withSaveAndVerify(
     await new MintableERC1155Factory(await getFirstSigner()).deploy(...args),
     eContractid.MintableERC1155,
+    args,
+    verify
+  );
+
+export const deployMockAirdrop = async (args: [], verify?: boolean): Promise<MockAirdrop> =>
+  withSaveAndVerify(
+    await new MockAirdropFactory(await getFirstSigner()).deploy(...args),
+    eContractid.MockAirdrop,
     args,
     verify
   );

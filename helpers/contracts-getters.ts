@@ -5,6 +5,9 @@ import {
   MintableERC721Factory,
   BNFTUpgradeableProxyFactory,
   BNFTProxyAdminFactory,
+  MintableERC20Factory,
+  MintableERC1155Factory,
+  MockAirdropFactory,
 } from "../types";
 import { IERC721DetailedFactory } from "../types/IERC721DetailedFactory";
 import { getEthersSigners, getParamPerNetwork, MockNftMap } from "./contracts-helpers";
@@ -36,9 +39,27 @@ export const getBNFT = async (address?: tEthereumAddress) =>
     await getFirstSigner()
   );
 
+export const getMintableERC20 = async (address: tEthereumAddress) =>
+  await MintableERC20Factory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.MintableERC20}`).value()).address,
+    await getFirstSigner()
+  );
+
 export const getMintableERC721 = async (address: tEthereumAddress) =>
   await MintableERC721Factory.connect(
     address || (await getDb(DRE.network.name).get(`${eContractid.MintableERC721}`).value()).address,
+    await getFirstSigner()
+  );
+
+export const getMintableERC1155 = async (address: tEthereumAddress) =>
+  await MintableERC1155Factory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.MintableERC1155}`).value()).address,
+    await getFirstSigner()
+  );
+
+export const getMockAirdrop = async (address?: tEthereumAddress) =>
+  await MockAirdropFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.MockAirdrop}`).value()).address,
     await getFirstSigner()
   );
 

@@ -22,6 +22,7 @@ export enum eContractid {
   MintableERC20 = "MintableERC20",
   MintableERC721 = "MintableERC721",
   MintableERC1155 = "MintableERC1155",
+  MockAirdrop = "MockAirdrop",
   Proxy = "Proxy",
   BNFTUpgradeableProxy = "BNFTUpgradeableProxy",
   ProxyAdmin = "ProxyAdmin", //BNFT(Registry)
