@@ -42,6 +42,12 @@ interface IBNFT {
    **/
   event FlashLoan(address indexed target, address indexed initiator, address indexed nftAsset, uint256 tokenId);
 
+  event ClaimERC20Airdrop(address indexed token, address indexed to, uint256 amount);
+
+  event ClaimERC721Airdrop(address indexed token, address indexed to, uint256[] ids);
+
+  event ClaimERC1155Airdrop(address indexed token, address indexed to, uint256[] ids, uint256[] amounts, bytes data);
+
   /**
    * @dev Initializes the bNFT
    * @param underlyingAsset_ The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)

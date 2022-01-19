@@ -188,6 +188,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   ) external override onlyOwner {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     IERC20Upgradeable(token).transfer(to, amount);
+    emit ClaimERC20Airdrop(token, to, amount);
   }
 
   function claimERC721Airdrop(
@@ -199,6 +200,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     for (uint256 i = 0; i < ids.length; i++) {
       IERC721Upgradeable(token).safeTransferFrom(address(this), to, ids[i]);
     }
+    emit ClaimERC721Airdrop(token, to, ids);
   }
 
   function claimERC1155Airdrop(
@@ -210,6 +212,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   ) external override onlyOwner {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     IERC1155Upgradeable(token).safeBatchTransferFrom(address(this), to, ids, amounts, data);
+    emit ClaimERC1155Airdrop(token, to, ids, amounts, data);
   }
 
   function onERC721Received(
