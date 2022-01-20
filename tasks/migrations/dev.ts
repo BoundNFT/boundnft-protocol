@@ -20,6 +20,9 @@ task("bend:dev", "Deploy development enviroment")
     console.log("\n\nDeploy mock nfts");
     await localBRE.run("dev:deploy-mock-nfts", { verify });
 
+    console.log("\n\nDeploy mock airdrops");
+    await localBRE.run("dev:deploy-mock-airdrops", { verify });
+
     //////////////////////////////////////////////////////////////////////////
     console.log("\n\nDeploy proxy admin");
     await localBRE.run("full:deploy-proxy-admin", { verify, pool: POOL_NAME });
@@ -30,6 +33,9 @@ task("bend:dev", "Deploy development enviroment")
 
     console.log("\n\nDeploy bnft tokens");
     await localBRE.run("dev:deploy-bnft-tokens", { verify, pool: POOL_NAME });
+
+    console.log("\n\nDeploy airdrop flashloan");
+    await localBRE.run("full:deploy-airdrop-flashloan", { verify, pool: POOL_NAME });
 
     console.log("\n\nFinished migration");
     printContracts();

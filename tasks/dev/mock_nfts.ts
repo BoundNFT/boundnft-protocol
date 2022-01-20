@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
-import { deployAllMockNfts, deployMockBNFTMinter } from "../../helpers/contracts-deployments";
-import { getDeploySigner, getIErc721Detailed, getMintableERC721 } from "../../helpers/contracts-getters";
+import { deployAllMockNfts } from "../../helpers/contracts-deployments";
+import { getDeploySigner, getMintableERC721 } from "../../helpers/contracts-getters";
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
 import { eNetwork } from "../../helpers/types";
 

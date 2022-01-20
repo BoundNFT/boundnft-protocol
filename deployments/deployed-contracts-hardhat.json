@@ -31,7 +31,7 @@
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "MockBNFTMinter": {
-    "address": "0x82EEc0C56D8E48ae007bEb6A896B98Ade36BC51c",
+    "address": "0xb38Ce645F2890a7820d322c1cE0774849489bB9d",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "DOODLE": {
@@ -48,6 +48,18 @@
   },
   "MAYC": {
     "address": "0x4e07D87De1CF586D51C3665e6a4d36eB9d99a457",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "AirdropFlashLoanReceiver": {
+    "address": "0x6B8dcBD1bb131ED184221902df1Fe21019ccD7dc",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MockAirdrop": {
+    "address": "0xd240323E990c480f993E74634c08f3D6EAD0a31F",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MockAirdropProject": {
+    "address": "0xd240323E990c480f993E74634c08f3D6EAD0a31F",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   }
 }

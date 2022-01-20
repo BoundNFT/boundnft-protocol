@@ -22,17 +22,12 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
   let mockERC20Instance: MintableERC20;
   let mockERC721Instance: MintableERC721;
   let mockERC1155Instance: MintableERC1155;
-  let mockMinterInstance: MockBNFTMinter;
 
   before(async () => {
     newBNFTInstance = await new BNFTFactory(await getDeploySigner()).deploy();
     mockERC20Instance = await new MintableERC20Factory(await getDeploySigner()).deploy("Airdrop", "AD", "18");
     mockERC721Instance = await new MintableERC721Factory(await getDeploySigner()).deploy("Airdrop", "AD");
     mockERC1155Instance = await new MintableERC1155Factory(await getDeploySigner()).deploy();
-    mockMinterInstance = await new MockBNFTMinterFactory(await getDeploySigner()).deploy(
-      testEnv.bayc.address,
-      testEnv.bBAYC.address
-    );
   });
 
   afterEach(async () => {});

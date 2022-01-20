@@ -1,13 +1,14 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { deployMockBNFTMinter } from "../helpers/contracts-deployments";
 import { CommonsConfig } from "../configs/commons";
+import { MockBNFTMinter } from "../types";
 
 const { expect } = require("chai");
 
 makeSuite("BNFT", (testEnv: TestEnv) => {
-  let mockMinterInstance1;
-  let mockMinterInstance2;
-  let cachedTokenId;
+  let mockMinterInstance1: MockBNFTMinter;
+  let mockMinterInstance2: MockBNFTMinter;
+  let cachedTokenId: string;
 
   before(async () => {
     mockMinterInstance1 = await deployMockBNFTMinter([testEnv.bayc.address, testEnv.bBAYC.address]);
@@ -29,10 +30,7 @@ makeSuite("BNFT", (testEnv: TestEnv) => {
     testEnv.tokenIdTracker++;
     const tokenId = testEnv.tokenIdTracker.toString();
     await bayc.connect(users[0].signer).mint(tokenId);
-    await bayc
-      .connect(users[0].signer)
-      ["safeTransferFrom(address,address,uint256)"](users[0].address, mockMinterInstance1.address, tokenId);
-    await bayc.connect(users[0].signer).setApprovalForAll(bBAYC.address, true);
+    await bayc.connect(users[0].signer).setApprovalForAll(mockMinterInstance1.address, true);
 
     cachedTokenId = tokenId;
   });
@@ -56,7 +54,11 @@ makeSuite("BNFT", (testEnv: TestEnv) => {
     expect(cachedTokenId, "previous test case is faild").to.not.be.undefined;
     const tokenId = cachedTokenId;
 
-    await expect(mockMinterInstance2.mint(users[0].address, tokenId)).to.be.revertedWith("BNFT: caller is not owner");
+    await bayc.connect(users[0].signer).setApprovalForAll(mockMinterInstance2.address, true);
+
+    await expect(mockMinterInstance2.mint(users[0].address, tokenId)).to.be.revertedWith(
+      "ERC721: transfer of token that is not own"
+    );
   });
 
   it("Check burn non-exist token", async () => {
@@ -73,7 +75,8 @@ makeSuite("BNFT", (testEnv: TestEnv) => {
     expect(cachedTokenId, "previous test case is faild").to.not.be.undefined;
     const tokenId = cachedTokenId;
 
-    await mockMinterInstance1.mint(users[0].address, tokenId);
+    await bayc.connect(users[0].signer).setApprovalForAll(mockMinterInstance1.address, true);
+    await mockMinterInstance1.connect(users[0].signer).mint(users[0].address, tokenId);
 
     const minter = await bBAYC.minterOf(tokenId);
     expect(minter).to.be.equal(mockMinterInstance1.address);

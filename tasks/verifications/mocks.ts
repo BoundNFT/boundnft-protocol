@@ -38,8 +38,8 @@ task("verify:mock-airdrops", "Verify mock airdrop contracts at Etherscan").setAc
 
   const registry = await getBNFTRegistryProxy();
 
-  const mockAirdrop = await getMockAirdrop();
-  await verifyContract(eContractid.MockAirdrop, mockAirdrop, [registry.address]);
+  const mockAirdropProject = await getMockAirdrop();
+  await verifyContract(eContractid.MockAirdropProject, mockAirdropProject, [registry.address]);
 
   console.log("Finished verifications.");
 });

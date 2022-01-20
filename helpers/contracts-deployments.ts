@@ -19,8 +19,11 @@ import {
   MintableERC20,
   MintableERC1155,
   MintableERC1155Factory,
-  MockAirdrop,
-  MockAirdropFactory,
+  MockAirdropProject,
+  MockAirdropProjectFactory,
+  AirdropFlashLoanReceiverFactory,
+  AirdropFlashLoanReceiver,
+  MockBNFTMinter,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
@@ -59,10 +62,10 @@ export const deployMintableERC1155 = async (args: [], verify?: boolean): Promise
     verify
   );
 
-export const deployMockAirdrop = async (args: [string], verify?: boolean): Promise<MockAirdrop> =>
+export const deployMockAirdrop = async (args: [string], verify?: boolean): Promise<MockAirdropProject> =>
   withSaveAndVerify(
-    await new MockAirdropFactory(await getFirstSigner()).deploy(...args),
-    eContractid.MockAirdrop,
+    await new MockAirdropProjectFactory(await getFirstSigner()).deploy(...args),
+    eContractid.MockAirdropProject,
     args,
     verify
   );
@@ -114,3 +117,14 @@ export const deployBNFTUpgradeableProxy = async (
 
 export const deployBNFTProxyAdmin = async (id: string, verify?: boolean) =>
   withSaveAndVerify(await new BNFTProxyAdminFactory(await getFirstSigner()).deploy(), id, [], verify);
+
+export const deployAirdropFlashLoanReceiver = async (
+  args: [string],
+  verify?: boolean
+): Promise<AirdropFlashLoanReceiver> =>
+  withSaveAndVerify(
+    await new AirdropFlashLoanReceiverFactory(await getFirstSigner()).deploy(...args),
+    eContractid.AirdropFlashLoanReceiver,
+    args,
+    verify
+  );

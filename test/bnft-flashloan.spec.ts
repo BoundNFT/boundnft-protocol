@@ -26,32 +26,23 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
   it("Mints NFT into the BNFT", async () => {
     const { users, bayc, bBAYC } = testEnv;
 
+    await bayc.connect(users[0].signer).setApprovalForAll(_mockBNFTMinter.address, true);
+    await bayc.connect(users[1].signer).setApprovalForAll(_mockBNFTMinter.address, true);
+
     testEnv.tokenIdTracker++;
     user0TokenId1 = testEnv.tokenIdTracker.toString();
     await bayc.connect(users[0].signer).mint(user0TokenId1);
-    await bayc
-      .connect(users[0].signer)
-      ["safeTransferFrom(address,address,uint256)"](users[0].address, _mockBNFTMinter.address, user0TokenId1);
-    await bayc.connect(users[0].signer).setApprovalForAll(_mockBNFTMinter.address, true);
-    await _mockBNFTMinter.mint(users[0].address, user0TokenId1);
+    await _mockBNFTMinter.connect(users[0].signer).mint(users[0].address, user0TokenId1);
 
     testEnv.tokenIdTracker++;
     user0TokenId2 = testEnv.tokenIdTracker.toString();
     await bayc.connect(users[0].signer).mint(user0TokenId2);
-    await bayc
-      .connect(users[0].signer)
-      ["safeTransferFrom(address,address,uint256)"](users[0].address, _mockBNFTMinter.address, user0TokenId2);
-    await bayc.connect(users[0].signer).setApprovalForAll(_mockBNFTMinter.address, true);
-    await _mockBNFTMinter.mint(users[0].address, user0TokenId2);
+    await _mockBNFTMinter.connect(users[0].signer).mint(users[0].address, user0TokenId2);
 
     testEnv.tokenIdTracker++;
     user1TokenId1 = testEnv.tokenIdTracker.toString();
     await bayc.connect(users[1].signer).mint(user1TokenId1);
-    await bayc
-      .connect(users[1].signer)
-      ["safeTransferFrom(address,address,uint256)"](users[1].address, _mockBNFTMinter.address, user1TokenId1);
-    await bayc.connect(users[1].signer).setApprovalForAll(_mockBNFTMinter.address, true);
-    await _mockBNFTMinter.mint(users[1].address, user1TokenId1);
+    await _mockBNFTMinter.connect(users[1].signer).mint(users[1].address, user1TokenId1);
   });
 
   it("Takes flashloan using one token, returns the tokens correctly", async () => {

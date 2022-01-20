@@ -19,20 +19,22 @@ export enum BendPools {
 }
 
 export enum eContractid {
-  MintableERC20 = "MintableERC20",
-  MintableERC721 = "MintableERC721",
-  MintableERC1155 = "MintableERC1155",
-  MockAirdrop = "MockAirdrop",
-  Proxy = "Proxy",
+  IERC721Detailed = "IERC721Detailed",
   BNFTUpgradeableProxy = "BNFTUpgradeableProxy",
   ProxyAdmin = "ProxyAdmin", //BNFT(Registry)
   BNFT = "BNFT",
-  MockBNFT = "MockBNFT",
-  IERC721Detailed = "IERC721Detailed",
   BNFTRegistry = "BNFTRegistry",
   BNFTRegistryImpl = "BNFTRegistryImpl",
+
+  MintableERC20 = "MintableERC20",
+  MintableERC721 = "MintableERC721",
+  MintableERC1155 = "MintableERC1155",
+  MockBNFT = "MockBNFT",
+  MockAirdropProject = "MockAirdropProject",
   MockBNFTMinter = "MockBNFTMinter",
   MockFlashLoanReceiver = "MockFlashLoanReceiver",
+
+  AirdropFlashLoanReceiver = "AirdropFlashLoanReceiver",
 }
 
 export type tEthereumAddress = string;

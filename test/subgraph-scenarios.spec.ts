@@ -15,31 +15,23 @@ makeSuite("Subgraph tests", async (testEnv) => {
 
     const mockMinter = await deployMockBNFTMinter([bayc.address, bBAYC.address]);
 
-    await waitForTx(await bayc.setApprovalForAll(mockMinter.address, true));
+    await waitForTx(await bayc.connect(user0.signer).setApprovalForAll(mockMinter.address, true));
 
     {
       const tokenId1 = 2001;
 
       await waitForTx(await bayc.connect(user0.signer).mint(tokenId1));
 
-      await bayc
-        .connect(users[0].signer)
-        ["safeTransferFrom(address,address,uint256)"](users[0].address, mockMinter.address, tokenId1);
+      await waitForTx(await mockMinter.connect(user0.signer).mint(user0.address, tokenId1));
 
-      await waitForTx(await mockMinter.mint(user0.address, tokenId1));
-
-      await waitForTx(await mockMinter.burn(tokenId1));
+      await waitForTx(await mockMinter.connect(user0.signer).burn(tokenId1));
     }
 
     {
       const tokenId2 = 2002;
       await waitForTx(await bayc.connect(user0.signer).mint(tokenId2));
 
-      await bayc
-        .connect(users[0].signer)
-        ["safeTransferFrom(address,address,uint256)"](users[0].address, mockMinter.address, tokenId2);
-
-      await waitForTx(await mockMinter.mint(user0.address, tokenId2));
+      await waitForTx(await mockMinter.connect(user0.signer).mint(user0.address, tokenId2));
     }
   });
 
@@ -64,31 +56,23 @@ makeSuite("Subgraph tests", async (testEnv) => {
 
     const mockMinter = await deployMockBNFTMinter([stToken.address, bNftProxy]);
 
-    await waitForTx(await stToken.setApprovalForAll(mockMinter.address, true));
+    await waitForTx(await stToken.connect(user0.signer).setApprovalForAll(mockMinter.address, true));
 
     {
       const tokenId1 = 2001;
 
       await waitForTx(await stToken.connect(user0.signer).mint(tokenId1));
 
-      await stToken
-        .connect(users[0].signer)
-        ["safeTransferFrom(address,address,uint256)"](users[0].address, mockMinter.address, tokenId1);
+      await waitForTx(await mockMinter.connect(user0.signer).mint(user0.address, tokenId1));
 
-      await waitForTx(await mockMinter.mint(user0.address, tokenId1));
-
-      await waitForTx(await mockMinter.burn(tokenId1));
+      await waitForTx(await mockMinter.connect(user0.signer).burn(tokenId1));
     }
 
     {
       const tokenId2 = 2002;
       await waitForTx(await stToken.connect(user0.signer).mint(tokenId2));
 
-      await stToken
-        .connect(users[0].signer)
-        ["safeTransferFrom(address,address,uint256)"](users[0].address, mockMinter.address, tokenId2);
-
-      await waitForTx(await mockMinter.mint(user0.address, tokenId2));
+      await waitForTx(await mockMinter.connect(user0.signer).mint(user0.address, tokenId2));
     }
   });
 });
