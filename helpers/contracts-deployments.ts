@@ -1,11 +1,8 @@
-import { Contract } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
-import { DRE, notFalsyOrZeroAddress } from "./misc-utils";
-import { tEthereumAddress, eContractid, NftContractId, PoolConfiguration, eEthereumNetwork } from "./types";
+import { DRE } from "./misc-utils";
+import { tEthereumAddress, eContractid, NftContractId } from "./types";
 import { MockContract } from "ethereum-waffle";
-import { ConfigNames, loadPoolConfig } from "./configuration";
 import { getDeploySigner, getFirstSigner } from "./contracts-getters";
-import { ZERO_ADDRESS } from "./constants";
 import {
   MintableERC721,
   MintableERC721Factory,
@@ -23,14 +20,8 @@ import {
   MockAirdropProjectFactory,
   AirdropFlashLoanReceiverFactory,
   AirdropFlashLoanReceiver,
-  MockBNFTMinter,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-
-const readArtifact = async (id: string) => {
-  return (DRE as HardhatRuntimeEnvironment).artifacts.readArtifact(id);
-};
 
 export const deployBNFTRegistry = async (verify?: boolean) => {
   const bnftRegistryImpl = await new BNFTRegistryFactory(await getFirstSigner()).deploy();

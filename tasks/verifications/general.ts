@@ -7,6 +7,7 @@ import {
   getBNFTRegistryProxy,
   getIErc721Detailed,
   getBNFTProxyAdminByAddress,
+  getAirdropFlashLoanReceiver,
 } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress } from "../../helpers/misc-utils";
@@ -83,3 +84,15 @@ task("verify:general", "Verify general contracts at Etherscan")
 
     console.log("Finished verifications.");
   });
+
+task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Etherscan").setAction(async ({}, localDRE) => {
+  await localDRE.run("set-DRE");
+  const network = localDRE.network.name as eNetwork;
+
+  const registry = await getBNFTRegistryProxy();
+
+  const airdropFlashloanReceiver = await getAirdropFlashLoanReceiver();
+  await verifyContract(eContractid.AirdropFlashLoanReceiver, airdropFlashloanReceiver, [registry.address]);
+
+  console.log("Finished verifications.");
+});

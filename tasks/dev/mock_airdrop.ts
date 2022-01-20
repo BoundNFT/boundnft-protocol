@@ -9,7 +9,6 @@ import {
   getMintableERC1155,
   getMintableERC20,
   getMintableERC721,
-  getMockAirdrop,
   getMockAirdropProject,
 } from "../../helpers/contracts-getters";
 import { getEthersSignerByAddress } from "../../helpers/contracts-helpers";
@@ -73,12 +72,12 @@ task("dev:flashloan-airdrop", "Doing flash loan for airdrop")
 
     const airdropFlashloanReceiver = await getAirdropFlashLoanReceiver();
 
-    const mockAirdropContract = await getMockAirdrop();
-    const mockAirdropERC20Address = await mockAirdropContract.erc20();
+    const mockAirdropContract = await getMockAirdropProject();
+    const mockAirdropERC20Address = await mockAirdropContract.erc20Token();
     const mockAirdropERC20Token = await getMintableERC20(mockAirdropERC20Address);
-    const mockAirdropERC721Address = await mockAirdropContract.erc721();
+    const mockAirdropERC721Address = await mockAirdropContract.erc721Token();
     const mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
-    const mockAirdropERC1155Address = await mockAirdropContract.erc1155();
+    const mockAirdropERC1155Address = await mockAirdropContract.erc1155Token();
     const mockAirdropERC1155Token = await getMintableERC1155(mockAirdropERC1155Address);
 
     const applyAirdropEncodedData = mockAirdropContract.interface.encodeFunctionData("nativeApplyAirdrop", [

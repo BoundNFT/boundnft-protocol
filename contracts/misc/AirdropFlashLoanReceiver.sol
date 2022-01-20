@@ -12,8 +12,6 @@ import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
-import "hardhat/console.sol";
-
 contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Holder {
   address public bnftRegistry;
 
@@ -34,8 +32,6 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     operator;
     params;
 
-    console.log("executeOperation", nftAsset, nftTokenIds[0]);
-
     // allow operator transfer borrowed nfts back to bnft
     IERC721(nftAsset).setApprovalForAll(operator, true);
 
@@ -48,8 +44,6 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
       bytes memory airdropParams
     ) = abi.decode(params, (uint256[], address[], uint256[], address, bytes));
 
-    console.log("executeOperation", airdropTokenTypes[0], airdropTokenAddresses[0]);
-
     require(airdropTokenTypes.length > 0, "invalid airdrop token type");
     require(airdropTokenAddresses.length == airdropTokenTypes.length, "invalid airdrop token address length");
     require(airdropTokenIds.length == airdropTokenTypes.length, "invalid airdrop token id length");
@@ -59,8 +53,6 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
 
     // call project aidrop contract
     Address.functionCall(airdropContract, airdropParams, "call airdrop method failed");
-
-    console.log("executeOperation", airdropContract, airdropParams.length);
 
     // transfer airdrop tokens to borrower
     for (uint256 typeIndex = 0; typeIndex < airdropTokenTypes.length; typeIndex++) {

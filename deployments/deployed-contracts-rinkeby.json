@@ -25,7 +25,11 @@
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
   },
   "MockAirdropProject": {
-    "address": "0x321799b29C62d155f72faC40d7C7Cf6fc341f11a",
+    "address": "0x3A430D013D36e18F42bf1b2Ed1E3C553fF1280b0",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiver": {
+    "address": "0x07AB34B4cd19B6Fb2eFA86AD351ae095D2566258",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

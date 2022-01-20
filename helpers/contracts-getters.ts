@@ -7,7 +7,7 @@ import {
   BNFTProxyAdminFactory,
   MintableERC20Factory,
   MintableERC1155Factory,
-  MockAirdropFactory,
+  MockAirdropProjectFactory,
   AirdropFlashLoanReceiverFactory,
   MockBNFTMinterFactory,
 } from "../types";

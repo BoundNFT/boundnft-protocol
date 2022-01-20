@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 import { loadPoolConfig, ConfigNames } from "../../helpers/configuration";
-import { getAllMockedNfts, getBNFTRegistryProxy, getMockAirdrop } from "../../helpers/contracts-getters";
+import { getAllMockedNfts, getBNFTRegistryProxy, getMockAirdropProject } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { eContractid, eNetwork, ICommonConfiguration } from "../../helpers/types";
 
@@ -38,7 +38,7 @@ task("verify:mock-airdrops", "Verify mock airdrop contracts at Etherscan").setAc
 
   const registry = await getBNFTRegistryProxy();
 
-  const mockAirdropProject = await getMockAirdrop();
+  const mockAirdropProject = await getMockAirdropProject();
   await verifyContract(eContractid.MockAirdropProject, mockAirdropProject, [registry.address]);
 
   console.log("Finished verifications.");
