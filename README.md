@@ -11,17 +11,17 @@
                                  
 ```
 
-# BNFT Protocol
+# Bound NFT Protocol
 
-This repository contains the smart contracts source code and configuration for BNFT Protocol. The repository uses Hardhat as development enviroment for compilation, testing and deployment tasks.
+This repository contains the smart contracts source code and configuration for Bound NFT Protocol. The repository uses Hardhat as development enviroment for compilation, testing and deployment tasks.
 
-## What is BNFT?
+## What is Bound NFT?
 
-BNFT is a Best NFT Promissory Note protocol where lending protocols can participate as minters.
+Bound NFT is a NFT Promissory Note protocol where lending protocols can participate as minters.
 
 ## Documentation
 
-The documentation of BNFT Protocol is in the following [BNFT documentation](https://docs.bnftdao.org) link. At the documentation you can learn more about the protocol, see the contract interfaces, integration guides and audits.
+The documentation of Bound NFT Protocol is in the following [BNFT documentation](https://docs.bnftdao.org) link. At the documentation you can learn more about the protocol, see the contract interfaces, integration guides and audits.
 
 For getting the latest contracts addresses, please check the [Deployed contracts](https://docs.bnftdao.org/deployed-contracts/deployed-contracts) page at the documentation to stay up to date.
 
