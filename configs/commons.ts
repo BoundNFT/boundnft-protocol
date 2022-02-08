@@ -5,8 +5,8 @@ import { ICommonConfiguration, eEthereumNetwork } from '../helpers/types';
 // ----------------
 
 export const CommonsConfig: ICommonConfiguration = {
-  BNftNamePrefix: 'BNFT promissory note',
-  BNftSymbolPrefix: 'b',
+  BNftNamePrefix: 'Bound NFT',
+  BNftSymbolPrefix: 'bound',
 
   ProtocolGlobalParams: {
     NilAddress: '0x0000000000000000000000000000000000000000',
