@@ -85,6 +85,44 @@ task("verify:general", "Verify general contracts at Etherscan")
     console.log("Finished verifications.");
   });
 
+task("verify:bnft", "Verify bnft contracts at Etherscan")
+  .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
+  .addParam("asset", "Address of ERC721 Token")
+  .setAction(async ({ asset, pool }, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
+    const poolConfig = loadPoolConfig(pool);
+
+    const bnftRegistryProxy = await getBNFTRegistryProxy();
+    const registryOwnerAddress = await bnftRegistryProxy.owner();
+
+    const bnftRegistryImpl = await getBNFTRegistryImpl();
+    const bnftGenericImpl = await getBNFT();
+
+    const assetContract = await getIErc721Detailed(asset);
+    const nftSymbol = await assetContract.symbol();
+
+    console.log(`\n- Verifying BNFT Proxy for ${asset} ...\n`);
+
+    const bnftAddresses = await bnftRegistryProxy.getBNFTAddresses(asset);
+    console.log(`\n- BNFT Proxy ${bnftAddresses.bNftProxy} Impl ${bnftAddresses.bNftImpl} ...\n`);
+
+    const bnftTokenProxy = await getBNFTUpgradeableProxy(bnftAddresses.bNftProxy);
+    const initEncodedData = bnftGenericImpl.interface.encodeFunctionData("initialize", [
+      asset,
+      poolConfig.BNftNamePrefix + " " + nftSymbol,
+      poolConfig.BNftSymbolPrefix + nftSymbol,
+      registryOwnerAddress,
+    ]);
+    await verifyContract(eContractid.BNFTUpgradeableProxy, bnftTokenProxy, [
+      bnftGenericImpl.address,
+      bnftRegistryProxy.address,
+      initEncodedData,
+    ]);
+
+    console.log("Finished verifications.");
+  });
+
 task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Etherscan").setAction(async ({}, localDRE) => {
   await localDRE.run("set-DRE");
   const network = localDRE.network.name as eNetwork;

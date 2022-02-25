@@ -31,5 +31,37 @@
   "AirdropFlashLoanReceiver": {
     "address": "0x07AB34B4cd19B6Fb2eFA86AD351ae095D2566258",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "DOODLE": {
+    "address": "0x10cACFfBf3Cdcfb365FDdC4795079417768BaA74",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "COOL": {
+    "address": "0x1F912E9b691858052196F11Aff9d8B6f89951AbD",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MEEBITS": {
+    "address": "0xA1BaBAB6d6cf1DC9C87Be22D1d5142CF905016a4",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MAYC": {
+    "address": "0x9C235dF4053a415f028b8386ed13ae8162843a6e",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "WOW": {
+    "address": "0xdfC14f7A536944467834EF7ce7b05a9a79BCDFaD",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "CLONEX": {
+    "address": "0xdd04ba0254972CC736F6966c496B4941f02BD816",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AZUKI": {
+    "address": "0x050Cd8082B86c5F469e0ba72ef4400E5E454886D",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "KONGZ": {
+    "address": "0x8fC9F05f7B21346FD5E9Fa3C963d3941eb861940",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

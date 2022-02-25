@@ -1,8 +1,11 @@
 import { task } from "hardhat/config";
-import { deployAllMockNfts } from "../../helpers/contracts-deployments";
+import { MOCK_NFT_BASE_URIS } from "../../helpers/constants";
+import { deployAllMockNfts, deployMintableERC721 } from "../../helpers/contracts-deployments";
 import { getDeploySigner, getMintableERC721 } from "../../helpers/contracts-getters";
+import { registerContractInJsonDb, tryGetContractAddressInDb } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
-import { eNetwork } from "../../helpers/types";
+import { eNetwork, NftContractId } from "../../helpers/types";
+import { MintableERC721 } from "../../types";
 
 task("dev:deploy-mock-nfts", "Deploy mock nfts for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
@@ -15,6 +18,54 @@ task("dev:deploy-mock-nfts", "Deploy mock nfts for dev enviroment")
     }
 
     await deployAllMockNfts(verify);
+  });
+
+task("dev:add-mock-nfts", "Add mock nfts for dev enviroment")
+  .addFlag("verify", "Verify contracts at Etherscan")
+  .setAction(async ({ verify }, localBRE) => {
+    await localBRE.run("set-DRE");
+
+    const tokens: { [symbol: string]: MintableERC721 } = {};
+
+    for (const tokenSymbol of Object.keys(NftContractId)) {
+      const tokenName = "Bend Mock " + tokenSymbol;
+      const contractId = tokenSymbol.toUpperCase();
+      const tokenAddress = await tryGetContractAddressInDb(contractId);
+      if (tokenAddress != undefined && notFalsyOrZeroAddress(tokenAddress)) {
+        continue;
+      }
+      tokens[tokenSymbol] = await deployMintableERC721([tokenName, tokenSymbol], verify);
+      await registerContractInJsonDb(contractId, tokens[tokenSymbol]);
+      console.log(`Symbol: ${tokenSymbol}, Address: ${tokens[tokenSymbol]}`);
+    }
+  });
+
+task("dev:set-mock-nfts", "Set mock nfts for dev enviroment")
+  .addFlag("verify", "Verify contracts at Etherscan")
+  .setAction(async ({ verify }, localBRE) => {
+    await localBRE.run("set-DRE");
+
+    for (const tokenSymbol of Object.keys(NftContractId)) {
+      const contractId = tokenSymbol.toUpperCase();
+      if (contractId == "WPUNKS") {
+        continue;
+      }
+
+      const baseURI = MOCK_NFT_BASE_URIS[tokenSymbol];
+      if (baseURI == undefined || baseURI == "") {
+        continue;
+      }
+
+      const tokenAddress = await tryGetContractAddressInDb(contractId);
+      if (tokenAddress == undefined || !notFalsyOrZeroAddress(tokenAddress)) {
+        continue;
+      }
+
+      const tokenContract = await getMintableERC721(tokenAddress);
+
+      console.log(`${tokenSymbol}, ${tokenAddress}, ${baseURI}`);
+      await waitForTx(await tokenContract.setBaseURI(baseURI));
+    }
   });
 
 task("dev:mint-mock-nfts", "Deploy mock nfts for dev enviroment")
