@@ -7,6 +7,7 @@ export interface SymbolMap<T> {
 export type eNetwork = eEthereumNetwork;
 
 export enum eEthereumNetwork {
+  develop = "develop",
   rinkeby = "rinkeby",
   main = "main",
   coverage = "coverage",
@@ -84,6 +85,7 @@ export interface iParamsPerNetworkAll<T> extends iEthereumParamsPerNetwork<T> {}
 
 export interface iEthereumParamsPerNetwork<T> {
   [eEthereumNetwork.coverage]: T;
+  [eEthereumNetwork.develop]: T;
   [eEthereumNetwork.rinkeby]: T;
   [eEthereumNetwork.main]: T;
   [eEthereumNetwork.hardhat]: T;
