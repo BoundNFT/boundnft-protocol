@@ -1,0 +1,93 @@
+{
+  "WETHMocked": {
+    "address": "0x3C73A32C11E20101be3D5ff2F67Af15a4ACbF298",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "WETH": {
+    "address": "0x3C73A32C11E20101be3D5ff2F67Af15a4ACbF298",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "MintableERC20": {
+    "address": "0x5C6105989c5Be5f88b88fD0b2cE15A282d7c9F07",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "DAI": {
+    "address": "0xcB3b65Fb934d5A49a4738d8c6CC328dc96120ad7",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "USDC": {
+    "address": "0x5C6105989c5Be5f88b88fD0b2cE15A282d7c9F07",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "CryptoPunksMarket": {
+    "address": "0xE159fC1226dbCe3e9d511e884a067D09C3290B9E",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "WrappedPunk": {
+    "address": "0xcDbBC001976F79db2fC1ECfd140031fE970CeaEc",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "WPUNKS": {
+    "address": "0xcDbBC001976F79db2fC1ECfd140031fE970CeaEc",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "MintableERC721": {
+    "address": "0x65217942f01E563e5F292ba0C7285D0ce85fDE1e",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "BAYC": {
+    "address": "0x818674fb778147DC81c85f9af3d5cd73E03545B2",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "DOODLE": {
+    "address": "0x54Db2bbf13cC6b2073CcDf9A06B7A2862eb8C3cC",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "COOL": {
+    "address": "0xD83948C3deF2a75F9E4A0c0D9e5E7e050a6c2423",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "MEEBITS": {
+    "address": "0x0DD78C9209f57088bAB52C953C8bD51BDA3570A2",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "MAYC": {
+    "address": "0x5EDB2c61d14648D8b2adb559a6AE13F7E3a11678",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "WOW": {
+    "address": "0xdB5DD4ecBd172BfAc198e617122D00CaD12ee2ae",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "CLONEX": {
+    "address": "0xA446Ab62fb4bdCEdAF69259354ad0C1C7ccb87ff",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "AZUKI": {
+    "address": "0x048e8A2738F4d292Cf30e8468066ce930dFBDAfa",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "KONGZ": {
+    "address": "0x65217942f01E563e5F292ba0C7285D0ce85fDE1e",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "ProxyAdmin": {
+    "address": "0xFA2975862160e2E3A522f40c59174a9Fd0b5D67B",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "BNFT": {
+    "address": "0xC8Ff0E0d386490819a4fB14a7e6d9a142ce8bbb2",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "BNFTRegistryImpl": {
+    "address": "0x5549494D1293804E3184a7Be81daBf8B57e303b1"
+  },
+  "BNFTRegistry": {
+    "address": "0xf440346C93868879B5D3b8e5f96fEc57D4f2dcdf",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  },
+  "AirdropFlashLoanReceiver": {
+    "address": "0x6624914F02aafae69249750D38Aef24A12D838fA",
+    "deployer": "0xad93fB0e59eC703422dD38dCb7AcB8e323C8cc5B"
+  }
+}
