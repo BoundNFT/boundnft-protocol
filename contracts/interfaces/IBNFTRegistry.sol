@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity ^0.8.0;
+pragma solidity 0.8.4;
 
 interface IBNFTRegistry {
   event Initialized(address genericImpl, string namePrefix, string symbolPrefix);
   event GenericImplementationUpdated(address genericImpl);
   event BNFTCreated(address indexed nftAsset, address bNftImpl, address bNftProxy, uint256 totals);
   event BNFTUpgraded(address indexed nftAsset, address bNftImpl, address bNftProxy, uint256 totals);
+  event CustomeSymbolsAdded(address[] nftAssets, string[] symbols);
 
   function getBNFTAddresses(address nftAsset) external view returns (address bNftProxy, address bNftImpl);
 
