@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity ^0.8.0;
+pragma solidity 0.8.4;
 
 import {IBNFTRegistry} from "../interfaces/IBNFTRegistry.sol";
 import {IBNFT} from "../interfaces/IBNFT.sol";
@@ -129,6 +129,8 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     for (uint256 i = 0; i < nftAssets_.length; i++) {
       customSymbols[nftAssets_[i]] = symbols_[i];
     }
+
+    emit CustomeSymbolsAdded(nftAssets_, symbols_);
   }
 
   function _createProxyAndInitWithImpl(address nftAsset, address bNftImpl) internal returns (address bNftProxy) {

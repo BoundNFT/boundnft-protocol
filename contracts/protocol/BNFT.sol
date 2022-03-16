@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: agpl-3.0
-pragma solidity ^0.8.0;
+pragma solidity 0.8.4;
 
 import {IBNFT} from "../interfaces/IBNFT.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
@@ -149,6 +149,9 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     IFlashLoanReceiver receiver = IFlashLoanReceiver(receiverAddress);
 
     // !!!CAUTION: receiver contract may reentry mint, burn, flashloan again
+
+    require(receiverAddress != address(0), "BNFT: zero address");
+    require(nftTokenIds.length > 0, "BNFT: empty token list");
 
     // only token owner can do flashloan
     for (i = 0; i < nftTokenIds.length; i++) {
