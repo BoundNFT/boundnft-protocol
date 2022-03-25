@@ -2,7 +2,7 @@ import { BytesLike } from "@ethersproject/bytes";
 import { DRE } from "./misc-utils";
 import { tEthereumAddress, eContractid, NftContractId } from "./types";
 import { MockContract } from "ethereum-waffle";
-import { getDeploySigner, getFirstSigner } from "./contracts-getters";
+import { getDeploySigner } from "./contracts-getters";
 import {
   MintableERC721,
   MintableERC721Factory,
@@ -24,7 +24,7 @@ import {
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
 export const deployBNFTRegistry = async (verify?: boolean) => {
-  const bnftRegistryImpl = await new BNFTRegistryFactory(await getFirstSigner()).deploy();
+  const bnftRegistryImpl = await new BNFTRegistryFactory(await getDeploySigner()).deploy();
   await insertContractAddressInDb(eContractid.BNFTRegistryImpl, bnftRegistryImpl.address);
   return withSaveAndVerify(bnftRegistryImpl, eContractid.BNFTRegistry, [], verify);
 };
@@ -39,7 +39,7 @@ export const deployMintableERC20 = async (args: [string, string, string], verify
 
 export const deployMintableERC721 = async (args: [string, string], verify?: boolean): Promise<MintableERC721> =>
   withSaveAndVerify(
-    await new MintableERC721Factory(await getFirstSigner()).deploy(...args),
+    await new MintableERC721Factory(await getDeploySigner()).deploy(...args),
     eContractid.MintableERC721,
     args,
     verify
@@ -47,7 +47,7 @@ export const deployMintableERC721 = async (args: [string, string], verify?: bool
 
 export const deployMintableERC1155 = async (args: [], verify?: boolean): Promise<MintableERC1155> =>
   withSaveAndVerify(
-    await new MintableERC1155Factory(await getFirstSigner()).deploy(...args),
+    await new MintableERC1155Factory(await getDeploySigner()).deploy(...args),
     eContractid.MintableERC1155,
     args,
     verify
@@ -55,14 +55,14 @@ export const deployMintableERC1155 = async (args: [], verify?: boolean): Promise
 
 export const deployMockAirdrop = async (args: [string], verify?: boolean): Promise<MockAirdropProject> =>
   withSaveAndVerify(
-    await new MockAirdropProjectFactory(await getFirstSigner()).deploy(...args),
+    await new MockAirdropProjectFactory(await getDeploySigner()).deploy(...args),
     eContractid.MockAirdropProject,
     args,
     verify
   );
 
 export const deployGenericBNFTImpl = async (verify: boolean) =>
-  withSaveAndVerify(await new BNFTFactory(await getFirstSigner()).deploy(), eContractid.BNFT, [], verify);
+  withSaveAndVerify(await new BNFTFactory(await getDeploySigner()).deploy(), eContractid.BNFT, [], verify);
 
 export const deployAllMockNfts = async (verify?: boolean) => {
   const tokens: { [symbol: string]: MockContract | MintableERC721 } = {};
@@ -78,7 +78,7 @@ export const deployAllMockNfts = async (verify?: boolean) => {
 
 export const deployMockBNFTMinter = async (args: [tEthereumAddress, tEthereumAddress], verify?: boolean) =>
   withSaveAndVerify(
-    await new MockBNFTMinterFactory(await getFirstSigner()).deploy(...args),
+    await new MockBNFTMinterFactory(await getDeploySigner()).deploy(...args),
     eContractid.MockBNFTMinter,
     args,
     verify
@@ -86,7 +86,7 @@ export const deployMockBNFTMinter = async (args: [tEthereumAddress, tEthereumAdd
 
 export const deployMockFlashLoanReceiver = async (args: [tEthereumAddress], verify?: boolean) =>
   withSaveAndVerify(
-    await new MockFlashLoanReceiverFactory(await getFirstSigner()).deploy(...args),
+    await new MockFlashLoanReceiverFactory(await getDeploySigner()).deploy(...args),
     eContractid.MockFlashLoanReceiver,
     args,
     verify
@@ -100,21 +100,21 @@ export const deployBNFTUpgradeableProxy = async (
   verify?: boolean
 ) =>
   withSaveAndVerify(
-    await new BNFTUpgradeableProxyFactory(await getFirstSigner()).deploy(logic, admin, data),
+    await new BNFTUpgradeableProxyFactory(await getDeploySigner()).deploy(logic, admin, data),
     id,
     [logic, admin, DRE.ethers.utils.hexlify(data)],
     verify
   );
 
 export const deployBNFTProxyAdmin = async (id: string, verify?: boolean) =>
-  withSaveAndVerify(await new BNFTProxyAdminFactory(await getFirstSigner()).deploy(), id, [], verify);
+  withSaveAndVerify(await new BNFTProxyAdminFactory(await getDeploySigner()).deploy(), id, [], verify);
 
 export const deployAirdropFlashLoanReceiver = async (
   args: [string],
   verify?: boolean
 ): Promise<AirdropFlashLoanReceiver> =>
   withSaveAndVerify(
-    await new AirdropFlashLoanReceiverFactory(await getFirstSigner()).deploy(...args),
+    await new AirdropFlashLoanReceiverFactory(await getDeploySigner()).deploy(...args),
     eContractid.AirdropFlashLoanReceiver,
     args,
     verify

@@ -24,7 +24,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.develop]: '0xFA2975862160e2E3A522f40c59174a9Fd0b5D67B',
     [eEthereumNetwork.rinkeby]: '0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B',
     [eEthereumNetwork.kovan]: '0x6606FF6624139a1599522Cf7B401b042Da43fA4f',
-    [eEthereumNetwork.main]: undefined,
+    [eEthereumNetwork.main]: '0xe635D0fb1608aA54C3ca99c497E887d2e1E3E690',
   },
 
   BNFTRegistry: {

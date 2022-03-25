@@ -1,7 +1,7 @@
 import { makeSuite } from "./helpers/make-suite";
 
 import { getNowTimeInMilliSeconds, waitForTx } from "../helpers/misc-utils";
-import { getBNFT, getFirstSigner } from "../helpers/contracts-getters";
+import { getBNFT, getDeploySigner } from "../helpers/contracts-getters";
 import { MintableERC721Factory } from "../types";
 import { deployMockBNFTMinter } from "../helpers/contracts-deployments";
 
@@ -43,7 +43,7 @@ makeSuite("Subgraph tests", async (testEnv) => {
     const latestTime = await getNowTimeInMilliSeconds();
     const tokenName = "Subgraph Test " + latestTime.toString();
     const tokenSymbol = "ST" + latestTime.toString();
-    const stToken = await new MintableERC721Factory(await getFirstSigner()).deploy(tokenName, tokenSymbol);
+    const stToken = await new MintableERC721Factory(await getDeploySigner()).deploy(tokenName, tokenSymbol);
 
     console.log("stToken:", await stToken.name(), await stToken.symbol());
 
