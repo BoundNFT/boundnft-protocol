@@ -140,7 +140,7 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
 
     await expect(
       bBAYC.connect(users[0].signer).flashLoan(_mockFlashLoanReceiver.address, [user0TokenId1], [])
-    ).to.be.revertedWith("BNFT: exist token");
+    ).to.be.revertedWith("ReentrancyGuard: reentrant call");
   });
 
   it("Tries to take a flashloan reentry BNFT burn (revert expected)", async () => {
@@ -150,7 +150,7 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
 
     await expect(
       bBAYC.connect(users[0].signer).flashLoan(_mockFlashLoanReceiver.address, [user0TokenId1], [])
-    ).to.be.revertedWith("BNFT: caller is not minter");
+    ).to.be.revertedWith("ReentrancyGuard: reentrant call");
   });
 
   it("Tries to take a flashloan reentry BNFT flashloan with mode 3 (revert expected)", async () => {
@@ -160,7 +160,7 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
 
     await expect(
       bBAYC.connect(users[0].signer).flashLoan(_mockFlashLoanReceiver.address, [user0TokenId1], [])
-    ).to.be.revertedWith("BNFT: caller is not owner");
+    ).to.be.revertedWith("ReentrancyGuard: reentrant call");
   });
 
   it("Tries to take a flashloan reentry BNFT flashloan with mode 4 (revert expected)", async () => {
@@ -170,6 +170,6 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
 
     await expect(
       bBAYC.connect(users[0].signer).flashLoan(_mockFlashLoanReceiver.address, [user0TokenId1], [])
-    ).to.be.revertedWith("BNFT: caller is not owner");
+    ).to.be.revertedWith("ReentrancyGuard: reentrant call");
   });
 });

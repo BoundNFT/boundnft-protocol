@@ -99,6 +99,27 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
     ).to.be.revertedWith("BNFT: token can not be underlying asset");
   });
 
+  it("Tries to call bnft claim airdrop - self address (revert expected)", async () => {
+    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+    const user0 = users[0];
+    const user2 = users[2];
+
+    const ownerAddress = await bBAYC.owner();
+    const ownerSinger = await getEthersSignerByAddress(ownerAddress);
+
+    await expect(bBAYC.connect(ownerSinger).claimERC20Airdrop(bBAYC.address, user0.address, "1")).to.be.revertedWith(
+      "BNFT: token can not be self address"
+    );
+
+    await expect(bBAYC.connect(ownerSinger).claimERC721Airdrop(bBAYC.address, user0.address, ["1"])).to.be.revertedWith(
+      "BNFT: token can not be self address"
+    );
+
+    await expect(
+      bBAYC.connect(ownerSinger).claimERC1155Airdrop(bBAYC.address, user0.address, ["1"], ["1"], [])
+    ).to.be.revertedWith("BNFT: token can not be self address");
+  });
+
   it("Owner call claim airdrop and succeded", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
     const user0 = users[0];

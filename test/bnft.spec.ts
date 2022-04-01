@@ -27,6 +27,10 @@ makeSuite("BNFT", (testEnv: TestEnv) => {
     const bBAYCSymbol = await bBAYC.symbol();
     expect(bBAYCSymbol).to.be.equal(CommonsConfig.BNftSymbolPrefix + baycSymbol);
 
+    const bBontractURI = await bBAYC.contractURI();
+    console.log("contractURI:", bBontractURI);
+    expect(bBontractURI).to.be.contains(bBAYC.address.toLowerCase());
+
     testEnv.tokenIdTracker++;
     const tokenId = testEnv.tokenIdTracker.toString();
     await bayc.connect(users[0].signer).mint(tokenId);
@@ -57,7 +61,7 @@ makeSuite("BNFT", (testEnv: TestEnv) => {
     await bayc.connect(users[0].signer).setApprovalForAll(mockMinterInstance2.address, true);
 
     await expect(mockMinterInstance2.mint(users[0].address, tokenId)).to.be.revertedWith(
-      "ERC721: transfer of token that is not own"
+      "ERC721: transfer from incorrect owner"
     );
   });
 

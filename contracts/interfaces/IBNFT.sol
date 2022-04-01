@@ -132,4 +132,9 @@ interface IBNFT {
    * @dev Returns the address of the underlying asset.
    */
   function underlyingAsset() external view returns (address);
+
+  /**
+   * @dev Returns the contract-level metadata.
+   */
+  function contractURI() external view returns (string memory);
 }

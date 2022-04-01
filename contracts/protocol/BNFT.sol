@@ -4,6 +4,7 @@ pragma solidity 0.8.4;
 import {IBNFT} from "../interfaces/IBNFT.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
 
+import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import {ERC721EnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
@@ -23,6 +24,30 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   // Mapping from token ID to minter address
   mapping(uint256 => address) private _minters;
   address private _owner;
+  uint256 private constant _NOT_ENTERED = 0;
+  uint256 private constant _ENTERED = 1;
+  uint256 private _status;
+
+  /**
+   * @dev Prevents a contract from calling itself, directly or indirectly.
+   * Calling a `nonReentrant` function from another `nonReentrant`
+   * function is not supported. It is possible to prevent this from happening
+   * by making the `nonReentrant` function external, and making it call a
+   * `private` function that does the actual work.
+   */
+  modifier nonReentrant() {
+    // On the first call to nonReentrant, _notEntered will be true
+    require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+
+    // Any calls to nonReentrant after this point will fail
+    _status = _ENTERED;
+
+    _;
+
+    // By storing the original value once again, a refund is triggered (see
+    // https://eips.ethereum.org/EIPS/eip-2200)
+    _status = _NOT_ENTERED;
+  }
 
   /**
    * @dev Initializes the bNFT
@@ -97,7 +122,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * @param to The owner address receive the bNFT token
    * @param tokenId token id of the underlying asset of NFT
    **/
-  function mint(address to, uint256 tokenId) external override {
+  function mint(address to, uint256 tokenId) external override nonReentrant {
     require(AddressUpgradeable.isContract(_msgSender()), "BNFT: caller is not contract");
     require(!_exists(tokenId), "BNFT: exist token");
     require(IERC721Upgradeable(_underlyingAsset).ownerOf(tokenId) == _msgSender(), "BNFT: caller is not owner");
@@ -121,7 +146,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    *
    * @param tokenId token id of the underlying asset of NFT
    **/
-  function burn(uint256 tokenId) external override {
+  function burn(uint256 tokenId) external override nonReentrant {
     require(AddressUpgradeable.isContract(_msgSender()), "BNFT: caller is not contract");
     require(_exists(tokenId), "BNFT: nonexist token");
     require(_minters[tokenId] == _msgSender(), "BNFT: caller is not minter");
@@ -144,7 +169,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address receiverAddress,
     uint256[] calldata nftTokenIds,
     bytes calldata params
-  ) external override {
+  ) external override nonReentrant {
     uint256 i;
     IFlashLoanReceiver receiver = IFlashLoanReceiver(receiverAddress);
 
@@ -184,12 +209,21 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     return IERC721MetadataUpgradeable(_underlyingAsset).tokenURI(tokenId);
   }
 
+  /**
+   * @dev See {IBNFT-contractURI}.
+   */
+  function contractURI() external view override returns (string memory) {
+    string memory hexAddress = StringsUpgradeable.toHexString(uint256(uint160(address(this))), 20);
+    return string(abi.encodePacked("https://metadata.benddao.xyz/", hexAddress));
+  }
+
   function claimERC20Airdrop(
     address token,
     address to,
     uint256 amount
-  ) external override onlyOwner {
+  ) external override nonReentrant onlyOwner {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
+    require(token != address(this), "BNFT: token can not be self address");
     IERC20Upgradeable(token).transfer(to, amount);
     emit ClaimERC20Airdrop(token, to, amount);
   }
@@ -198,8 +232,9 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address token,
     address to,
     uint256[] calldata ids
-  ) external override onlyOwner {
+  ) external override nonReentrant onlyOwner {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
+    require(token != address(this), "BNFT: token can not be self address");
     for (uint256 i = 0; i < ids.length; i++) {
       IERC721Upgradeable(token).safeTransferFrom(address(this), to, ids[i]);
     }
@@ -212,8 +247,9 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256[] calldata ids,
     uint256[] calldata amounts,
     bytes calldata data
-  ) external override onlyOwner {
+  ) external override nonReentrant onlyOwner {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
+    require(token != address(this), "BNFT: token can not be self address");
     IERC1155Upgradeable(token).safeBatchTransferFrom(address(this), to, ids, amounts, data);
     emit ClaimERC1155Airdrop(token, to, ids, amounts, data);
   }

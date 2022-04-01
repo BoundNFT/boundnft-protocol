@@ -15,11 +15,11 @@
     "address": "0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B"
   },
   "BNFT": {
-    "address": "0xe4C064ffdc15cA42Bb2D5c4aF8D7a2A49F63d87E",
+    "address": "0x3296caB3cf58100a663A330DD79753888810907d",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0x9919603B006d34DAF2E16C55694D2bfC5594b6F6"
+    "address": "0x7Ac8723ED7FcC7476EF0a94B3475A96e70A79301"
   },
   "BNFTRegistry": {
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
@@ -29,7 +29,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiver": {
-    "address": "0x07AB34B4cd19B6Fb2eFA86AD351ae095D2566258",
+    "address": "0x4F3b1073eBF56DB48095A4190286c8288dE865B4",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "DOODLE": {
