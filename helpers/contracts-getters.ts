@@ -22,11 +22,11 @@ export const getSecondSigner = async () => (await getEthersSigners())[1];
 
 export const getThirdSigner = async () => (await getEthersSigners())[2];
 
-export const getDeploySigner = async () => (await getEthersSigners())[1];
+export const getDeploySigner = async () => (await getEthersSigners())[0];
 
-export const getPoolOwnerSigner = async () => (await getEthersSigners())[1];
+export const getPoolOwnerSigner = async () => (await getEthersSigners())[0];
 
-export const getProxyAdminSigner = async () => (await getEthersSigners())[3];
+export const getProxyAdminSigner = async () => (await getEthersSigners())[2];
 
 export const getBNFTRegistryProxy = async (address?: tEthereumAddress) => {
   return await BNFTRegistryFactory.connect(
