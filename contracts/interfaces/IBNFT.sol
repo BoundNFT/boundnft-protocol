@@ -63,7 +63,7 @@ interface IBNFT {
    * @dev Mints bNFT token to the user address
    *
    * Requirements:
-   *  - The caller must be contract address.
+   *  - The caller can be contract address and EOA.
    *  - `nftTokenId` must not exist.
    *
    * @param to The owner address receive the bNFT token
@@ -75,7 +75,7 @@ interface IBNFT {
    * @dev Burns user bNFT token
    *
    * Requirements:
-   *  - The caller must be contract address.
+   *  - The caller can be contract address and EOA.
    *  - `tokenId` must exist.
    *
    * @param tokenId token id of the underlying asset of NFT

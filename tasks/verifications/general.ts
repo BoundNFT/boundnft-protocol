@@ -120,6 +120,10 @@ task("verify:bnft", "Verify bnft contracts at Etherscan")
       initEncodedData,
     ]);
 
+    console.log(`\n- Verifying AirdropFlashLoanReceiver ...\n`);
+    const airdropFlashloanReceiver = await getAirdropFlashLoanReceiver();
+    await verifyContract(eContractid.AirdropFlashLoanReceiver, airdropFlashloanReceiver, [bnftRegistryProxy.address]);
+
     console.log("Finished verifications.");
   });
 
