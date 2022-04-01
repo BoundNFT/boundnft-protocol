@@ -117,13 +117,16 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * @dev Mints bNFT token to the user address
    *
    * Requirements:
-   *  - The caller must be contract address
+   *  - The caller can be contract address and EOA
    *
    * @param to The owner address receive the bNFT token
    * @param tokenId token id of the underlying asset of NFT
    **/
   function mint(address to, uint256 tokenId) external override nonReentrant {
-    require(AddressUpgradeable.isContract(_msgSender()), "BNFT: caller is not contract");
+    bool isCA = AddressUpgradeable.isContract(_msgSender());
+    if (!isCA) {
+      require(to == _msgSender(), "BNFT: caller is not to");
+    }
     require(!_exists(tokenId), "BNFT: exist token");
     require(IERC721Upgradeable(_underlyingAsset).ownerOf(tokenId) == _msgSender(), "BNFT: caller is not owner");
 
@@ -142,12 +145,11 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * @dev Burns user bNFT token
    *
    * Requirements:
-   *  - The caller must be contract address
+   *  - The caller can be contract address and EOA
    *
    * @param tokenId token id of the underlying asset of NFT
    **/
   function burn(uint256 tokenId) external override nonReentrant {
-    require(AddressUpgradeable.isContract(_msgSender()), "BNFT: caller is not contract");
     require(_exists(tokenId), "BNFT: nonexist token");
     require(_minters[tokenId] == _msgSender(), "BNFT: caller is not minter");
 

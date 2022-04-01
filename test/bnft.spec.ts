@@ -5,7 +5,7 @@ import { MockBNFTMinter } from "../types";
 
 const { expect } = require("chai");
 
-makeSuite("BNFT", (testEnv: TestEnv) => {
+makeSuite("BNFT: Contract Address", (testEnv: TestEnv) => {
   let mockMinterInstance1: MockBNFTMinter;
   let mockMinterInstance2: MockBNFTMinter;
   let cachedTokenId: string;
@@ -37,19 +37,6 @@ makeSuite("BNFT", (testEnv: TestEnv) => {
     await bayc.connect(users[0].signer).setApprovalForAll(mockMinterInstance1.address, true);
 
     cachedTokenId = tokenId;
-  });
-
-  it("Check caller must be contract", async () => {
-    const { bayc, bBAYC, users } = testEnv;
-
-    expect(cachedTokenId, "previous test case is faild").to.not.be.undefined;
-    const tokenId = cachedTokenId;
-
-    await expect(bBAYC.connect(users[0].signer).mint(users[1].address, tokenId)).to.be.revertedWith(
-      "BNFT: caller is not contract"
-    );
-
-    await expect(bBAYC.connect(users[0].signer).burn(tokenId)).to.be.revertedWith("BNFT: caller is not contract");
   });
 
   it("Check mint other owner's token", async () => {
