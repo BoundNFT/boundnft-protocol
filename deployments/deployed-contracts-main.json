@@ -4,7 +4,7 @@
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFT": {
-    "address": "0xe4CBA9dB1A80e400203f4AE75D926c8c2C1Af03d",
+    "address": "0x98a3894Af804d0da09BCE3Ccf92BA3Cf841Df581",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFTRegistryImpl": {
@@ -16,6 +16,13 @@
   },
   "AirdropFlashLoanReceiver": {
     "address": "0x312c5b4aBC508e3B8865b61cfB9a8410482Ca77F",
+    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
+  },
+  "BoundPunkGatewayImpl": {
+    "address": "0x502Ab7367692859c13349520A970e50B61251b9B"
+  },
+  "BoundPunkGateway": {
+    "address": "0x9f3A8d7F61F6407190fe5264ad88F88F39e214a8",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   }
 }

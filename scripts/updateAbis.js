@@ -8,6 +8,10 @@ const protocolContractList = [
 
 const interfacesContractList = ["IERC721Detailed", "IFlashLoanReceiver"];
 
+const miscContractList = [
+  "BoundPunkGateway",
+];
+
 const updateAbis = async (subDir, contractList) => {
   contractList.forEach((contract) => {
     const artifact = require(`../artifacts/contracts/${subDir}/${contract}.sol/${contract}.json`);
@@ -31,3 +35,5 @@ deleteFolderRecursive("../abis");
 updateAbis("protocol", protocolContractList).then().catch();
 
 updateAbis("interfaces", interfacesContractList).then().catch();
+
+updateAbis("misc", miscContractList).then().catch();

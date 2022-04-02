@@ -10,6 +10,9 @@ import {
   MockAirdropProjectFactory,
   AirdropFlashLoanReceiverFactory,
   MockBNFTMinterFactory,
+  CryptoPunksMarketFactory,
+  WrappedPunkFactory,
+  BoundPunkGatewayFactory,
 } from "../types";
 import { IERC721DetailedFactory } from "../types/IERC721DetailedFactory";
 import { getEthersSigners, getParamPerNetwork, MockNftMap } from "./contracts-helpers";
@@ -124,5 +127,29 @@ export const getAddressById = async (id: string): Promise<tEthereumAddress | und
 export const getAirdropFlashLoanReceiver = async (address?: tEthereumAddress) =>
   await AirdropFlashLoanReceiverFactory.connect(
     address || (await getDb(DRE.network.name).get(`${eContractid.AirdropFlashLoanReceiver}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getCryptoPunksMarket = async (address?: tEthereumAddress) =>
+  await CryptoPunksMarketFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.CryptoPunksMarket}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getWrappedPunk = async (address?: tEthereumAddress) =>
+  await WrappedPunkFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.WrappedPunk}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getBoundPunkGateway = async (address?: tEthereumAddress) =>
+  await BoundPunkGatewayFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.BoundPunkGateway}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getBoundPunkGatewayImpl = async (address?: tEthereumAddress) =>
+  await BoundPunkGatewayFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.BoundPunkGatewayImpl}`).value()).address,
     await getDeploySigner()
   );

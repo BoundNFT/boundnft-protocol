@@ -20,6 +20,10 @@ import {
   MockAirdropProjectFactory,
   AirdropFlashLoanReceiverFactory,
   AirdropFlashLoanReceiver,
+  CryptoPunksMarketFactory,
+  WrappedPunkFactory,
+  BoundPunkGatewayFactory,
+  WrappedPunk,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
@@ -65,9 +69,17 @@ export const deployGenericBNFTImpl = async (verify: boolean) =>
   withSaveAndVerify(await new BNFTFactory(await getDeploySigner()).deploy(), eContractid.BNFT, [], verify);
 
 export const deployAllMockNfts = async (verify?: boolean) => {
-  const tokens: { [symbol: string]: MockContract | MintableERC721 } = {};
+  const tokens: { [symbol: string]: MockContract | MintableERC721 | WrappedPunk } = {};
 
   for (const tokenSymbol of Object.keys(NftContractId)) {
+    if (tokenSymbol === "WPUNKS") {
+      const cryptoPunksMarket = await deployCryptoPunksMarket([], verify);
+      const wrappedPunk = await deployWrappedPunk([cryptoPunksMarket.address], verify);
+      tokens[tokenSymbol] = wrappedPunk;
+      await registerContractInJsonDb(tokenSymbol.toUpperCase(), tokens[tokenSymbol]);
+      continue;
+    }
+
     const tokenName = "Bend Mock " + tokenSymbol;
 
     tokens[tokenSymbol] = await deployMintableERC721([tokenName, tokenSymbol], verify);
@@ -119,3 +131,25 @@ export const deployAirdropFlashLoanReceiver = async (
     args,
     verify
   );
+
+export const deployCryptoPunksMarket = async (args: [], verify?: boolean) =>
+  withSaveAndVerify(
+    await new CryptoPunksMarketFactory(await getDeploySigner()).deploy(...args),
+    eContractid.CryptoPunksMarket,
+    args,
+    verify
+  );
+
+export const deployWrappedPunk = async (args: [tEthereumAddress], verify?: boolean) =>
+  withSaveAndVerify(
+    await new WrappedPunkFactory(await getDeploySigner()).deploy(...args),
+    eContractid.WrappedPunk,
+    args,
+    verify
+  );
+
+export const deployBoundPunkGateway = async (verify?: boolean) => {
+  const punkImpl = await new BoundPunkGatewayFactory(await getDeploySigner()).deploy();
+  await insertContractAddressInDb(eContractid.BoundPunkGatewayImpl, punkImpl.address);
+  return withSaveAndVerify(punkImpl, eContractid.BoundPunkGateway, [], verify);
+};

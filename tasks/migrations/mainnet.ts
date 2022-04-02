@@ -41,6 +41,9 @@ task("bend:mainnet", "Deploy full enviroment")
     console.log("\n\nDeploy bnft tokens");
     await DRE.run("full:deploy-bnft-tokens", { pool: POOL_NAME });
 
+    console.log("\n\nDeploy boundpunk gateway");
+    await DRE.run("full:deploy-boundpunk-gateway", { verify, pool: POOL_NAME });
+
     console.log("\n\nDeploy airdrop flashloan");
     await DRE.run("full:deploy-airdrop-flashloan", { pool: POOL_NAME });
 
