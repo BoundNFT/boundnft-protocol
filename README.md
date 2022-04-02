@@ -1,5 +1,6 @@
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-[![Build pass](https://github.com/bendfi/bnft-protocol/actions/workflows/node.js.yml/badge.svg)](https://github.com/bendfi/bnft-protocol/actions/workflows/node.js.yml)
+[![Build pass](https://github.com/boundnft/boundnft-protocol/actions/workflows/node.js.yml/badge.svg)](https://github.com/boundnft/boundnft-protocol/actions/workflows/node.js.yml)
+[![codecov](https://codecov.io/gh/boundnft/boundnft-protocol/branch/main/graph/badge.svg?token=DD4QGDBBN1)](https://codecov.io/gh/boundnft/boundnft-protocol)
+
 ```
  ######  #     # ####### ####### 
  #     # ##    # #          #    
