@@ -63,5 +63,12 @@
   "KONGZ": {
     "address": "0x8fC9F05f7B21346FD5E9Fa3C963d3941eb861940",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BoundPunkGatewayImpl": {
+    "address": "0x540b6A0Df8D882e3EA75dB2aFa128c44F8fD8417"
+  },
+  "BoundPunkGateway": {
+    "address": "0xF482E6E29c0fe449b2A7326CDe850dcf8CE62e32",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

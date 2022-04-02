@@ -46,6 +46,34 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.main]: '',
   },
 
+  CryptoPunksMarket: {
+    [eEthereumNetwork.coverage]: '', // deployed in local evm
+    [eEthereumNetwork.hardhat]: '', // deployed in local evm
+    [eEthereumNetwork.localhost]: '',
+    [eEthereumNetwork.develop]: '0xE159fC1226dbCe3e9d511e884a067D09C3290B9E',
+    [eEthereumNetwork.rinkeby]: '0x6389eA3Cf6dE815ba76d7Cf4C6Db6A7093471bcb',
+    [eEthereumNetwork.kovan]: '0xc667A10012209D8Fccc85aF7a913d8bBd26c18a7',
+    [eEthereumNetwork.main]: '0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb',
+  },
+  WrappedPunkToken: {
+    [eEthereumNetwork.coverage]: '', // deployed in local evm
+    [eEthereumNetwork.hardhat]: '', // deployed in local evm
+    [eEthereumNetwork.localhost]: '',
+    [eEthereumNetwork.develop]: '0xcDbBC001976F79db2fC1ECfd140031fE970CeaEc',
+    [eEthereumNetwork.rinkeby]: '0x74e4418A41169Fb951Ca886976ccd8b36968c4Ab',
+    [eEthereumNetwork.kovan]: '0x8Ffc30191AdF56C3Bb06BD03A358fdBfA2C06f63',
+    [eEthereumNetwork.main]: '0xb7F7F6C52F2e2fdb1963Eab30438024864c313F6',
+  },
+  BoundPunkGateway: {
+    [eEthereumNetwork.coverage]: '',
+    [eEthereumNetwork.hardhat]: '',
+    [eEthereumNetwork.localhost]: '',
+    [eEthereumNetwork.develop]: '',
+    [eEthereumNetwork.rinkeby]: '',
+    [eEthereumNetwork.kovan]: '',
+    [eEthereumNetwork.main]: '',
+  },
+
   NftsAssets: {
     [eEthereumNetwork.coverage]: {},
     [eEthereumNetwork.hardhat]: {},

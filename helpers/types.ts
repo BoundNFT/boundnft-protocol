@@ -37,6 +37,11 @@ export enum eContractid {
   MockFlashLoanReceiver = "MockFlashLoanReceiver",
 
   AirdropFlashLoanReceiver = "AirdropFlashLoanReceiver",
+
+  CryptoPunksMarket = "CryptoPunksMarket",
+  WrappedPunk = "WrappedPunk",
+  BoundPunkGatewayImpl = "BoundPunkGatewayImpl",
+  BoundPunkGateway = "BoundPunkGateway",
 }
 
 export type tEthereumAddress = string;
@@ -117,6 +122,10 @@ export interface ICommonConfiguration {
 
   BNFTRegistry: iParamsPerNetwork<tEthereumAddress | undefined>;
   BNFTRegistryOwner: iParamsPerNetwork<tEthereumAddress | undefined>;
+
+  CryptoPunksMarket: iParamsPerNetwork<tEthereumAddress | undefined>;
+  WrappedPunkToken: iParamsPerNetwork<tEthereumAddress | undefined>;
+  BoundPunkGateway: iParamsPerNetwork<tEthereumAddress | undefined>;
 
   NftsAssets: iParamsPerNetwork<SymbolMap<tEthereumAddress>>;
 }
