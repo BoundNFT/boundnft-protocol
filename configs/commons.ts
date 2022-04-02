@@ -69,7 +69,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.hardhat]: '',
     [eEthereumNetwork.localhost]: '',
     [eEthereumNetwork.develop]: '',
-    [eEthereumNetwork.rinkeby]: '',
+    [eEthereumNetwork.rinkeby]: '0xF482E6E29c0fe449b2A7326CDe850dcf8CE62e32',
     [eEthereumNetwork.kovan]: '',
     [eEthereumNetwork.main]: '',
   },

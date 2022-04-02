@@ -3,9 +3,9 @@ import { waitForTx, notFalsyOrZeroAddress } from "../../helpers/misc-utils";
 import { eNetwork, eContractid } from "../../helpers/types";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
 import { deployBNFTUpgradeableProxy, deployBoundPunkGateway } from "../../helpers/contracts-deployments";
-import { getBNFTRegistryProxy, getBNFTUpgradeableProxy, getBNFTProxyAdminById } from "../../helpers/contracts-getters";
+import { getBNFTUpgradeableProxy, getBNFTProxyAdminById, getBoundPunkGateway } from "../../helpers/contracts-getters";
 import { getParamPerNetwork, insertContractAddressInDb } from "../../helpers/contracts-helpers";
-import { BNFTRegistry, BNFTUpgradeableProxy } from "../../types";
+import { BNFTUpgradeableProxy, BoundPunkGateway } from "../../types";
 
 task("full:deploy-boundpunk-gateway", "Deploy BoundPunk Gateway for full enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
@@ -34,7 +34,7 @@ task("full:deploy-boundpunk-gateway", "Deploy BoundPunk Gateway for full envirom
 
     const boundPunkGatewayImpl = await deployBoundPunkGateway(verify);
 
-    let boundPunkGateway: BNFTRegistry;
+    let boundPunkGateway: BoundPunkGateway;
     let boundPunkGatewayProxy: BNFTUpgradeableProxy;
 
     let boundPunkGatewayProxyAddress = getParamPerNetwork(poolConfig.BoundPunkGateway, network);
@@ -55,12 +55,12 @@ task("full:deploy-boundpunk-gateway", "Deploy BoundPunk Gateway for full envirom
         verify
       );
 
-      boundPunkGateway = await getBNFTRegistryProxy(boundPunkGatewayProxy.address);
+      boundPunkGateway = await getBoundPunkGateway(boundPunkGatewayProxy.address);
     } else {
-      console.log("Upgrading exist bnft registry proxy to new implementation...");
-      await insertContractAddressInDb(eContractid.BNFTRegistry, bnftRegistryProxyAddress);
+      console.log("Upgrading exist BoundPunkGateway proxy to new implementation...");
+      await insertContractAddressInDb(eContractid.BoundPunkGateway, boundPunkGatewayProxyAddress);
 
-      boundPunkGatewayProxy = await getBNFTUpgradeableProxy(bnftRegistryProxyAddress);
+      boundPunkGatewayProxy = await getBNFTUpgradeableProxy(boundPunkGatewayProxyAddress);
 
       // only proxy admin can do upgrading
       const ownerSigner = DRE.ethers.provider.getSigner(proxyOwnerAddress);
@@ -68,7 +68,7 @@ task("full:deploy-boundpunk-gateway", "Deploy BoundPunk Gateway for full envirom
         await proxyAdmin.connect(ownerSigner).upgrade(boundPunkGatewayProxy.address, boundPunkGatewayImpl.address)
       );
 
-      boundPunkGateway = await getBNFTRegistryProxy(boundPunkGatewayProxy.address);
+      boundPunkGateway = await getBoundPunkGateway(boundPunkGatewayProxy.address);
     }
 
     console.log(

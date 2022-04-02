@@ -73,5 +73,7 @@ contract BoundPunkGateway is ContextUpgradeable, ReentrancyGuardUpgradeable, ERC
 
     // transfer CryptoPunks to caller
     punks.transferPunk(bnftOwner, punkIndex);
+    address punkOwner = punks.punkIndexToAddress(punkIndex);
+    require(punkOwner == _msgSender(), "WPG: caller is not owner in Punks");
   }
 }
