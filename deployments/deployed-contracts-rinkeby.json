@@ -15,11 +15,11 @@
     "address": "0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B"
   },
   "BNFT": {
-    "address": "0x3296caB3cf58100a663A330DD79753888810907d",
+    "address": "0x35665a8842d0F2AB44dE64EAd6dE80820f7eeB61",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0x7Ac8723ED7FcC7476EF0a94B3475A96e70A79301"
+    "address": "0x6ff48ac92d6F4D1461A564051C77A6679A9d3321"
   },
   "BNFTRegistry": {
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
@@ -29,7 +29,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiver": {
-    "address": "0x4F3b1073eBF56DB48095A4190286c8288dE865B4",
+    "address": "0xEB48Fa7230981259bef2a7A21d2c5aAfD50Db3CB",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "DOODLE": {
@@ -63,5 +63,19 @@
   "KONGZ": {
     "address": "0x8fC9F05f7B21346FD5E9Fa3C963d3941eb861940",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "CryptoPunksMarket": {
+    "address": "0x6389eA3Cf6dE815ba76d7Cf4C6Db6A7093471bcb",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "WrappedPunk": {
+    "address": "0x74e4418A41169Fb951Ca886976ccd8b36968c4Ab",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BoundPunkGatewayImpl": {
+    "address": "0x85312EF769184dc58fcE389307a0c45AA3F5a3bd"
+  },
+  "BoundPunkGateway": {
+    "address": "0xF482E6E29c0fe449b2A7326CDe850dcf8CE62e32"
   }
 }
