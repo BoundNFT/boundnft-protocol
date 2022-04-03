@@ -2,14 +2,14 @@
 [![codecov](https://codecov.io/gh/boundnft/boundnft-protocol/branch/main/graph/badge.svg?token=DD4QGDBBN1)](https://codecov.io/gh/boundnft/boundnft-protocol)
 
 ```
- ######  #     # ####### ####### 
- #     # ##    # #          #    
- #     # # #   # #          #    
- ######  #  #  # #####      #    
- #     # #   # # #          #    
- #     # #    ## #          #    
- ######  #     # #          #    
-                                 
+######                              #     # ####### ####### 
+#     #  ####  #    # #    # #####  ##    # #          #    
+#     # #    # #    # ##   # #    # # #   # #          #    
+######  #    # #    # # #  # #    # #  #  # #####      #    
+#     # #    # #    # #  # # #    # #   # # #          #    
+#     # #    # #    # #   ## #    # #    ## #          #    
+######   ####   ####  #    # #####  #     # #          #    
+
 ```
 
 # Bound NFT Protocol
