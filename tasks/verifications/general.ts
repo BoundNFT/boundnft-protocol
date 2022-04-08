@@ -29,45 +29,11 @@ task("verify:general", "Verify general contracts at Etherscan")
       throw Error("Invalid proxy admin address in pool config");
     }
     const proxyAdmin = await getBNFTProxyAdminByAddress(proxyAdminAddress);
-
-    // Punk Gateway proxy
-    {
-      console.log("\n- Verifying BoundPunkGateway Proxy...\n");
-      let punkAddress = getParamPerNetwork(poolConfig.CryptoPunksMarket, network);
-      if (punkAddress == undefined || !notFalsyOrZeroAddress(punkAddress)) {
-        throw new Error("Invald CryptoPunksMarket in config");
-      }
-      let wpunkAddress = getParamPerNetwork(poolConfig.WrappedPunkToken, network);
-      if (wpunkAddress == undefined || !notFalsyOrZeroAddress(wpunkAddress)) {
-        throw new Error("Invald WrappedPunkToken in config");
-      }
-      let bnftRegistryProxyAddress = getParamPerNetwork(poolConfig.BNFTRegistry, network);
-      if (bnftRegistryProxyAddress == undefined || !notFalsyOrZeroAddress(bnftRegistryProxyAddress)) {
-        throw new Error("Invald BNFTRegistry in config");
-      }
-
-      const boundPunkGatewayImpl = await getBoundPunkGatewayImpl();
-      console.log("\n- Verifying BoundPunkGateway Implementation...\n", boundPunkGatewayImpl.address);
-      await verifyContract(eContractid.BoundPunkGatewayImpl, boundPunkGatewayImpl, []);
-
-      const boundPunkGateway = await getBoundPunkGateway();
-      const initEncodedData = boundPunkGatewayImpl.interface.encodeFunctionData("initialize", [
-        punkAddress,
-        wpunkAddress,
-        bnftRegistryProxyAddress,
-      ]);
-      await verifyContract(eContractid.BNFTUpgradeableProxy, boundPunkGateway, [
-        boundPunkGatewayImpl.address,
-        proxyAdmin.address,
-        initEncodedData,
-      ]);
-    }
-    return;
-
     await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
 
     const bnftRegistryProxy = await getBNFTRegistryProxy();
     const registryOwnerAddress = await bnftRegistryProxy.owner();
+    const claimAdminAddress = await bnftRegistryProxy.claimAdmin();
 
     const bnftRegistryImpl = await getBNFTRegistryImpl();
     const bnftGenericImpl = await getBNFT();
@@ -111,10 +77,44 @@ task("verify:general", "Verify general contracts at Etherscan")
         poolConfig.BNftNamePrefix + " " + nftSymbol,
         poolConfig.BNftSymbolPrefix + nftSymbol,
         registryOwnerAddress,
+        claimAdminAddress,
       ]);
       await verifyContract(eContractid.BNFTUpgradeableProxy, bnftTokenProxy, [
         bnftGenericImpl.address,
         bnftRegistryProxy.address,
+        initEncodedData,
+      ]);
+    }
+
+    // Punk Gateway proxy
+    {
+      console.log("\n- Verifying BoundPunkGateway Proxy...\n");
+      let punkAddress = getParamPerNetwork(poolConfig.CryptoPunksMarket, network);
+      if (punkAddress == undefined || !notFalsyOrZeroAddress(punkAddress)) {
+        throw new Error("Invald CryptoPunksMarket in config");
+      }
+      let wpunkAddress = getParamPerNetwork(poolConfig.WrappedPunkToken, network);
+      if (wpunkAddress == undefined || !notFalsyOrZeroAddress(wpunkAddress)) {
+        throw new Error("Invald WrappedPunkToken in config");
+      }
+      let bnftRegistryProxyAddress = getParamPerNetwork(poolConfig.BNFTRegistry, network);
+      if (bnftRegistryProxyAddress == undefined || !notFalsyOrZeroAddress(bnftRegistryProxyAddress)) {
+        throw new Error("Invald BNFTRegistry in config");
+      }
+
+      const boundPunkGatewayImpl = await getBoundPunkGatewayImpl();
+      console.log("\n- Verifying BoundPunkGateway Implementation...\n", boundPunkGatewayImpl.address);
+      await verifyContract(eContractid.BoundPunkGatewayImpl, boundPunkGatewayImpl, []);
+
+      const boundPunkGateway = await getBoundPunkGateway();
+      const initEncodedData = boundPunkGatewayImpl.interface.encodeFunctionData("initialize", [
+        punkAddress,
+        wpunkAddress,
+        bnftRegistryProxyAddress,
+      ]);
+      await verifyContract(eContractid.BNFTUpgradeableProxy, boundPunkGateway, [
+        boundPunkGatewayImpl.address,
+        proxyAdmin.address,
         initEncodedData,
       ]);
     }
@@ -132,6 +132,7 @@ task("verify:bnft", "Verify bnft contracts at Etherscan")
 
     const bnftRegistryProxy = await getBNFTRegistryProxy();
     const registryOwnerAddress = await bnftRegistryProxy.owner();
+    const claimAdminAddress = await bnftRegistryProxy.claimAdmin();
 
     const bnftRegistryImpl = await getBNFTRegistryImpl();
     const bnftGenericImpl = await getBNFT();
@@ -150,6 +151,7 @@ task("verify:bnft", "Verify bnft contracts at Etherscan")
       poolConfig.BNftNamePrefix + " " + nftSymbol,
       poolConfig.BNftSymbolPrefix + nftSymbol,
       registryOwnerAddress,
+      claimAdminAddress,
     ]);
     await verifyContract(eContractid.BNFTUpgradeableProxy, bnftTokenProxy, [
       bnftGenericImpl.address,

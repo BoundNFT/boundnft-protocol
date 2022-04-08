@@ -16,6 +16,13 @@ interface IBNFT {
   event OwnershipTransferred(address oldOwner, address newOwner);
 
   /**
+   * @dev Emitted when the claim admin is updated
+   * @param oldAdmin The address of the old admin
+   * @param newAdmin The address of the new admin
+   **/
+  event ClaimAdminUpdated(address oldAdmin, address newAdmin);
+
+  /**
    * @dev Emitted on mint
    * @param user The address initiating the burn
    * @param nftAsset address of the underlying asset of NFT
@@ -56,7 +63,8 @@ interface IBNFT {
     address underlyingAsset_,
     string calldata bNftName,
     string calldata bNftSymbol,
-    address airdropAdmin_
+    address owner_,
+    address claimAdmin_
   ) external;
 
   /**

@@ -87,7 +87,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
           );
         }
       } else if (vars.airdropTokenTypes[typeIndex] == 3) {
-        // ERC115
+        // ERC1155
         vars.airdropBalance = IERC1155(vars.airdropTokenAddresses[typeIndex]).balanceOf(
           address(this),
           vars.airdropTokenIds[typeIndex]
