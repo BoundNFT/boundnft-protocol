@@ -27,6 +27,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   uint256 private constant _NOT_ENTERED = 0;
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
+  address private _claimAdmin;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -57,13 +58,16 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address underlyingAsset_,
     string calldata bNftName,
     string calldata bNftSymbol,
-    address owner_
+    address owner_,
+    address claimAdmin_
   ) external override initializer {
     __ERC721_init(bNftName, bNftSymbol);
 
     _underlyingAsset = underlyingAsset_;
 
     _transferOwnership(owner_);
+
+    _setClaimAdmin(claimAdmin_);
 
     emit Initialized(underlyingAsset_);
   }
@@ -114,6 +118,36 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   /**
+   * @dev Returns the address of the current claim admin.
+   */
+  function claimAdmin() public view virtual returns (address) {
+    return _claimAdmin;
+  }
+
+  /**
+   * @dev Throws if called by any account other than the claim admin.
+   */
+  modifier onlyClaimAdmin() {
+    require(claimAdmin() == _msgSender(), "BNFT: caller is not the claim admin");
+    _;
+  }
+
+  /**
+   * @dev Set claim admin of the contract to a new account (`newAdmin`).
+   * Can only be called by the current owner.
+   */
+  function setClaimAdmin(address newAdmin) public virtual onlyOwner {
+    require(newAdmin != address(0), "BNFT: new admin is the zero address");
+    _setClaimAdmin(newAdmin);
+  }
+
+  function _setClaimAdmin(address newAdmin) internal virtual {
+    address oldAdmin = _claimAdmin;
+    _claimAdmin = newAdmin;
+    emit ClaimAdminUpdated(oldAdmin, newAdmin);
+  }
+
+  /**
    * @dev Mints bNFT token to the user address
    *
    * Requirements:
@@ -130,13 +164,13 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     require(!_exists(tokenId), "BNFT: exist token");
     require(IERC721Upgradeable(_underlyingAsset).ownerOf(tokenId) == _msgSender(), "BNFT: caller is not owner");
 
-    // Receive NFT Tokens
-    IERC721Upgradeable(_underlyingAsset).safeTransferFrom(_msgSender(), address(this), tokenId);
-
     // mint bNFT to user
     _mint(to, tokenId);
 
     _minters[tokenId] = _msgSender();
+
+    // Receive NFT Tokens
+    IERC721Upgradeable(_underlyingAsset).safeTransferFrom(_msgSender(), address(this), tokenId);
 
     emit Mint(_msgSender(), _underlyingAsset, tokenId, to);
   }
@@ -155,11 +189,11 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
     address tokenOwner = ERC721Upgradeable.ownerOf(tokenId);
 
-    IERC721Upgradeable(_underlyingAsset).safeTransferFrom(address(this), _msgSender(), tokenId);
-
     _burn(tokenId);
 
     delete _minters[tokenId];
+
+    IERC721Upgradeable(_underlyingAsset).safeTransferFrom(address(this), _msgSender(), tokenId);
 
     emit Burn(_msgSender(), _underlyingAsset, tokenId, tokenOwner);
   }
@@ -223,7 +257,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address token,
     address to,
     uint256 amount
-  ) external override nonReentrant onlyOwner {
+  ) external override nonReentrant onlyClaimAdmin {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     require(token != address(this), "BNFT: token can not be self address");
     IERC20Upgradeable(token).transfer(to, amount);
@@ -234,7 +268,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address token,
     address to,
     uint256[] calldata ids
-  ) external override nonReentrant onlyOwner {
+  ) external override nonReentrant onlyClaimAdmin {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     require(token != address(this), "BNFT: token can not be self address");
     for (uint256 i = 0; i < ids.length; i++) {
@@ -249,7 +283,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256[] calldata ids,
     uint256[] calldata amounts,
     bytes calldata data
-  ) external override nonReentrant onlyOwner {
+  ) external override nonReentrant onlyClaimAdmin {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     require(token != address(this), "BNFT: token can not be self address");
     IERC1155Upgradeable(token).safeBatchTransferFrom(address(this), to, ids, amounts, data);

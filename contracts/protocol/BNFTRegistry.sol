@@ -21,6 +21,7 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   uint256 private constant _NOT_ENTERED = 0;
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
+  address private _claimAdmin;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -41,6 +42,14 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     // By storing the original value once again, a refund is triggered (see
     // https://eips.ethereum.org/EIPS/eip-2200)
     _status = _NOT_ENTERED;
+  }
+
+  /**
+   * @dev Throws if called by any account other than the claim admin.
+   */
+  modifier onlyClaimAdmin() {
+    require(claimAdmin() == _msgSender(), "BNFTR: caller is not the claim admin");
+    _;
   }
 
   function getBNFTAddresses(address nftAsset) external view override returns (address bNftProxy, address bNftImpl) {
@@ -75,6 +84,8 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
 
     namePrefix = namePrefix_;
     symbolPrefix = symbolPrefix_;
+
+    _setClaimAdmin(_msgSender());
 
     emit Initialized(genericImpl, namePrefix, symbolPrefix);
   }
@@ -163,6 +174,28 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     emit CustomeSymbolsAdded(nftAssets_, symbols_);
   }
 
+  /**
+   * @dev Returns the address of the current claim admin.
+   */
+  function claimAdmin() public view virtual returns (address) {
+    return _claimAdmin;
+  }
+
+  /**
+   * @dev Set claim admin of the contract to a new account (`newAdmin`).
+   * Can only be called by the current owner.
+   */
+  function setClaimAdmin(address newAdmin) public virtual onlyOwner {
+    require(newAdmin != address(0), "BNFTR: new admin is the zero address");
+    _setClaimAdmin(newAdmin);
+  }
+
+  function _setClaimAdmin(address newAdmin) internal virtual {
+    address oldAdmin = _claimAdmin;
+    _claimAdmin = newAdmin;
+    emit ClaimAdminUpdated(oldAdmin, newAdmin);
+  }
+
   function _createProxyAndInitWithImpl(address nftAsset, address bNftImpl) internal returns (address bNftProxy) {
     bytes memory initParams = _buildInitParams(nftAsset);
 
@@ -183,7 +216,14 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     string memory bNftName = string(abi.encodePacked(namePrefix, " ", nftSymbol));
     string memory bNftSymbol = string(abi.encodePacked(symbolPrefix, nftSymbol));
 
-    initParams = abi.encodeWithSelector(IBNFT.initialize.selector, nftAsset, bNftName, bNftSymbol, owner());
+    initParams = abi.encodeWithSelector(
+      IBNFT.initialize.selector,
+      nftAsset,
+      bNftName,
+      bNftSymbol,
+      owner(),
+      claimAdmin()
+    );
   }
 
   function _requireAddressIsERC721(address nftAsset) internal view {
