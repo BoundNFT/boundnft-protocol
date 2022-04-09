@@ -4,11 +4,11 @@
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFT": {
-    "address": "0x98a3894Af804d0da09BCE3Ccf92BA3Cf841Df581",
+    "address": "0x3D2DcD3Df15C9bAc0F31cec54B1EF82C632f866e",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFTRegistryImpl": {
-    "address": "0x6433b4d08aBC86b24C4a9F4e111B3312A766DDf0"
+    "address": "0x65D197c82AAF1E9e7b7798b04985CB597008A501"
   },
   "BNFTRegistry": {
     "address": "0x79d922DD382E42A156bC0A354861cDBC4F09110d",
