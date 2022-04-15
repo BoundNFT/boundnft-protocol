@@ -90,7 +90,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.develop]: '',
     [eEthereumNetwork.rinkeby]: '0x931d1664A61D4F4d47a262e321Ea11cbef50cb00',
     [eEthereumNetwork.kovan]: '',
-    [eEthereumNetwork.main]: '',
+    [eEthereumNetwork.main]: '0x6D187449A5664DD87E58A9d3b982989AaeA469BD',
   },
 
   NftsAssets: {

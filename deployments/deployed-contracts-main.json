@@ -29,10 +29,10 @@
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "AirdropDistributionImpl": {
-    "address": "0x1bFfa61A78228cc2Df4009f012C681F6590F7D19"
+    "address": "0xF878945f09af63D5df6CD83b0c30e9cB6a6535cd"
   },
   "AirdropDistribution": {
-    "address": "0xC8eD9177C6caAd5fccBd5741db8c152c58812d02",
+    "address": "0x6D187449A5664DD87E58A9d3b982989AaeA469BD",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   }
 }
