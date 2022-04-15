@@ -84,6 +84,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "oldAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "ClaimAdminUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "token",
@@ -337,6 +356,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "claimAdmin",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -490,6 +522,11 @@
       {
         "internalType": "address",
         "name": "owner_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "claimAdmin_",
         "type": "address"
       }
     ],
@@ -788,6 +825,19 @@
       }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "setClaimAdmin",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

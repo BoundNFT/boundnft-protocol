@@ -13,6 +13,7 @@ import {
   CryptoPunksMarketFactory,
   WrappedPunkFactory,
   BoundPunkGatewayFactory,
+  AirdropDistributionFactory,
 } from "../types";
 import { IERC721DetailedFactory } from "../types/IERC721DetailedFactory";
 import { getEthersSigners, getParamPerNetwork, MockNftMap } from "./contracts-helpers";
@@ -127,6 +128,18 @@ export const getAddressById = async (id: string): Promise<tEthereumAddress | und
 export const getAirdropFlashLoanReceiver = async (address?: tEthereumAddress) =>
   await AirdropFlashLoanReceiverFactory.connect(
     address || (await getDb(DRE.network.name).get(`${eContractid.AirdropFlashLoanReceiver}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getAirdropDistribution = async (address?: tEthereumAddress) =>
+  await AirdropDistributionFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.AirdropDistribution}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getAirdropDistributionImpl = async (address?: tEthereumAddress) =>
+  await AirdropDistributionFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.AirdropDistributionImpl}`).value()).address,
     await getDeploySigner()
   );
 

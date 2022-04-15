@@ -24,6 +24,7 @@ export enum eContractid {
   IERC721Detailed = "IERC721Detailed",
   BNFTUpgradeableProxy = "BNFTUpgradeableProxy",
   ProxyAdmin = "ProxyAdmin", //BNFT(Registry)
+  ProxyAdminWithoutTimelock = "ProxyAdminWithoutTimelock",
   BNFT = "BNFT",
   BNFTRegistry = "BNFTRegistry",
   BNFTRegistryImpl = "BNFTRegistryImpl",
@@ -35,8 +36,11 @@ export enum eContractid {
   MockAirdropProject = "MockAirdropProject",
   MockBNFTMinter = "MockBNFTMinter",
   MockFlashLoanReceiver = "MockFlashLoanReceiver",
+  MockVRFCoordinatorV2 = "MockVRFCoordinatorV2",
 
   AirdropFlashLoanReceiver = "AirdropFlashLoanReceiver",
+  AirdropDistribution = "AirdropDistribution",
+  AirdropDistributionImpl = "AirdropDistributionImpl",
 
   CryptoPunksMarket = "CryptoPunksMarket",
   WrappedPunk = "WrappedPunk",
@@ -119,6 +123,7 @@ export interface ICommonConfiguration {
   ProtocolGlobalParams: IProtocolGlobalConfig;
 
   ProxyAdmin: iParamsPerNetwork<tEthereumAddress | undefined>;
+  ProxyAdminWithoutTimelock: iParamsPerNetwork<tEthereumAddress | undefined>;
 
   BNFTRegistry: iParamsPerNetwork<tEthereumAddress | undefined>;
   BNFTRegistryOwner: iParamsPerNetwork<tEthereumAddress | undefined>;
@@ -126,6 +131,8 @@ export interface ICommonConfiguration {
   CryptoPunksMarket: iParamsPerNetwork<tEthereumAddress | undefined>;
   WrappedPunkToken: iParamsPerNetwork<tEthereumAddress | undefined>;
   BoundPunkGateway: iParamsPerNetwork<tEthereumAddress | undefined>;
+
+  AirdropDistribution: iParamsPerNetwork<tEthereumAddress | undefined>;
 
   NftsAssets: iParamsPerNetwork<SymbolMap<tEthereumAddress>>;
 }

@@ -66,6 +66,25 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "oldAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "ClaimAdminUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "address[]",
         "name": "nftAssets",
         "type": "address[]"
@@ -228,6 +247,19 @@
       }
     ],
     "name": "bNftProxys",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "claimAdmin",
     "outputs": [
       {
         "internalType": "address",
@@ -426,6 +458,19 @@
       }
     ],
     "name": "setBNFTGenericImpl",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "setClaimAdmin",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

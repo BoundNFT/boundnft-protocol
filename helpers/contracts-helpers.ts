@@ -230,7 +230,7 @@ export const verifyContract = async (id: string, instance: Contract, args: (stri
       args,
       "contracts/libraries/BNFTUpgradeableProxy.sol:BNFTUpgradeableProxy"
     );
-  } else if (id == eContractid.ProxyAdmin) {
+  } else if (id == eContractid.ProxyAdmin || id == eContractid.ProxyAdminWithoutTimelock) {
     await verifyEtherscanContract(instance.address, args, "contracts/libraries/BNFTProxyAdmin.sol:BNFTProxyAdmin");
   } else {
     await verifyEtherscanContract(instance.address, args);

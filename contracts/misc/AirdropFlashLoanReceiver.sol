@@ -104,4 +104,14 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
 
     return true;
   }
+
+  function encodeFlashLoanParams(
+    uint256[] calldata airdropTokenTypes,
+    address[] calldata airdropTokenAddresses,
+    uint256[] calldata airdropTokenIds,
+    address airdropContract,
+    bytes calldata airdropParams
+  ) public pure returns (bytes memory) {
+    return abi.encode(airdropTokenTypes, airdropTokenAddresses, airdropTokenIds, airdropContract, airdropParams);
+  }
 }

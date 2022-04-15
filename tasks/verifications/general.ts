@@ -10,6 +10,7 @@ import {
   getAirdropFlashLoanReceiver,
   getBoundPunkGateway,
   getBoundPunkGatewayImpl,
+  getAirdropDistributionImpl,
 } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress } from "../../helpers/misc-utils";
@@ -29,7 +30,14 @@ task("verify:general", "Verify general contracts at Etherscan")
       throw Error("Invalid proxy admin address in pool config");
     }
     const proxyAdmin = await getBNFTProxyAdminByAddress(proxyAdminAddress);
-    await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
+    //await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
+
+    const proxyAdminWTLAddress = getParamPerNetwork(poolConfig.ProxyAdminWithoutTimelock, network);
+    if (proxyAdminWTLAddress == undefined || !notFalsyOrZeroAddress(proxyAdminWTLAddress)) {
+      throw Error("Invalid proxy admin without timelock address in pool config");
+    }
+    const proxyAdminWTL = await getBNFTProxyAdminByAddress(proxyAdminWTLAddress);
+    await verifyContract(eContractid.ProxyAdminWithoutTimelock, proxyAdminWTL, []);
 
     const bnftRegistryProxy = await getBNFTRegistryProxy();
     const registryOwnerAddress = await bnftRegistryProxy.owner();
@@ -171,6 +179,9 @@ task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Ethersca
   const network = localDRE.network.name as eNetwork;
 
   const registry = await getBNFTRegistryProxy();
+
+  const airdropDistribution = await getAirdropDistributionImpl();
+  await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
 
   const airdropFlashloanReceiver = await getAirdropFlashLoanReceiver();
   await verifyContract(eContractid.AirdropFlashLoanReceiver, airdropFlashloanReceiver, [registry.address]);

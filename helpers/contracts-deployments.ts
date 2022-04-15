@@ -24,6 +24,9 @@ import {
   WrappedPunkFactory,
   BoundPunkGatewayFactory,
   WrappedPunk,
+  AirdropDistribution,
+  AirdropDistributionFactory,
+  MockVRFCoordinatorV2Factory,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
@@ -104,6 +107,14 @@ export const deployMockFlashLoanReceiver = async (args: [tEthereumAddress], veri
     verify
   );
 
+export const deployMockMockVRFCoordinatorV2 = async (args: [string, string], verify?: boolean) =>
+  withSaveAndVerify(
+    await new MockVRFCoordinatorV2Factory(await getDeploySigner()).deploy(...args),
+    eContractid.MockFlashLoanReceiver,
+    args,
+    verify
+  );
+
 export const deployBNFTUpgradeableProxy = async (
   id: string,
   admin: tEthereumAddress,
@@ -131,6 +142,12 @@ export const deployAirdropFlashLoanReceiver = async (
     args,
     verify
   );
+
+export const deployAirdropDistribution = async (verify?: boolean) => {
+  const contractImpl = await new AirdropDistributionFactory(await getDeploySigner()).deploy();
+  await insertContractAddressInDb(eContractid.AirdropDistributionImpl, contractImpl.address);
+  return withSaveAndVerify(contractImpl, eContractid.AirdropDistribution, [], verify);
+};
 
 export const deployCryptoPunksMarket = async (args: [], verify?: boolean) =>
   withSaveAndVerify(

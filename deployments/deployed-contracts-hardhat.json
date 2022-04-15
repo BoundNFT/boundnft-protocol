@@ -97,5 +97,12 @@
   },
   "BoundPunkGateway": {
     "address": "0x0A66e11653e32D082F3330Dc99687ce42Eb53121"
+  },
+  "AirdropDistribution": {
+    "address": "0x17624D935b72A4d765d7A69a68E7C0725A38d5bc",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "AirdropDistributionImpl": {
+    "address": "0x17624D935b72A4d765d7A69a68E7C0725A38d5bc"
   }
 }

@@ -13,7 +13,7 @@ import { waitForTx } from "../helpers/misc-utils";
 
 const { expect } = require("chai");
 
-makeSuite("Airdrop-FlashLoan", (testEnv: TestEnv) => {
+makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
   let _airdropFlashLoanReceiver = {} as AirdropFlashLoanReceiver;
   let _mockAirdropProject = {} as MockAirdropProject;
   let _mockBNFTMinter = {} as MockBNFTMinter;

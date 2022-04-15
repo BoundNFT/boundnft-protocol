@@ -27,6 +27,16 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.main]: '0xe635D0fb1608aA54C3ca99c497E887d2e1E3E690',
   },
 
+  ProxyAdminWithoutTimelock: {
+    [eEthereumNetwork.coverage]: undefined,
+    [eEthereumNetwork.hardhat]: undefined,
+    [eEthereumNetwork.localhost]: undefined,
+    [eEthereumNetwork.develop]: '',
+    [eEthereumNetwork.rinkeby]: '0x27dC5B3BBb3c87130EBE1C96B3B8d169cB10EaF8',
+    [eEthereumNetwork.kovan]: '',
+    [eEthereumNetwork.main]: '0x2F886F5e1DBF63cB14579eb5BE6295A818Bd1795',
+  },
+
   BNFTRegistry: {
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',
@@ -70,6 +80,15 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.localhost]: '',
     [eEthereumNetwork.develop]: '',
     [eEthereumNetwork.rinkeby]: '0xF482E6E29c0fe449b2A7326CDe850dcf8CE62e32',
+    [eEthereumNetwork.kovan]: '',
+    [eEthereumNetwork.main]: '0x9f3A8d7F61F6407190fe5264ad88F88F39e214a8',
+  },
+  AirdropDistribution: {
+    [eEthereumNetwork.coverage]: '',
+    [eEthereumNetwork.hardhat]: '',
+    [eEthereumNetwork.localhost]: '',
+    [eEthereumNetwork.develop]: '',
+    [eEthereumNetwork.rinkeby]: '0x931d1664A61D4F4d47a262e321Ea11cbef50cb00',
     [eEthereumNetwork.kovan]: '',
     [eEthereumNetwork.main]: '',
   },

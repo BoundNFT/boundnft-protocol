@@ -52,7 +52,7 @@
     "prepublishOnly": "npm run compile"
   },
   "devDependencies": {
-    "@chainlink/contracts": "0.2.2",
+    "@chainlink/contracts": "^0.4.0",
     "@nomiclabs/hardhat-ethers": "^2.0.0",
     "@nomiclabs/hardhat-etherscan": "^2.0.2",
     "@nomiclabs/hardhat-solhint": "^2.0.0",
