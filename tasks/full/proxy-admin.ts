@@ -28,4 +28,23 @@ task("full:deploy-proxy-admin", "Deploy proxy admin contract")
       }
       console.log("ProxyAdmin Address:", proxyAdmin.address, "Owner Address:", await proxyAdmin.owner());
     }
+
+    {
+      let proxyAdminWithoutTimelock: BNFTProxyAdmin;
+      const proxyAdminAddress = getParamPerNetwork(poolConfig.ProxyAdminWithoutTimelock, network);
+      if (proxyAdminAddress == undefined || !notFalsyOrZeroAddress(proxyAdminAddress)) {
+        console.log("Deploying new proxy admin without timelock ...");
+        proxyAdminWithoutTimelock = await deployBNFTProxyAdmin(eContractid.ProxyAdminWithoutTimelock, verify);
+      } else {
+        console.log("Using proxy admin without timelock in pool config...");
+        await insertContractAddressInDb(eContractid.ProxyAdminWithoutTimelock, proxyAdminAddress);
+        proxyAdminWithoutTimelock = await getBNFTProxyAdminByAddress(proxyAdminAddress);
+      }
+      console.log(
+        "ProxyAdminWithoutTimelock Address:",
+        proxyAdminWithoutTimelock.address,
+        "Owner Address:",
+        await proxyAdminWithoutTimelock.owner()
+      );
+    }
   });

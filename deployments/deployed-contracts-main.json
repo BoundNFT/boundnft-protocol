@@ -1,21 +1,24 @@
 {
   "ProxyAdmin": {
-    "address": "0xe635D0fb1608aA54C3ca99c497E887d2e1E3E690",
+    "address": "0xe635D0fb1608aA54C3ca99c497E887d2e1E3E690"
+  },
+  "ProxyAdminWithoutTimelock": {
+    "address": "0x2F886F5e1DBF63cB14579eb5BE6295A818Bd1795",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFT": {
-    "address": "0x98a3894Af804d0da09BCE3Ccf92BA3Cf841Df581",
+    "address": "0x3D2DcD3Df15C9bAc0F31cec54B1EF82C632f866e",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFTRegistryImpl": {
-    "address": "0x6433b4d08aBC86b24C4a9F4e111B3312A766DDf0"
+    "address": "0x65D197c82AAF1E9e7b7798b04985CB597008A501"
   },
   "BNFTRegistry": {
     "address": "0x79d922DD382E42A156bC0A354861cDBC4F09110d",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "AirdropFlashLoanReceiver": {
-    "address": "0x312c5b4aBC508e3B8865b61cfB9a8410482Ca77F",
+    "address": "0xa8Ae91Dd8CD8f410BA59626caef160925A033734",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BoundPunkGatewayImpl": {
@@ -23,6 +26,13 @@
   },
   "BoundPunkGateway": {
     "address": "0x9f3A8d7F61F6407190fe5264ad88F88F39e214a8",
+    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
+  },
+  "AirdropDistributionImpl": {
+    "address": "0xF878945f09af63D5df6CD83b0c30e9cB6a6535cd"
+  },
+  "AirdropDistribution": {
+    "address": "0x6D187449A5664DD87E58A9d3b982989AaeA469BD",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   }
 }

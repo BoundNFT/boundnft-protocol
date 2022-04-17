@@ -10,6 +10,8 @@ const interfacesContractList = ["IERC721Detailed", "IFlashLoanReceiver"];
 
 const miscContractList = [
   "BoundPunkGateway",
+  "AirdropFlashLoanReceiver",
+  "AirdropDistribution",
 ];
 
 const updateAbis = async (subDir, contractList) => {

@@ -30,10 +30,10 @@
   dependencies:
     "regenerator-runtime" "^0.13.4"
 
-"@chainlink/contracts@0.2.2":
-  "integrity" "sha512-wxXPbt7O3aZaUSG34ufFASC5amRSL6eeYCqsa+2gpqbB8Hk7B7FydEDCI5dqvAC444TlFskPHcVbizCZkRHPpw=="
-  "resolved" "https://registry.npmjs.org/@chainlink/contracts/-/contracts-0.2.2.tgz"
-  "version" "0.2.2"
+"@chainlink/contracts@^0.4.0":
+  "integrity" "sha512-yZGeCBd7d+qxfw9r/JxtPzsW2kCc6MorPRZ/tDKnaJI98H99j5P2Fosfehmcwk6wVZlz+0Bp4kS1y480nw3Zow=="
+  "resolved" "https://registry.npmjs.org/@chainlink/contracts/-/contracts-0.4.0.tgz"
+  "version" "0.4.0"
 
 "@codechecks/client@^0.1.0":
   "integrity" "sha1-XKDLOw2Z/tHDlwM8mB7+7dji6jc="
@@ -12090,8 +12090,6 @@
     "yaeti" "^0.0.6"
 
 "whatwg-fetch@2.0.4":
-  "integrity" "sha512-dcQ1GWpOD/eEQ97k66aiEVpNnapVj90/+R+SXTPYGHpYBBypfKJEQjLrvMZ7YXbKm21gXd4NcuxUTjiv1YtLng=="
-  "resolved" "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.4.tgz"
   "version" "2.0.4"
 
 "whatwg-url@^5.0.0":
