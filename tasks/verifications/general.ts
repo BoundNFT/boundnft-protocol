@@ -30,7 +30,7 @@ task("verify:general", "Verify general contracts at Etherscan")
       throw Error("Invalid proxy admin address in pool config");
     }
     const proxyAdmin = await getBNFTProxyAdminByAddress(proxyAdminAddress);
-    //await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
+    await verifyContract(eContractid.ProxyAdmin, proxyAdmin, []);
 
     const proxyAdminWTLAddress = getParamPerNetwork(poolConfig.ProxyAdminWithoutTimelock, network);
     if (proxyAdminWTLAddress == undefined || !notFalsyOrZeroAddress(proxyAdminWTLAddress)) {
