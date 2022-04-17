@@ -188,7 +188,9 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
     );
 
     console.log("fullfill random words");
-    _mockVrfCoordinator.fulfillRandomWords(airdropData.vrfRequestId, _airdropDistribution.address);
+    await waitForTx(
+      await _mockVrfCoordinator.fulfillRandomWords(airdropData.vrfRequestId, _airdropDistribution.address)
+    );
 
     console.log("nft owner claim erc1155");
     {
