@@ -46,6 +46,9 @@ makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
     const mockAirdropERC1155Address = await _mockAirdropProject.erc1155Token();
     const mockAirdropERC1155Token = await getMintableERC1155(mockAirdropERC1155Address);
 
+    const erc1155Id = (await _mockAirdropProject.getERC1155TokenId(tokenId)).toString();
+    console.log("tokenId:", tokenId, "erc1155Id:", erc1155Id, "owner:", nftOwner.address);
+
     const applyAirdropEncodedData = _mockAirdropProject.interface.encodeFunctionData("nativeApplyAirdrop", [
       bayc.address,
       tokenId,
@@ -57,7 +60,7 @@ makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
       [
         [1, 2, 3],
         [mockAirdropERC20Address, mockAirdropERC721Address, mockAirdropERC1155Address],
-        [0, 0, tokenId],
+        [0, 0, erc1155Id],
         _mockAirdropProject.address,
         applyAirdropEncodedData,
       ]
@@ -70,13 +73,13 @@ makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
 
     console.log("Airdrop ERC20 Balance:", await mockAirdropERC20Token.balanceOf(nftOwner.address));
     console.log("Airdrop ERC721 Balance:", await mockAirdropERC721Token.balanceOf(nftOwner.address));
-    console.log("Airdrop ERC1155 Balance:", await mockAirdropERC1155Token.balanceOf(nftOwner.address, tokenId));
+    console.log("Airdrop ERC1155 Balance:", await mockAirdropERC1155Token.balanceOf(nftOwner.address, erc1155Id));
 
     expect(await mockAirdropERC20Token.balanceOf(nftOwner.address)).to.be.equal(await _mockAirdropProject.erc20Bonus());
     expect(await mockAirdropERC721Token.balanceOf(nftOwner.address)).to.be.equal(
       await _mockAirdropProject.erc721Bonus()
     );
-    expect(await mockAirdropERC1155Token.balanceOf(nftOwner.address, tokenId)).to.be.equal(
+    expect(await mockAirdropERC1155Token.balanceOf(nftOwner.address, erc1155Id)).to.be.equal(
       await _mockAirdropProject.erc1155Bonus()
     );
   });

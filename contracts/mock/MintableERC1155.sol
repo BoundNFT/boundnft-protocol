@@ -16,8 +16,9 @@ contract MintableERC1155 is ERC1155 {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(uint256 id, uint256 amount) public returns (bool) {
-    require(id < 10000, "exceed id limit");
-    require(amount <= 100, "exceed amount limit");
+    require(id > 0, "id is zero");
+    require(id <= 10, "exceed id limit");
+    require(amount <= 10000, "exceed amount limit");
 
     _mint(_msgSender(), id, amount, new bytes(0));
     return true;
