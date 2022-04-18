@@ -26,6 +26,45 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "airdropTokenTypes",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "airdropTokenAddresses",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "airdropTokenIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "airdropContract",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "airdropParams",
+        "type": "bytes"
+      }
+    ],
+    "name": "encodeFlashLoanParams",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "nftAsset",
         "type": "address"
