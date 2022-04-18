@@ -17,6 +17,8 @@ import {
 import { getDeploySigner, getMintableERC1155, getMintableERC20, getMintableERC721 } from "../helpers/contracts-getters";
 import { ethers } from "ethers";
 import { waitForTx } from "../helpers/misc-utils";
+import { ecrecover, zeroAddress } from "ethereumjs-util";
+import { ONE_ADDRESS, ZERO_ADDRESS } from "../helpers/constants";
 
 const { expect } = require("chai");
 
@@ -120,6 +122,26 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
 
     await waitForTx(await _airdropDistribution.connect(nftOwner2.signer).claimERC721(airdropId));
     expect(await _mockAirdropERC721Token.ownerOf(tokenId2)).to.be.equal(nftOwner2.address);
+
+    // clear airdrop tokens
+    const erc20Bonus = await _mockAirdropProject.erc20Bonus();
+    await waitForTx(
+      await bBAYC.connect(deployerSigner).claimERC20Airdrop(_mockAirdropERC20Token.address, ONE_ADDRESS, erc20Bonus)
+    );
+    const erc1155Bonus = await _mockAirdropProject.erc1155Bonus();
+    const erc1155Id1 = (await _mockAirdropProject.getERC1155TokenId(tokenId1)).toString();
+    const erc1155Id2 = (await _mockAirdropProject.getERC1155TokenId(tokenId2)).toString();
+    await waitForTx(
+      await bBAYC
+        .connect(deployerSigner)
+        .claimERC1155Airdrop(
+          _mockAirdropERC1155Token.address,
+          ONE_ADDRESS,
+          [erc1155Id1, erc1155Id2],
+          [erc1155Bonus, erc1155Bonus],
+          []
+        )
+    );
   });
 
   it("Snapshot airdrop ERC1155 and using random distribution", async () => {
@@ -143,12 +165,17 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
     await waitForTx(await _mockAirdropProject.bnftSnapshotAirdrop(bayc.address, tokenId1));
     await waitForTx(await _mockAirdropProject.bnftSnapshotAirdrop(bayc.address, tokenId2));
 
-    console.log("Airdrop ERC1155 Balance:", await _mockAirdropERC1155Token.balanceOf(bBAYC.address, tokenId1));
-    console.log("Airdrop ERC1155 Balance:", await _mockAirdropERC1155Token.balanceOf(bBAYC.address, tokenId2));
+    const erc1155Id1 = (await _mockAirdropProject.getERC1155TokenId(tokenId1)).toString();
+    console.log("tokenId1:", tokenId1, "erc1155Id1:", erc1155Id1);
+    const erc1155Id2 = (await _mockAirdropProject.getERC1155TokenId(tokenId2)).toString();
+    console.log("tokenId2:", tokenId2, "erc1155Id2:", erc1155Id2);
+
+    console.log("Airdrop ERC1155 Balance:", await _mockAirdropERC1155Token.balanceOf(bBAYC.address, erc1155Id1));
+    console.log("Airdrop ERC1155 Balance:", await _mockAirdropERC1155Token.balanceOf(bBAYC.address, erc1155Id2));
 
     const erc1155Bonus = await _mockAirdropProject.erc1155Bonus();
-    expect(await _mockAirdropERC1155Token.balanceOf(bBAYC.address, tokenId1)).to.be.equal(erc1155Bonus);
-    expect(await _mockAirdropERC1155Token.balanceOf(bBAYC.address, tokenId2)).to.be.equal(erc1155Bonus);
+    expect(await _mockAirdropERC1155Token.balanceOf(bBAYC.address, erc1155Id1)).to.be.equal(erc1155Bonus);
+    expect(await _mockAirdropERC1155Token.balanceOf(bBAYC.address, erc1155Id2)).to.be.equal(erc1155Bonus);
 
     console.log("transfer airdrop tokens to distribution");
     await waitForTx(
@@ -157,7 +184,7 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
         .claimERC1155Airdrop(
           _mockAirdropERC1155Token.address,
           _airdropDistribution.address,
-          [tokenId1, tokenId2],
+          [erc1155Id1, erc1155Id2],
           [erc1155Bonus, erc1155Bonus],
           []
         )
@@ -184,7 +211,7 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
     );
 
     await waitForTx(
-      await _airdropDistribution.connect(deployerSigner).configureERC1155(airdropId, [tokenId1, tokenId2])
+      await _airdropDistribution.connect(deployerSigner).configureERC1155(airdropId, [erc1155Id1, erc1155Id2])
     );
 
     console.log("fullfill random words");
@@ -196,16 +223,16 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
     {
       await waitForTx(await _airdropDistribution.connect(nftOwner1.signer).claimERC1155(airdropId));
 
-      const nftOwner1Token1Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner1.address, tokenId1);
-      const nftOwner1Token2Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner1.address, tokenId2);
+      const nftOwner1Token1Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner1.address, erc1155Id1);
+      const nftOwner1Token2Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner1.address, erc1155Id2);
       expect(nftOwner1Token1Balance.add(nftOwner1Token2Balance)).to.be.equal(1);
     }
 
     {
       await waitForTx(await _airdropDistribution.connect(nftOwner2.signer).claimERC1155(airdropId));
 
-      const nftOwner2Token1Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner1.address, tokenId1);
-      const nftOwner2Token2Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner1.address, tokenId2);
+      const nftOwner2Token1Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner2.address, erc1155Id1);
+      const nftOwner2Token2Balance = await _mockAirdropERC1155Token.balanceOf(nftOwner2.address, erc1155Id2);
       expect(nftOwner2Token1Balance.add(nftOwner2Token2Balance)).to.be.equal(1);
     }
   });
