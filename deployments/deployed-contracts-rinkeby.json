@@ -11,11 +11,11 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "WPUNKS": {
-    "address": "0x5b4FaC380a2A79EE0ddA713a31cbA7A74Cba7Cd0",
+    "address": "0x74e4418A41169Fb951Ca886976ccd8b36968c4Ab",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BAYC": {
-    "address": "0x6b81840bc2E607C1Ea099D7BD93957608CEB3947",
+    "address": "0x588D1a07ccdb224cB28dCd8E3dD46E16B3a72b5e",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFT": {
@@ -29,7 +29,7 @@
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
   },
   "MockAirdropProject": {
-    "address": "0x3A430D013D36e18F42bf1b2Ed1E3C553fF1280b0",
+    "address": "0x8C7DFC4bA4F2AE816479De870c00e664A4eE0A2C",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiver": {
@@ -83,10 +83,9 @@
     "address": "0xF482E6E29c0fe449b2A7326CDe850dcf8CE62e32"
   },
   "AirdropDistributionImpl": {
-    "address": "0xff7c5364203B38Dd8FA62DB6f23ab035247fDd76"
+    "address": "0xd3cC85757110E575d12f540da44Bbf871b7f9788"
   },
   "AirdropDistribution": {
-    "address": "0x931d1664A61D4F4d47a262e321Ea11cbef50cb00",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+    "address": "0x931d1664A61D4F4d47a262e321Ea11cbef50cb00"
   }
 }

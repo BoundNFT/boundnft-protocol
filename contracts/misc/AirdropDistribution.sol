@@ -215,7 +215,7 @@ contract AirdropDistribution is
   function requestVRFRandomWords(uint256 airdropId) public onlyOwner nonReentrant {
     AirdropData storage data = airdropDatas[airdropId];
     require(data.airdropId != 0, "invalid airdrop id");
-    require(data.claimType != 0, "claim type not random");
+    require(data.claimType == CLAIM_TYPE_RANDOM, "claim type not random");
 
     data.vrfRequestId = vrfCoordinator.requestRandomWords(
       vrfKeyHash,
@@ -257,11 +257,40 @@ contract AirdropDistribution is
     }
   }
 
+  function getNftUserTokenIds(uint256 airdropId, address nftUser) public view returns (uint256[] memory) {
+    AirdropData storage data = airdropDatas[airdropId];
+    require(data.airdropId != 0, "invalid airdrop id");
+
+    return data.nftUserTokenIds[nftUser];
+  }
+
+  function isNftTokenClaimed(uint256 airdropId, uint256 tokenId) public view returns (bool) {
+    AirdropData storage data = airdropDatas[airdropId];
+    require(data.airdropId != 0, "invalid airdrop id");
+
+    return data.nftTokenClaimeds[tokenId];
+  }
+
   function configureERC1155(uint256 airdropId, uint256[] calldata airdropTokenIds) public onlyOwner nonReentrant {
     AirdropData storage data = airdropDatas[airdropId];
+    require(data.airdropId != 0, "invalid airdrop id");
     require(data.airdropTokenType == TOKEN_TYPE_ERC1155, "token type not erc1155");
 
     data.erc1155AirdropTokenIds = airdropTokenIds;
+  }
+
+  function getERC1155Config(uint256 airdropId) public view returns (uint256[] memory, uint256[] memory) {
+    AirdropData storage data = airdropDatas[airdropId];
+    require(data.airdropId != 0, "invalid airdrop id");
+
+    uint256[] memory erc1155Balances = new uint256[](data.erc1155AirdropTokenIds.length);
+    for (uint256 airIdIdx = 0; airIdIdx < data.erc1155AirdropTokenIds.length; airIdIdx++) {
+      erc1155Balances[airIdIdx] = IERC1155Upgradeable(data.airdropTokenAddress).balanceOf(
+        address(this),
+        data.erc1155AirdropTokenIds[airIdIdx]
+      );
+    }
+    return (data.erc1155AirdropTokenIds, erc1155Balances);
   }
 
   struct ClaimLocalVars {
