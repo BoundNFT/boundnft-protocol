@@ -40,6 +40,21 @@ task("dev:add-mock-nfts", "Add mock nfts for dev enviroment")
     }
   });
 
+task("dev:deploy-new-mock-nft", "Deploy new mock nft for dev enviroment")
+  .addFlag("verify", "Verify contracts at Etherscan")
+  .addParam("name", "Name of mock nft contract")
+  .addParam("symbol", "Symbol of mock nft contract")
+  .setAction(async ({ verify, name, symbol }, localBRE) => {
+    await localBRE.run("set-DRE");
+
+    const network = localBRE.network.name as eNetwork;
+    if (network.includes("main")) {
+      throw new Error("Mocks not used at mainnet configuration.");
+    }
+
+    await deployMintableERC721([name, symbol], verify);
+  });
+
 task("dev:set-mock-nfts", "Set mock nfts for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
