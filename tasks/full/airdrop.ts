@@ -14,6 +14,7 @@ import {
   getBNFTProxyAdminById,
   getBNFTRegistryProxy,
   getBNFTUpgradeableProxy,
+  getDeploySigner,
   getMintableERC1155,
   getMintableERC20,
   getMockAirdropProject,
@@ -31,7 +32,8 @@ task("full:deploy-airdrop-flashloan", "Deploy airdrop flashloan receiver for dev
     const network = localBRE.network.name as eNetwork;
     const registry = await getBNFTRegistryProxy();
     console.log("BNFTRegistry:", registry.address);
-    const airdropFlashloan = await deployAirdropFlashLoanReceiver([registry.address], verify);
+    const owner = await (await getDeploySigner()).getAddress();
+    const airdropFlashloan = await deployAirdropFlashLoanReceiver(owner, registry.address, "0", verify);
     console.log("AirdropFlashLoanReceiver:", airdropFlashloan.address);
   });
 

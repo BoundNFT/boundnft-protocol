@@ -7,7 +7,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "MintableERC721": {
-    "address": "0x9C18FfD4C6E89184676fb710C0587fa4FE5b1892",
+    "address": "0x79f6AD922de2f1123cdB7fff4D1f8d5480b21C41",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "WPUNKS": {
@@ -33,7 +33,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiver": {
-    "address": "0x95fd583212676061698410F7B36B2B7faa50891B",
+    "address": "0xe1A86ac542F9d6Ab4f39975B73E93A50A2C0b09B",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "DOODLE": {
@@ -89,7 +89,7 @@
     "address": "0x931d1664A61D4F4d47a262e321Ea11cbef50cb00"
   },
   "UserFlashclaimRegistry": {
-    "address": "0xE2E45BEc84AB8713076dfc5e773249949aE4F00E",
+    "address": "0xfC9BfeE58026dB583d9386f703edEb355Cf1416f",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

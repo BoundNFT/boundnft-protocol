@@ -3,8 +3,11 @@ pragma solidity 0.8.4;
 
 import "../interfaces/IFlashLoanReceiver.sol";
 import "../interfaces/IBNFT.sol";
+import "../interfaces/IBNFTRegistry.sol";
 
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
@@ -12,12 +15,23 @@ import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
-contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Holder {
+contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownable, ERC721Holder, ERC1155Holder {
   address public immutable bnftRegistry;
   mapping(bytes32 => uint256) public airdropClaimRecords;
+  uint256 public deployType;
 
-  constructor(address bnftRegistry_) {
+  constructor(
+    address owner_,
+    address bnftRegistry_,
+    uint256 deployType_
+  ) {
+    require(owner_ != address(0), "zero owner address");
+    require(bnftRegistry_ != address(0), "zero registry address");
+
     bnftRegistry = bnftRegistry_;
+    deployType = deployType_;
+
+    _transferOwnership(owner_);
   }
 
   struct ExecuteOperationLocalVars {
@@ -39,6 +53,14 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     bytes calldata params
   ) external override returns (bool) {
     ExecuteOperationLocalVars memory vars;
+
+    // check caller and owner
+    (address bnftProxy, ) = IBNFTRegistry(bnftRegistry).getBNFTAddresses(nftAsset);
+    require(bnftProxy == msg.sender, "caller not bnft");
+
+    if (deployType != 0) {
+      require(initiator == owner(), "initiator not owner");
+    }
 
     require(nftTokenIds.length > 0, "empty token list");
 
@@ -64,7 +86,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     // call project aidrop contract
     Address.functionCall(vars.airdropContract, vars.airdropParams, "call airdrop method failed");
 
-    vars.airdropKeyHash = _getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
+    vars.airdropKeyHash = getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
 
     // transfer airdrop tokens to borrower
     for (uint256 typeIndex = 0; typeIndex < vars.airdropTokenTypes.length; typeIndex++) {
@@ -115,13 +137,43 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     return true;
   }
 
+  function emergencyERC20Transfer(
+    address token,
+    address to,
+    uint256 amount
+  ) external onlyOwner {
+    IERC20(token).transfer(to, amount);
+  }
+
+  function emergencyERC721Transfer(
+    address token,
+    address to,
+    uint256 id
+  ) external onlyOwner {
+    IERC721(token).safeTransferFrom(address(this), to, id);
+  }
+
+  function emergencyERC1155Transfer(
+    address token,
+    address to,
+    uint256 id,
+    uint256 amount
+  ) external onlyOwner {
+    IERC1155(token).safeTransferFrom(address(this), to, id, amount, new bytes(0));
+  }
+
+  function emergencyEtherTransfer(address to, uint256 amount) external onlyOwner {
+    (bool success, ) = to.call{value: amount}(new bytes(0));
+    require(success, "ETH_TRANSFER_FAILED");
+  }
+
   function getAirdropClaimRecord(
     address initiator,
     address nftAsset,
     uint256[] calldata nftTokenIds,
     bytes calldata params
   ) public view returns (uint256) {
-    bytes32 airdropKeyHash = _getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
+    bytes32 airdropKeyHash = getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
     return airdropClaimRecords[airdropKeyHash];
   }
 
@@ -141,15 +193,6 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     uint256[] calldata nftTokenIds,
     bytes calldata params
   ) public pure returns (bytes32) {
-    return _getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
-  }
-
-  function _getClaimKeyHash(
-    address initiator,
-    address nftAsset,
-    uint256[] calldata nftTokenIds,
-    bytes calldata params
-  ) internal pure returns (bytes32) {
     return keccak256(abi.encodePacked(initiator, nftAsset, nftTokenIds, params));
   }
 }

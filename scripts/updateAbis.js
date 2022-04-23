@@ -12,6 +12,7 @@ const miscContractList = [
   "BoundPunkGateway",
   "AirdropFlashLoanReceiver",
   "AirdropDistribution",
+  "UserFlashclaimRegistry",
 ];
 
 const updateAbis = async (subDir, contractList) => {

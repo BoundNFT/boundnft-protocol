@@ -134,13 +134,15 @@ export const deployBNFTProxyAdmin = async (id: string, verify?: boolean) =>
   withSaveAndVerify(await new BNFTProxyAdminFactory(await getDeploySigner()).deploy(), id, [], verify);
 
 export const deployAirdropFlashLoanReceiver = async (
-  args: [string],
+  owner: tEthereumAddress,
+  registry: tEthereumAddress,
+  deployType: string,
   verify?: boolean
 ): Promise<AirdropFlashLoanReceiver> =>
   withSaveAndVerify(
-    await new AirdropFlashLoanReceiverFactory(await getDeploySigner()).deploy(...args),
+    await new AirdropFlashLoanReceiverFactory(await getDeploySigner()).deploy(owner, registry, deployType),
     eContractid.AirdropFlashLoanReceiver,
-    args,
+    [owner, registry, deployType],
     verify
   );
 

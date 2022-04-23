@@ -181,10 +181,14 @@ task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Ethersca
   const registry = await getBNFTRegistryProxy();
 
   const airdropDistribution = await getAirdropDistributionImpl();
-  await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
+  //await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
 
   const airdropFlashloanReceiver = await getAirdropFlashLoanReceiver();
-  await verifyContract(eContractid.AirdropFlashLoanReceiver, airdropFlashloanReceiver, [registry.address]);
+  await verifyContract(eContractid.AirdropFlashLoanReceiver, airdropFlashloanReceiver, [
+    registry.address,
+    await airdropFlashloanReceiver.owner(),
+    "0",
+  ]);
 
   console.log("Finished verifications.");
 });

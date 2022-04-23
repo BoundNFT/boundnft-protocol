@@ -21,7 +21,11 @@ makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
   before(async () => {
     const { bayc, bBAYC, bnftRegistry } = testEnv;
 
-    _airdropFlashLoanReceiver = await deployAirdropFlashLoanReceiver([bnftRegistry.address]);
+    _airdropFlashLoanReceiver = await deployAirdropFlashLoanReceiver(
+      testEnv.users[0].address,
+      bnftRegistry.address,
+      "0"
+    );
     _mockAirdropProject = await deployMockAirdrop([bnftRegistry.address]);
     _mockBNFTMinter = await deployMockBNFTMinter([bayc.address, bBAYC.address]);
   });
