@@ -9,6 +9,7 @@ import {
   MintableERC1155Factory,
   MockAirdropProjectFactory,
   AirdropFlashLoanReceiverFactory,
+  UserFlashclaimRegistryFactory,
   MockBNFTMinterFactory,
   CryptoPunksMarketFactory,
   WrappedPunkFactory,
@@ -128,6 +129,12 @@ export const getAddressById = async (id: string): Promise<tEthereumAddress | und
 export const getAirdropFlashLoanReceiver = async (address?: tEthereumAddress) =>
   await AirdropFlashLoanReceiverFactory.connect(
     address || (await getDb(DRE.network.name).get(`${eContractid.AirdropFlashLoanReceiver}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getUserFlashclaimRegistry = async (address?: tEthereumAddress) =>
+  await UserFlashclaimRegistryFactory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.UserFlashclaimRegistry}`).value()).address,
     await getDeploySigner()
   );
 

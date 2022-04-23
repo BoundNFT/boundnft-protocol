@@ -20,11 +20,12 @@ import {
   MockAirdropProjectFactory,
   AirdropFlashLoanReceiverFactory,
   AirdropFlashLoanReceiver,
+  UserFlashclaimRegistry,
+  UserFlashclaimRegistryFactory,
   CryptoPunksMarketFactory,
   WrappedPunkFactory,
   BoundPunkGatewayFactory,
   WrappedPunk,
-  AirdropDistribution,
   AirdropDistributionFactory,
   MockVRFCoordinatorV2Factory,
 } from "../types";
@@ -139,6 +140,14 @@ export const deployAirdropFlashLoanReceiver = async (
   withSaveAndVerify(
     await new AirdropFlashLoanReceiverFactory(await getDeploySigner()).deploy(...args),
     eContractid.AirdropFlashLoanReceiver,
+    args,
+    verify
+  );
+
+export const deployUserFlashclaimRegistry = async (args: [string], verify?: boolean): Promise<UserFlashclaimRegistry> =>
+  withSaveAndVerify(
+    await new UserFlashclaimRegistryFactory(await getDeploySigner()).deploy(...args),
+    eContractid.UserFlashclaimRegistry,
     args,
     verify
   );

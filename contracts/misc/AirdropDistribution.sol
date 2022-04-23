@@ -336,11 +336,11 @@ contract AirdropDistribution is
         continue;
       }
 
-      // transfer airdrop token to user
-      IERC721Upgradeable(data.airdropTokenAddress).safeTransferFrom(address(this), _msgSender(), vars.airdropTokenId);
-
       // mark orginal nft token has claimed
       data.nftTokenClaimeds[vars.userNftTokenId] = true;
+
+      // transfer airdrop token to user
+      IERC721Upgradeable(data.airdropTokenAddress).safeTransferFrom(address(this), _msgSender(), vars.airdropTokenId);
 
       emit AidropERC721Claimed(_msgSender(), data.airdropId, vars.userNftTokenId, vars.airdropTokenId);
     }
@@ -390,6 +390,9 @@ contract AirdropDistribution is
         continue;
       }
 
+      // mark orginal nft token has claimed
+      data.nftTokenClaimeds[vars.userNftTokenId] = true;
+
       // transfer airdrop token to user
       IERC1155Upgradeable(data.airdropTokenAddress).safeTransferFrom(
         address(this),
@@ -400,9 +403,6 @@ contract AirdropDistribution is
       );
 
       emit AidropERC1155Claimed(_msgSender(), data.airdropId, vars.userNftTokenId, vars.airdropTokenId, 1);
-
-      // mark orginal nft token has claimed
-      data.nftTokenClaimeds[vars.userNftTokenId] = true;
     }
   }
 

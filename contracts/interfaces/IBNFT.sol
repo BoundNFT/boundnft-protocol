@@ -55,6 +55,8 @@ interface IBNFT {
 
   event ClaimERC1155Airdrop(address indexed token, address indexed to, uint256[] ids, uint256[] amounts, bytes data);
 
+  event ExecuteAirdrop(address indexed airdropContract);
+
   /**
    * @dev Initializes the bNFT
    * @param underlyingAsset_ The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)
@@ -125,6 +127,8 @@ interface IBNFT {
     uint256[] calldata amounts,
     bytes calldata data
   ) external;
+
+  function executeAirdrop(address airdropContract, bytes calldata airdropParams) external;
 
   /**
    * @dev Returns the owner of the `nftTokenId` token.

@@ -14,6 +14,7 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Holder {
   address public immutable bnftRegistry;
+  mapping(bytes32 => uint256) public airdropClaimRecords;
 
   constructor(address bnftRegistry_) {
     bnftRegistry = bnftRegistry_;
@@ -27,6 +28,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     bytes airdropParams;
     uint256 airdropBalance;
     uint256 airdropTokenId;
+    bytes32 airdropKeyHash;
   }
 
   function executeOperation(
@@ -62,6 +64,8 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     // call project aidrop contract
     Address.functionCall(vars.airdropContract, vars.airdropParams, "call airdrop method failed");
 
+    vars.airdropKeyHash = _getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
+
     // transfer airdrop tokens to borrower
     for (uint256 typeIndex = 0; typeIndex < vars.airdropTokenTypes.length; typeIndex++) {
       require(vars.airdropTokenAddresses[typeIndex] != address(0), "invalid airdrop token address");
@@ -70,11 +74,15 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
         // ERC20
         vars.airdropBalance = IERC20(vars.airdropTokenAddresses[typeIndex]).balanceOf(address(this));
         if (vars.airdropBalance > 0) {
+          airdropClaimRecords[vars.airdropKeyHash] += vars.airdropBalance;
+
           IERC20(vars.airdropTokenAddresses[typeIndex]).transfer(initiator, vars.airdropBalance);
         }
       } else if (vars.airdropTokenTypes[typeIndex] == 2) {
         // ERC721
         vars.airdropBalance = IERC721(vars.airdropTokenAddresses[typeIndex]).balanceOf(address(this));
+        airdropClaimRecords[vars.airdropKeyHash] += vars.airdropBalance;
+
         for (uint256 i = 0; i < vars.airdropBalance; i++) {
           vars.airdropTokenId = IERC721Enumerable(vars.airdropTokenAddresses[typeIndex]).tokenOfOwnerByIndex(
             address(this),
@@ -92,6 +100,8 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
           address(this),
           vars.airdropTokenIds[typeIndex]
         );
+        airdropClaimRecords[vars.airdropKeyHash] += vars.airdropBalance;
+
         IERC1155(vars.airdropTokenAddresses[typeIndex]).safeTransferFrom(
           address(this),
           initiator,
@@ -105,6 +115,16 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     return true;
   }
 
+  function getAirdropClaimRecord(
+    address initiator,
+    address nftAsset,
+    uint256[] calldata nftTokenIds,
+    bytes calldata params
+  ) public view returns (uint256) {
+    bytes32 airdropKeyHash = _getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
+    return airdropClaimRecords[airdropKeyHash];
+  }
+
   function encodeFlashLoanParams(
     uint256[] calldata airdropTokenTypes,
     address[] calldata airdropTokenAddresses,
@@ -113,5 +133,23 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ERC721Holder, ERC1155Ho
     bytes calldata airdropParams
   ) public pure returns (bytes memory) {
     return abi.encode(airdropTokenTypes, airdropTokenAddresses, airdropTokenIds, airdropContract, airdropParams);
+  }
+
+  function getClaimKeyHash(
+    address initiator,
+    address nftAsset,
+    uint256[] calldata nftTokenIds,
+    bytes calldata params
+  ) public pure returns (bytes32) {
+    return _getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
+  }
+
+  function _getClaimKeyHash(
+    address initiator,
+    address nftAsset,
+    uint256[] calldata nftTokenIds,
+    bytes calldata params
+  ) internal pure returns (bytes32) {
+    return keccak256(abi.encodePacked(initiator, nftAsset, nftTokenIds, params));
   }
 }

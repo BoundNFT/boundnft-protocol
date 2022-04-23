@@ -5,6 +5,7 @@ import {
   deployAirdropDistribution,
   deployAirdropFlashLoanReceiver,
   deployBNFTUpgradeableProxy,
+  deployUserFlashclaimRegistry,
 } from "../../helpers/contracts-deployments";
 import {
   getAddressById,
@@ -32,6 +33,18 @@ task("full:deploy-airdrop-flashloan", "Deploy airdrop flashloan receiver for dev
     console.log("BNFTRegistry:", registry.address);
     const airdropFlashloan = await deployAirdropFlashLoanReceiver([registry.address], verify);
     console.log("AirdropFlashLoanReceiver:", airdropFlashloan.address);
+  });
+
+task("full:deploy-flashclaim-registry", "Deploy airdrop flashclaim registry for dev enviroment")
+  .addFlag("verify", "Verify contracts at Etherscan")
+  .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
+  .setAction(async ({ verify, pool }, localBRE) => {
+    await localBRE.run("set-DRE");
+    const network = localBRE.network.name as eNetwork;
+    const registry = await getBNFTRegistryProxy();
+    console.log("BNFTRegistry:", registry.address);
+    const flashclaimRegistry = await deployUserFlashclaimRegistry([registry.address], verify);
+    console.log("UserFlashclaimRegistry:", flashclaimRegistry.address);
   });
 
 task("full:deploy-airdrop-distribution", "Deploy airdrop distribution for dev enviroment")
