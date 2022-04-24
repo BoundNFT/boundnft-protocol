@@ -17,7 +17,7 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownable, ERC721Holder, ERC1155Holder {
   address public immutable bnftRegistry;
-  mapping(bytes32 => uint256) public airdropClaimRecords;
+  mapping(bytes32 => bool) public airdropClaimRecords;
   uint256 public deployType;
 
   constructor(
@@ -87,6 +87,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     Address.functionCall(vars.airdropContract, vars.airdropParams, "call airdrop method failed");
 
     vars.airdropKeyHash = getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
+    airdropClaimRecords[vars.airdropKeyHash] = true;
 
     // transfer airdrop tokens to borrower
     for (uint256 typeIndex = 0; typeIndex < vars.airdropTokenTypes.length; typeIndex++) {
@@ -96,15 +97,11 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
         // ERC20
         vars.airdropBalance = IERC20(vars.airdropTokenAddresses[typeIndex]).balanceOf(address(this));
         if (vars.airdropBalance > 0) {
-          airdropClaimRecords[vars.airdropKeyHash] += vars.airdropBalance;
-
           IERC20(vars.airdropTokenAddresses[typeIndex]).transfer(initiator, vars.airdropBalance);
         }
       } else if (vars.airdropTokenTypes[typeIndex] == 2) {
         // ERC721
         vars.airdropBalance = IERC721(vars.airdropTokenAddresses[typeIndex]).balanceOf(address(this));
-        airdropClaimRecords[vars.airdropKeyHash] += vars.airdropBalance;
-
         for (uint256 i = 0; i < vars.airdropBalance; i++) {
           vars.airdropTokenId = IERC721Enumerable(vars.airdropTokenAddresses[typeIndex]).tokenOfOwnerByIndex(
             address(this),
@@ -122,8 +119,6 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
           address(this),
           vars.airdropTokenIds[typeIndex]
         );
-        airdropClaimRecords[vars.airdropKeyHash] += vars.airdropBalance;
-
         IERC1155(vars.airdropTokenAddresses[typeIndex]).safeTransferFrom(
           address(this),
           initiator,
@@ -137,7 +132,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     return true;
   }
 
-  function emergencyERC20Transfer(
+  function transferERC20(
     address token,
     address to,
     uint256 amount
@@ -145,7 +140,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     IERC20(token).transfer(to, amount);
   }
 
-  function emergencyERC721Transfer(
+  function transferERC721(
     address token,
     address to,
     uint256 id
@@ -153,7 +148,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     IERC721(token).safeTransferFrom(address(this), to, id);
   }
 
-  function emergencyERC1155Transfer(
+  function transferERC1155(
     address token,
     address to,
     uint256 id,
@@ -162,7 +157,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     IERC1155(token).safeTransferFrom(address(this), to, id, amount, new bytes(0));
   }
 
-  function emergencyEtherTransfer(address to, uint256 amount) external onlyOwner {
+  function transferEther(address to, uint256 amount) external onlyOwner {
     (bool success, ) = to.call{value: amount}(new bytes(0));
     require(success, "ETH_TRANSFER_FAILED");
   }
@@ -172,7 +167,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     address nftAsset,
     uint256[] calldata nftTokenIds,
     bytes calldata params
-  ) public view returns (uint256) {
+  ) public view returns (bool) {
     bytes32 airdropKeyHash = getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
     return airdropClaimRecords[airdropKeyHash];
   }
