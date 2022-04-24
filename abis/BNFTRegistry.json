@@ -259,6 +259,26 @@
   },
   {
     "inputs": [],
+    "name": "batchUpgradeAllBNFT",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "nftAssets",
+        "type": "address[]"
+      }
+    ],
+    "name": "batchUpgradeBNFT",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "claimAdmin",
     "outputs": [
       {
