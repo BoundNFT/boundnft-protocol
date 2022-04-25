@@ -136,7 +136,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     address token,
     address to,
     uint256 amount
-  ) external onlyOwner {
+  ) external nonReentrant onlyOwner {
     IERC20(token).transfer(to, amount);
   }
 
@@ -144,7 +144,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     address token,
     address to,
     uint256 id
-  ) external onlyOwner {
+  ) external nonReentrant onlyOwner {
     IERC721(token).safeTransferFrom(address(this), to, id);
   }
 
@@ -153,11 +153,11 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
     address to,
     uint256 id,
     uint256 amount
-  ) external onlyOwner {
+  ) external nonReentrant onlyOwner {
     IERC1155(token).safeTransferFrom(address(this), to, id, amount, new bytes(0));
   }
 
-  function transferEther(address to, uint256 amount) external onlyOwner {
+  function transferEther(address to, uint256 amount) external nonReentrant onlyOwner {
     (bool success, ) = to.call{value: amount}(new bytes(0));
     require(success, "ETH_TRANSFER_FAILED");
   }

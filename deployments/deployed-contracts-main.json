@@ -18,7 +18,7 @@
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "AirdropFlashLoanReceiver": {
-    "address": "0xa8Ae91Dd8CD8f410BA59626caef160925A033734",
+    "address": "0xeA90c7a42436587749348ff1DD5eEE48278FEe7c",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BoundPunkGatewayImpl": {
@@ -33,5 +33,9 @@
   },
   "AirdropDistribution": {
     "address": "0x6D187449A5664DD87E58A9d3b982989AaeA469BD"
+  },
+  "UserFlashclaimRegistry": {
+    "address": "0xa10ABc32d8f881D0fd5abDb2C5Df3B399aab5ea9",
+    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   }
 }

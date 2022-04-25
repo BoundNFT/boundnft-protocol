@@ -33,7 +33,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiver": {
-    "address": "0xfc9F218ae7892DB868291FA297Dd8F324d876f12",
+    "address": "0x7B49EdC154CbF0b1a4cBdB544d924943a335e841",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "DOODLE": {
@@ -89,7 +89,7 @@
     "address": "0x931d1664A61D4F4d47a262e321Ea11cbef50cb00"
   },
   "UserFlashclaimRegistry": {
-    "address": "0x45d8082e8FCD26e683Eee8f361F1613005710F45",
+    "address": "0xB6BecC8De4a859D3e8DA472aA7af022C69fadcCa",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
