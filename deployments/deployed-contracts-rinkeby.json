@@ -3,11 +3,10 @@
     "address": "0x8601bCbDC41a6Fe6422764EF1Dc8ccb7fa8B891B"
   },
   "ProxyAdminWithoutTimelock": {
-    "address": "0x27dC5B3BBb3c87130EBE1C96B3B8d169cB10EaF8",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+    "address": "0x27dC5B3BBb3c87130EBE1C96B3B8d169cB10EaF8"
   },
   "MintableERC721": {
-    "address": "0x6b81840bc2E607C1Ea099D7BD93957608CEB3947",
+    "address": "0x79f6AD922de2f1123cdB7fff4D1f8d5480b21C41",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "WPUNKS": {
@@ -19,21 +18,21 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFT": {
-    "address": "0xA7E7476E4E764141a37dCB52a7c22A138459C7E9",
+    "address": "0xa8f4DBfbC3Bb4e63a23f7cE8Af2Fb7fC74708c34",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0xcFAD562D5fb47bEDa604af1de63b1dce4d276342"
+    "address": "0x0c4398ae237fFBCdD6E2896603256803a167d897"
   },
   "BNFTRegistry": {
     "address": "0xB873F088EB721261bc88BbC739B5C794e02e414b"
   },
   "MockAirdropProject": {
-    "address": "0x8C7DFC4bA4F2AE816479De870c00e664A4eE0A2C",
+    "address": "0xf2387A48524f6f048888Ec4fff21635458C28aF8",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiver": {
-    "address": "0x4409b4899cD9c7c9f8e7120d6973d0E89e2cdF52",
+    "address": "0x7B49EdC154CbF0b1a4cBdB544d924943a335e841",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "DOODLE": {
@@ -83,9 +82,13 @@
     "address": "0xF482E6E29c0fe449b2A7326CDe850dcf8CE62e32"
   },
   "AirdropDistributionImpl": {
-    "address": "0xd3cC85757110E575d12f540da44Bbf871b7f9788"
+    "address": "0x034F10BC94480412AdA7110c63425508cB4232A3"
   },
   "AirdropDistribution": {
     "address": "0x931d1664A61D4F4d47a262e321Ea11cbef50cb00"
+  },
+  "UserFlashclaimRegistry": {
+    "address": "0xB6BecC8De4a859D3e8DA472aA7af022C69fadcCa",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

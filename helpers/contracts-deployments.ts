@@ -20,11 +20,12 @@ import {
   MockAirdropProjectFactory,
   AirdropFlashLoanReceiverFactory,
   AirdropFlashLoanReceiver,
+  UserFlashclaimRegistry,
+  UserFlashclaimRegistryFactory,
   CryptoPunksMarketFactory,
   WrappedPunkFactory,
   BoundPunkGatewayFactory,
   WrappedPunk,
-  AirdropDistribution,
   AirdropDistributionFactory,
   MockVRFCoordinatorV2Factory,
 } from "../types";
@@ -133,12 +134,22 @@ export const deployBNFTProxyAdmin = async (id: string, verify?: boolean) =>
   withSaveAndVerify(await new BNFTProxyAdminFactory(await getDeploySigner()).deploy(), id, [], verify);
 
 export const deployAirdropFlashLoanReceiver = async (
-  args: [string],
+  owner: tEthereumAddress,
+  registry: tEthereumAddress,
+  deployType: string,
   verify?: boolean
 ): Promise<AirdropFlashLoanReceiver> =>
   withSaveAndVerify(
-    await new AirdropFlashLoanReceiverFactory(await getDeploySigner()).deploy(...args),
+    await new AirdropFlashLoanReceiverFactory(await getDeploySigner()).deploy(owner, registry, deployType),
     eContractid.AirdropFlashLoanReceiver,
+    [owner, registry, deployType],
+    verify
+  );
+
+export const deployUserFlashclaimRegistry = async (args: [string], verify?: boolean): Promise<UserFlashclaimRegistry> =>
+  withSaveAndVerify(
+    await new UserFlashclaimRegistryFactory(await getDeploySigner()).deploy(...args),
+    eContractid.UserFlashclaimRegistry,
     args,
     verify
   );

@@ -99,6 +99,13 @@ contract MockAirdropProject is ERC721Holder, ERC1155Holder {
     erc1155Token.safeTransferFrom(address(this), to, erc1155TokenId, erc1155Bonus, new bytes(0));
   }
 
+  function bnftClaimAirdrop(address nftAsset) public {
+    (address bnftProxy, ) = bnftRegistry.getBNFTAddresses(nftAsset);
+    require(bnftProxy == msg.sender, "caller is not bnft");
+
+    erc20Token.transfer(msg.sender, erc20Bonus);
+  }
+
   function getERC1155TokenId(uint256 nftTokenId) public view returns (uint256) {
     return (nftTokenId % erc1155IdMax) + 1;
   }

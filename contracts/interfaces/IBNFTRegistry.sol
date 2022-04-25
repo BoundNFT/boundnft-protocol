@@ -50,6 +50,10 @@ interface IBNFTRegistry {
     bytes memory encodedCallData
   ) external;
 
+  function batchUpgradeBNFT(address[] calldata nftAssets) external;
+
+  function batchUpgradeAllBNFT() external;
+
   /**
    * @dev Adding custom symbol for some special NFTs like CryptoPunks
    * @param nftAssets_ The addresses of the NFTs

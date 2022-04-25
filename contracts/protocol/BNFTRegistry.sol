@@ -140,6 +140,14 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     address bNftImpl,
     bytes memory encodedCallData
   ) external override nonReentrant onlyOwner {
+    _upgradeBNFTWithImpl(nftAsset, bNftImpl, encodedCallData);
+  }
+
+  function _upgradeBNFTWithImpl(
+    address nftAsset,
+    address bNftImpl,
+    bytes memory encodedCallData
+  ) internal {
     address bNftProxy = bNftProxys[nftAsset];
     require(bNftProxy != address(0), "BNFTR: asset nonexist");
 
@@ -154,6 +162,20 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     bNftImpls[nftAsset] = bNftImpl;
 
     emit BNFTUpgraded(nftAsset, bNftImpl, bNftProxy, bNftAssetLists.length);
+  }
+
+  function batchUpgradeBNFT(address[] calldata nftAssets) external override nonReentrant onlyOwner {
+    require(nftAssets.length > 0, "BNFTR: empty assets");
+
+    for (uint256 i = 0; i < nftAssets.length; i++) {
+      _upgradeBNFTWithImpl(nftAssets[i], bNftGenericImpl, new bytes(0));
+    }
+  }
+
+  function batchUpgradeAllBNFT() external override nonReentrant onlyOwner {
+    for (uint256 i = 0; i < bNftAssetLists.length; i++) {
+      _upgradeBNFTWithImpl(bNftAssetLists[i], bNftGenericImpl, new bytes(0));
+    }
   }
 
   /**

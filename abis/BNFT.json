@@ -192,6 +192,19 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "airdropContract",
+        "type": "address"
+      }
+    ],
+    "name": "ExecuteAirdrop",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "target",
         "type": "address"
       },
@@ -458,6 +471,24 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "airdropContract",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "airdropParams",
+        "type": "bytes"
+      }
+    ],
+    "name": "executeAirdrop",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

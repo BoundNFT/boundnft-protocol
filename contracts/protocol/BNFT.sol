@@ -290,6 +290,21 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     emit ClaimERC1155Airdrop(token, to, ids, amounts, data);
   }
 
+  function executeAirdrop(address airdropContract, bytes calldata airdropParams)
+    external
+    override
+    nonReentrant
+    onlyClaimAdmin
+  {
+    require(airdropContract != address(0), "invalid airdrop contract address");
+    require(airdropParams.length >= 4, "invalid airdrop parameters");
+
+    // call project aidrop contract
+    AddressUpgradeable.functionCall(airdropContract, airdropParams, "call airdrop method failed");
+
+    emit ExecuteAirdrop(airdropContract);
+  }
+
   function onERC721Received(
     address operator,
     address from,
