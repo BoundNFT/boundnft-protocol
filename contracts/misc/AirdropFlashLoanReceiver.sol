@@ -100,7 +100,7 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
           IERC20(vars.airdropTokenAddresses[typeIndex]).transfer(initiator, vars.airdropBalance);
         }
       } else if (vars.airdropTokenTypes[typeIndex] == 2) {
-        // ERC721
+        // ERC721 with Enumerate
         vars.airdropBalance = IERC721(vars.airdropTokenAddresses[typeIndex]).balanceOf(address(this));
         for (uint256 i = 0; i < vars.airdropBalance; i++) {
           vars.airdropTokenId = IERC721Enumerable(vars.airdropTokenAddresses[typeIndex]).tokenOfOwnerByIndex(
@@ -125,6 +125,13 @@ contract AirdropFlashLoanReceiver is IFlashLoanReceiver, ReentrancyGuard, Ownabl
           vars.airdropTokenIds[typeIndex],
           vars.airdropBalance,
           new bytes(0)
+        );
+      } else if (vars.airdropTokenTypes[typeIndex] == 4) {
+        // ERC721 without Enumerate
+        IERC721Enumerable(vars.airdropTokenAddresses[typeIndex]).safeTransferFrom(
+          address(this),
+          initiator,
+          vars.airdropTokenIds[typeIndex]
         );
       }
     }
