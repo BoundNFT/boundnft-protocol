@@ -32,7 +32,7 @@ makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
 
   afterEach(async () => {});
 
-  it("Apply airdrop using flashLoan", async () => {
+  it("Apply airdrop using flashLoan - ERC20/ERC721/ERC1155", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
     const nftOwner = users[0];
 
@@ -86,5 +86,44 @@ makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
     expect(await mockAirdropERC1155Token.balanceOf(nftOwner.address, erc1155Id)).to.be.equal(
       await _mockAirdropProject.erc1155Bonus()
     );
+  });
+
+  it("Apply airdrop using flashLoan - ERC721 without Enumerate", async () => {
+    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+    const nftOwner = users[0];
+
+    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
+
+    const tokenId = testEnv.tokenIdTracker++;
+    await waitForTx(await bayc.mint(tokenId));
+
+    await waitForTx(await _mockBNFTMinter.mint(nftOwner.address, tokenId));
+
+    const mockAirdropERC721Address = await _mockAirdropProject.erc721Token();
+    const mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
+    const erc721Bonus = await _mockAirdropProject.erc721Bonus();
+
+    const applyAirdropEncodedData = _mockAirdropProject.interface.encodeFunctionData("nativeApplyAirdrop", [
+      bayc.address,
+      tokenId,
+    ]);
+    console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
+
+    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
+      ["uint256[]", "address[]", "uint256[]", "address", "bytes"],
+      [[4], [mockAirdropERC721Address], [tokenId], _mockAirdropProject.address, applyAirdropEncodedData]
+    );
+    console.log("receiverEncodedData:", receiverEncodedData);
+
+    const erc721BalanceBefore = await mockAirdropERC721Token.balanceOf(nftOwner.address);
+
+    await waitForTx(
+      await bBAYC.connect(nftOwner.signer).flashLoan(_airdropFlashLoanReceiver.address, [tokenId], receiverEncodedData)
+    );
+
+    console.log("Airdrop ERC721 Balance:", await mockAirdropERC721Token.balanceOf(nftOwner.address));
+
+    const erc721BalanceAfter = await mockAirdropERC721Token.balanceOf(nftOwner.address);
+    expect(erc721BalanceAfter).to.be.equal(erc721Bonus.add(erc721BalanceBefore));
   });
 });
