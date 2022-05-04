@@ -3,6 +3,7 @@ pragma solidity 0.8.4;
 
 import {IBNFT} from "../interfaces/IBNFT.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
+import {IENSReverseRegistrar} from "../interfaces/IENSReverseRegistrar.sol";
 
 import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
@@ -303,6 +304,10 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     AddressUpgradeable.functionCall(airdropContract, airdropParams, "call airdrop method failed");
 
     emit ExecuteAirdrop(airdropContract);
+  }
+
+  function setENSName(address registrar, string memory name) external nonReentrant onlyOwner returns (bytes32) {
+    return IENSReverseRegistrar(registrar).setName(name);
   }
 
   function onERC721Received(
