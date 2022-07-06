@@ -39,9 +39,11 @@ export enum eContractid {
   MockVRFCoordinatorV2 = "MockVRFCoordinatorV2",
 
   AirdropFlashLoanReceiver = "AirdropFlashLoanReceiver",
+  AirdropFlashLoanReceiverV2 = "AirdropFlashLoanReceiverV2",
   AirdropDistribution = "AirdropDistribution",
   AirdropDistributionImpl = "AirdropDistributionImpl",
   UserFlashclaimRegistry = "UserFlashclaimRegistry",
+  UserFlashclaimRegistryV2 = "UserFlashclaimRegistryV2",
 
   CryptoPunksMarket = "CryptoPunksMarket",
   WrappedPunk = "WrappedPunk",

@@ -11,6 +11,8 @@ import {
   getBoundPunkGateway,
   getBoundPunkGatewayImpl,
   getAirdropDistributionImpl,
+  getAirdropFlashLoanReceiverV2,
+  getUserFlashclaimRegistryV2,
 } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress } from "../../helpers/misc-utils";
@@ -174,26 +176,27 @@ task("verify:bnft", "Verify bnft contracts at Etherscan")
     console.log("Finished verifications.");
   });
 
-task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Etherscan")
-  .addParam("receiver", "Address of airdrop receiver")
-  .setAction(async ({ receiver }, localDRE) => {
-    await localDRE.run("set-DRE");
-    const network = localDRE.network.name as eNetwork;
+task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Etherscan").setAction(async ({}, localDRE) => {
+  await localDRE.run("set-DRE");
+  const network = localDRE.network.name as eNetwork;
 
-    const registry = await getBNFTRegistryProxy();
+  const bnftRegistry = await getBNFTRegistryProxy();
 
-    const airdropFlashloanReceiver = await getAirdropFlashLoanReceiver(receiver);
-    await verifyContract(eContractid.AirdropFlashLoanReceiver, airdropFlashloanReceiver, [
-      registry.address,
-      await airdropFlashloanReceiver.owner(),
-      "0",
-    ]);
-    if (!notFalsyOrZeroAddress(receiver)) {
-      return;
-    }
+  console.log("Verifying UserFlashclaimRegistryV2 ...\n");
+  const flashclaimRegistryV2 = await getUserFlashclaimRegistryV2();
+  await verifyContract(eContractid.UserFlashclaimRegistryV2, flashclaimRegistryV2, [
+    bnftRegistry.address,
+    flashclaimRegistryV2.address,
+  ]);
 
-    const airdropDistribution = await getAirdropDistributionImpl();
-    await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
+  console.log("Verifying AirdropFlashLoanReceiverV2 Implemention ...\n");
+  const receiverImplV2Address = await flashclaimRegistryV2.receiverV2Implemention();
+  const receiverImplV2Contract = await getAirdropFlashLoanReceiverV2(receiverImplV2Address);
+  await verifyContract(eContractid.AirdropFlashLoanReceiverV2, receiverImplV2Contract, []);
 
-    console.log("Finished verifications.");
-  });
+  console.log("Verifying AirdropDistributionImpl ...\n");
+  const airdropDistribution = await getAirdropDistributionImpl();
+  await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
+
+  console.log("Finished verifications.");
+});

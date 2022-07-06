@@ -5,7 +5,7 @@ import {
   deployAirdropDistribution,
   deployAirdropFlashLoanReceiver,
   deployBNFTUpgradeableProxy,
-  deployUserFlashclaimRegistry,
+  deployUserFlashclaimRegistryV2,
 } from "../../helpers/contracts-deployments";
 import {
   getAddressById,
@@ -18,6 +18,7 @@ import {
   getMintableERC1155,
   getMintableERC20,
   getMockAirdropProject,
+  getUserFlashclaimRegistry,
 } from "../../helpers/contracts-getters";
 import { getParamPerNetwork, insertContractAddressInDb } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
@@ -43,10 +44,14 @@ task("full:deploy-flashclaim-registry", "Deploy airdrop flashclaim registry for 
   .setAction(async ({ verify, pool }, localBRE) => {
     await localBRE.run("set-DRE");
     const network = localBRE.network.name as eNetwork;
-    const registry = await getBNFTRegistryProxy();
-    console.log("BNFTRegistry:", registry.address);
-    const flashclaimRegistry = await deployUserFlashclaimRegistry([registry.address], verify);
-    console.log("UserFlashclaimRegistry:", flashclaimRegistry.address);
+
+    const bnftRegistry = await getBNFTRegistryProxy();
+    console.log("BNFTRegistry:", bnftRegistry.address);
+    const v1Registry = await getUserFlashclaimRegistry();
+    console.log("UserFlashclaimRegistryV1:", v1Registry.address);
+
+    const flashclaimRegistry = await deployUserFlashclaimRegistryV2([bnftRegistry.address, v1Registry.address], verify);
+    console.log("UserFlashclaimRegistryV2:", flashclaimRegistry.address);
   });
 
 task("full:deploy-airdrop-distribution", "Deploy airdrop distribution for dev enviroment")
