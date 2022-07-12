@@ -11,6 +11,8 @@ import {
   getBoundPunkGateway,
   getBoundPunkGatewayImpl,
   getAirdropDistributionImpl,
+  getAirdropFlashLoanReceiverV2,
+  getUserFlashclaimRegistryV2,
 } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress } from "../../helpers/misc-utils";
@@ -178,17 +180,23 @@ task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Ethersca
   await localDRE.run("set-DRE");
   const network = localDRE.network.name as eNetwork;
 
-  const registry = await getBNFTRegistryProxy();
+  const bnftRegistry = await getBNFTRegistryProxy();
 
-  const airdropDistribution = await getAirdropDistributionImpl();
-  //await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
-
-  const airdropFlashloanReceiver = await getAirdropFlashLoanReceiver();
-  await verifyContract(eContractid.AirdropFlashLoanReceiver, airdropFlashloanReceiver, [
-    registry.address,
-    await airdropFlashloanReceiver.owner(),
-    "0",
+  console.log("Verifying UserFlashclaimRegistryV2 ...\n");
+  const flashclaimRegistryV2 = await getUserFlashclaimRegistryV2();
+  await verifyContract(eContractid.UserFlashclaimRegistryV2, flashclaimRegistryV2, [
+    bnftRegistry.address,
+    flashclaimRegistryV2.address,
   ]);
+
+  console.log("Verifying AirdropFlashLoanReceiverV2 Implemention ...\n");
+  const receiverImplV2Address = await flashclaimRegistryV2.receiverV2Implemention();
+  const receiverImplV2Contract = await getAirdropFlashLoanReceiverV2(receiverImplV2Address);
+  await verifyContract(eContractid.AirdropFlashLoanReceiverV2, receiverImplV2Contract, []);
+
+  console.log("Verifying AirdropDistributionImpl ...\n");
+  const airdropDistribution = await getAirdropDistributionImpl();
+  await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
 
   console.log("Finished verifications.");
 });

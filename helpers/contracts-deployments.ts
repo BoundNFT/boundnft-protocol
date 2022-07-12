@@ -1,5 +1,5 @@
 import { BytesLike } from "@ethersproject/bytes";
-import { DRE } from "./misc-utils";
+import { DRE, waitForTx } from "./misc-utils";
 import { tEthereumAddress, eContractid, NftContractId } from "./types";
 import { MockContract } from "ethereum-waffle";
 import { getDeploySigner } from "./contracts-getters";
@@ -22,12 +22,16 @@ import {
   AirdropFlashLoanReceiver,
   UserFlashclaimRegistry,
   UserFlashclaimRegistryFactory,
+  UserFlashclaimRegistryV2,
+  UserFlashclaimRegistryV2Factory,
   CryptoPunksMarketFactory,
   WrappedPunkFactory,
   BoundPunkGatewayFactory,
   WrappedPunk,
   AirdropDistributionFactory,
   MockVRFCoordinatorV2Factory,
+  AirdropFlashLoanReceiverV2,
+  AirdropFlashLoanReceiverV2Factory,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
@@ -146,10 +150,37 @@ export const deployAirdropFlashLoanReceiver = async (
     verify
   );
 
+export const deployAirdropFlashLoanReceiverV2 = async (
+  owner: tEthereumAddress,
+  registry: tEthereumAddress,
+  deployType: string,
+  verify?: boolean
+): Promise<AirdropFlashLoanReceiverV2> => {
+  const receiver = await withSaveAndVerify(
+    await new AirdropFlashLoanReceiverV2Factory(await getDeploySigner()).deploy(),
+    eContractid.AirdropFlashLoanReceiver,
+    [owner, registry, deployType],
+    verify
+  );
+  await waitForTx(await receiver.initialize(owner, registry, deployType));
+  return receiver;
+};
+
 export const deployUserFlashclaimRegistry = async (args: [string], verify?: boolean): Promise<UserFlashclaimRegistry> =>
   withSaveAndVerify(
     await new UserFlashclaimRegistryFactory(await getDeploySigner()).deploy(...args),
     eContractid.UserFlashclaimRegistry,
+    args,
+    verify
+  );
+
+export const deployUserFlashclaimRegistryV2 = async (
+  args: [string, string],
+  verify?: boolean
+): Promise<UserFlashclaimRegistryV2> =>
+  withSaveAndVerify(
+    await new UserFlashclaimRegistryV2Factory(await getDeploySigner()).deploy(...args),
+    eContractid.UserFlashclaimRegistryV2,
     args,
     verify
   );

@@ -90,5 +90,9 @@
   "UserFlashclaimRegistry": {
     "address": "0x6A90356dbe7e894B93BbcF1C29fD086E9cF05B95",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV2": {
+    "address": "0x3DBB126cDaB4A5952DfaECEE742690f3badD9467",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

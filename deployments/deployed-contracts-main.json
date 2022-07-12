@@ -37,5 +37,9 @@
   "UserFlashclaimRegistry": {
     "address": "0x79cd7E50058492bfBFc46Ea2AF869BC77D2733Cf",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
+  },
+  "UserFlashclaimRegistryV2": {
+    "address": "0x699b138fb22AA6E735d27Aa996fF42ECc9dEBD03",
+    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   }
 }
