@@ -1,31 +1,31 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { MockBNFTMinter } from "../types/MockBNFTMinter";
 import {
-  deployAirdropFlashLoanReceiver,
+  deployAirdropFlashLoanReceiverV2,
   deployMockAirdrop,
   deployMockBNFTMinter,
-  deployMockFlashLoanReceiver,
 } from "../helpers/contracts-deployments";
-import { AirdropFlashLoanReceiver, MockAirdropProject } from "../types";
+import { AirdropFlashLoanReceiverV2, MockAirdropProject } from "../types";
 import { getMintableERC1155, getMintableERC20, getMintableERC721 } from "../helpers/contracts-getters";
 import { ethers } from "ethers";
 import { waitForTx } from "../helpers/misc-utils";
 
 const { expect } = require("chai");
 
-makeSuite("Airdrop: FlashLoan", (testEnv: TestEnv) => {
-  let _airdropFlashLoanReceiver = {} as AirdropFlashLoanReceiver;
+makeSuite("Airdrop: FlashLoan V2", (testEnv: TestEnv) => {
+  let _airdropFlashLoanReceiver = {} as AirdropFlashLoanReceiverV2;
   let _mockAirdropProject = {} as MockAirdropProject;
   let _mockBNFTMinter = {} as MockBNFTMinter;
 
   before(async () => {
     const { bayc, bBAYC, bnftRegistry } = testEnv;
 
-    _airdropFlashLoanReceiver = await deployAirdropFlashLoanReceiver(
+    _airdropFlashLoanReceiver = await deployAirdropFlashLoanReceiverV2(
       testEnv.users[0].address,
       bnftRegistry.address,
       "0"
     );
+
     _mockAirdropProject = await deployMockAirdrop([bnftRegistry.address]);
     _mockBNFTMinter = await deployMockBNFTMinter([bayc.address, bBAYC.address]);
   });
