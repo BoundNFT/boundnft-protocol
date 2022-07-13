@@ -15,6 +15,7 @@ import {
 } from "../types";
 import {
   getAirdropFlashLoanReceiver,
+  getAirdropFlashLoanReceiverV2,
   getMintableERC1155,
   getMintableERC20,
   getMintableERC721,
@@ -49,6 +50,9 @@ makeSuite("Airdrop: Registry V2", (testEnv: TestEnv) => {
 
     const receiverV1Contract = await getAirdropFlashLoanReceiver(receiverV1Address);
     expect(await receiverV1Contract.owner()).to.be.equal(user1.address);
+
+    const receiverAddress = await _flashClaimRegistryV2.userReceivers(user1.address);
+    expect(receiverAddress).to.be.equal(receiverV1Address);
   });
 
   it("User 1 tries to create V2 receiver but already has V1 registry. (revert expected)", async () => {
@@ -58,8 +62,8 @@ makeSuite("Airdrop: Registry V2", (testEnv: TestEnv) => {
       "user already has a V1 receiver"
     );
 
-    const receiverAddress = await _flashClaimRegistryV2.userReceiversV2(user1.address);
-    expect(receiverAddress).to.be.equal(ZERO_ADDRESS);
+    const receiverV2Address = await _flashClaimRegistryV2.userReceiversV2(user1.address);
+    expect(receiverV2Address).to.be.equal(ZERO_ADDRESS);
   });
 
   it("User 2 tries to create V2 receiver at first time.", async () => {
@@ -70,7 +74,10 @@ makeSuite("Airdrop: Registry V2", (testEnv: TestEnv) => {
     const receiverV2Address = await _flashClaimRegistryV2.userReceiversV2(user2.address);
     expect(receiverV2Address).to.be.not.equal(undefined);
 
-    const receiverAddress = await _flashClaimRegistryV2.userReceiversV2(user2.address);
+    const receiverV1Contract = await getAirdropFlashLoanReceiverV2(receiverV2Address);
+    expect(await receiverV1Contract.owner()).to.be.equal(user2.address);
+
+    const receiverAddress = await _flashClaimRegistryV2.userReceivers(user2.address);
     expect(receiverAddress).to.be.equal(receiverV2Address);
   });
 
