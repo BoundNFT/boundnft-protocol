@@ -364,7 +364,8 @@ contract AirdropDistribution is
 
       // allocate airdrop token to user by diff claim type
       if (data.claimType == CLAIM_TYPE_FIXED_SAME) {
-        vars.airdropTokenId = vars.userNftTokenId;
+        vars.erc1155NonEmptyTokenIds[0] = data.erc1155AirdropTokenIds[0];
+        vars.airdropTokenId = vars.erc1155NonEmptyTokenIds[0];
       } else if (data.claimType == CLAIM_TYPE_RANDOM) {
         uint256 randomWord = _getRandomWord(data);
 
