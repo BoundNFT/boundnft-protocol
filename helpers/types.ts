@@ -40,10 +40,12 @@ export enum eContractid {
 
   AirdropFlashLoanReceiver = "AirdropFlashLoanReceiver",
   AirdropFlashLoanReceiverV2 = "AirdropFlashLoanReceiverV2",
+  AirdropFlashLoanReceiverV3 = "AirdropFlashLoanReceiverV3",
   AirdropDistribution = "AirdropDistribution",
   AirdropDistributionImpl = "AirdropDistributionImpl",
   UserFlashclaimRegistry = "UserFlashclaimRegistry",
   UserFlashclaimRegistryV2 = "UserFlashclaimRegistryV2",
+  UserFlashclaimRegistryV3 = "UserFlashclaimRegistryV3",
 
   CryptoPunksMarket = "CryptoPunksMarket",
   WrappedPunk = "WrappedPunk",
