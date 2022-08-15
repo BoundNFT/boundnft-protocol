@@ -94,5 +94,13 @@
   "UserFlashclaimRegistryV2": {
     "address": "0x3DBB126cDaB4A5952DfaECEE742690f3badD9467",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV3": {
+    "address": "0x516d7c743B7b588Cde9A8Ceb3e5aA835b4E92Ea3",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3": {
+    "address": "0xf457355890B44867F5da186C61952D6f9EC674b5",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

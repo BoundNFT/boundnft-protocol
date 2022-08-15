@@ -25,6 +25,7 @@ contract AirdropFlashLoanReceiverV3 is
   address public bnftRegistry;
   mapping(bytes32 => bool) public airdropClaimRecords;
   uint256 public deployType;
+  uint256 public constant VERSION = 3;
 
   function initialize(
     address owner_,

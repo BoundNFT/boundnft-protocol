@@ -14,6 +14,7 @@ contract UserFlashclaimRegistryV3 {
   mapping(address => address) public userReceiversV3;
   address public immutable receiverV3Implemention;
   address public immutable flashClaimRegistryV2;
+  uint256 public constant VERSION = 3;
 
   constructor(address bnftRegistry_, address flashClaimRegistryV2_) {
     bnftRegistry = bnftRegistry_;
