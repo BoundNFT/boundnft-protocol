@@ -151,12 +151,12 @@ contract AirdropFlashLoanReceiverV3 is
     return true;
   }
 
-  function executeClaim(address claimContract, bytes calldata claimParams) external nonReentrant onlyOwner {
-    require(claimContract != address(0), "invalid contract address");
-    require(claimParams.length >= 4, "invalid parameters");
+  function callMethod(address targetContract, bytes calldata callParams) external nonReentrant onlyOwner {
+    require(targetContract != address(0), "invalid contract address");
+    require(callParams.length >= 4, "invalid call parameters");
 
     // call project claim contract
-    AddressUpgradeable.functionCall(claimContract, claimParams, "call method failed");
+    AddressUpgradeable.functionCall(targetContract, callParams, "call method failed");
   }
 
   function approveERC20(

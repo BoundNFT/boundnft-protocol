@@ -1,6 +1,6 @@
 {
   "MintableERC721": {
-    "address": "0x1864c9342339c36588F7f31d1079690a7003c7a2",
+    "address": "0xBb94c69258B09B351E31972aDd0951f30E7f5ed6",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "WPUNKS": {
@@ -16,7 +16,7 @@
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "BNFT": {
-    "address": "0xF9107B537482fE7cE75a6646BEad2A97BFA4eB0E",
+    "address": "0x8286b7d42cB141E1871a3475bB8E0C3F84db0352",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "BNFTRegistryImpl": {
@@ -59,7 +59,7 @@
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "MockAirdropProject": {
-    "address": "0x153a75c692b6f047974bc96e30d20546B0Bc2992",
+    "address": "0x4E76d6429C6f9dD22F87f10BcA800664B8Cc118b",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "WOW": {

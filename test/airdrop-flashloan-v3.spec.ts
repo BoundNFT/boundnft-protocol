@@ -230,7 +230,7 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     await waitForTx(
       await _airdropFlashLoanReceiver
         .connect(receiverOwnerSigner)
-        .executeClaim(_mockAirdropProject.address, applyAirdropEncodedData)
+        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData)
     );
 
     const claimErc20Balance = await mockAirdropERC20Token.balanceOf(_airdropFlashLoanReceiver.address);
