@@ -159,6 +159,14 @@ contract AirdropFlashLoanReceiverV3 is
     AddressUpgradeable.functionCall(claimContract, claimParams, "call method failed");
   }
 
+  function approveERC20(
+    address token,
+    address spender,
+    uint256 amount
+  ) external nonReentrant onlyOwner {
+    IERC20Upgradeable(token).approve(spender, amount);
+  }
+
   function transferERC20(
     address token,
     address to,
@@ -167,12 +175,36 @@ contract AirdropFlashLoanReceiverV3 is
     IERC20Upgradeable(token).transfer(to, amount);
   }
 
+  function approveERC721(
+    address token,
+    address operator,
+    uint256 tokenId
+  ) external nonReentrant onlyOwner {
+    IERC721Upgradeable(token).approve(operator, tokenId);
+  }
+
+  function approveERC721ForAll(
+    address token,
+    address operator,
+    bool approved
+  ) external nonReentrant onlyOwner {
+    IERC721Upgradeable(token).setApprovalForAll(operator, approved);
+  }
+
   function transferERC721(
     address token,
     address to,
     uint256 id
   ) external nonReentrant onlyOwner {
     IERC721Upgradeable(token).safeTransferFrom(address(this), to, id);
+  }
+
+  function approveERC1155ForAll(
+    address token,
+    address operator,
+    bool approved
+  ) external nonReentrant onlyOwner {
+    IERC1155Upgradeable(token).setApprovalForAll(operator, approved);
   }
 
   function transferERC1155(
