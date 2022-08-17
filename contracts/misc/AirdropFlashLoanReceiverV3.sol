@@ -70,6 +70,7 @@ contract AirdropFlashLoanReceiverV3 is
     (address bnftProxy, ) = IBNFTRegistry(bnftRegistry).getBNFTAddresses(nftAsset);
     require(bnftProxy == msg.sender, "caller not bnft");
 
+    // 0 = used for public, created by BendDAO, 1 - used for private, created by owner
     if (deployType != 0) {
       require(initiator == owner(), "initiator not owner");
     }
@@ -167,11 +168,8 @@ contract AirdropFlashLoanReceiverV3 is
     IERC20Upgradeable(token).approve(spender, amount);
   }
 
-  function transferERC20(
-    address token,
-    address to,
-    uint256 amount
-  ) external nonReentrant onlyOwner {
+  function transferERC20(address token, uint256 amount) external nonReentrant onlyOwner {
+    address to = owner();
     IERC20Upgradeable(token).transfer(to, amount);
   }
 
@@ -191,11 +189,8 @@ contract AirdropFlashLoanReceiverV3 is
     IERC721Upgradeable(token).setApprovalForAll(operator, approved);
   }
 
-  function transferERC721(
-    address token,
-    address to,
-    uint256 id
-  ) external nonReentrant onlyOwner {
+  function transferERC721(address token, uint256 id) external nonReentrant onlyOwner {
+    address to = owner();
     IERC721Upgradeable(token).safeTransferFrom(address(this), to, id);
   }
 
@@ -209,14 +204,15 @@ contract AirdropFlashLoanReceiverV3 is
 
   function transferERC1155(
     address token,
-    address to,
     uint256 id,
     uint256 amount
   ) external nonReentrant onlyOwner {
+    address to = owner();
     IERC1155Upgradeable(token).safeTransferFrom(address(this), to, id, amount, new bytes(0));
   }
 
-  function transferEther(address to, uint256 amount) external nonReentrant onlyOwner {
+  function transferEther(uint256 amount) external nonReentrant onlyOwner {
+    address to = owner();
     (bool success, ) = to.call{value: amount}(new bytes(0));
     require(success, "ETH_TRANSFER_FAILED");
   }

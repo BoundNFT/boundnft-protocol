@@ -71,9 +71,7 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
 
   it("Tries to transfer token - invalid owner (revert expected)", async () => {
     const { users } = testEnv;
-    const user0 = users[0];
     const user2 = users[2];
-    const user3 = users[3];
 
     const mockAirdropERC20Address = await _mockAirdropProject.erc20Token();
     const mockAirdropERC20Token = await getMintableERC20(mockAirdropERC20Address);
@@ -83,22 +81,20 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     const mockAirdropERC1155Token = await getMintableERC1155(mockAirdropERC1155Address);
 
     await expect(
-      _airdropFlashLoanReceiver.connect(user2.signer).transferERC20(mockAirdropERC20Token.address, user3.address, 100)
+      _airdropFlashLoanReceiver.connect(user2.signer).transferERC20(mockAirdropERC20Token.address, 100)
     ).to.be.revertedWith("Ownable: caller is not the owner");
 
     await expect(
-      _airdropFlashLoanReceiver.connect(user2.signer).transferERC721(mockAirdropERC721Token.address, user3.address, 100)
+      _airdropFlashLoanReceiver.connect(user2.signer).transferERC721(mockAirdropERC721Token.address, 100)
     ).to.be.revertedWith("Ownable: caller is not the owner");
 
     await expect(
-      _airdropFlashLoanReceiver
-        .connect(user2.signer)
-        .transferERC1155(mockAirdropERC1155Token.address, user3.address, 100, 1)
+      _airdropFlashLoanReceiver.connect(user2.signer).transferERC1155(mockAirdropERC1155Token.address, 100, 1)
     ).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
   it("Apply airdrop using flashLoan - ERC20/ERC721/ERC1155", async () => {
-    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+    const { users, bayc, bBAYC } = testEnv;
     const nftOwner = users[0];
 
     await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
@@ -192,6 +188,15 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     expect(erc721BalanceAfter).to.be.equal(erc721Bonus.add(erc721BalanceBefore));
   });
 
+  it("Tries to call claim - invalid owner (revert expected)", async () => {
+    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+    const user3 = users[3];
+
+    await expect(
+      _airdropFlashLoanReceiver.connect(user3.signer).callMethod(_mockAirdropProject.address, [1, 2, 3, 4])
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+  });
+
   it("Apply airdrop using claim - ERC20/ERC721/ERC1155", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
     const nftOwner = users[0];
@@ -243,19 +248,19 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     await waitForTx(
       await _airdropFlashLoanReceiver
         .connect(receiverOwnerSigner)
-        .transferERC20(mockAirdropERC20Token.address, nftOwner.address, claimErc20Balance)
+        .transferERC20(mockAirdropERC20Token.address, claimErc20Balance)
     );
     airdropERC721TokenId = tokenId.toString();
     await waitForTx(
       await _airdropFlashLoanReceiver
         .connect(receiverOwnerSigner)
-        .transferERC721(mockAirdropERC721Token.address, nftOwner.address, tokenId)
+        .transferERC721(mockAirdropERC721Token.address, tokenId)
     );
     airdropERC1155TokenId = erc1155Id;
     await waitForTx(
       await _airdropFlashLoanReceiver
         .connect(receiverOwnerSigner)
-        .transferERC1155(mockAirdropERC1155Token.address, nftOwner.address, erc1155Id, claimErc1155Balance)
+        .transferERC1155(mockAirdropERC1155Token.address, erc1155Id, claimErc1155Balance)
     );
   });
 
