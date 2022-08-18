@@ -32,6 +32,10 @@ import {
   MockVRFCoordinatorV2Factory,
   AirdropFlashLoanReceiverV2,
   AirdropFlashLoanReceiverV2Factory,
+  UserFlashclaimRegistryV3,
+  UserFlashclaimRegistryV3Factory,
+  AirdropFlashLoanReceiverV3,
+  AirdropFlashLoanReceiverV3Factory,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
@@ -158,8 +162,24 @@ export const deployAirdropFlashLoanReceiverV2 = async (
 ): Promise<AirdropFlashLoanReceiverV2> => {
   const receiver = await withSaveAndVerify(
     await new AirdropFlashLoanReceiverV2Factory(await getDeploySigner()).deploy(),
-    eContractid.AirdropFlashLoanReceiver,
+    eContractid.AirdropFlashLoanReceiverV2,
     [owner, registry, deployType],
+    verify
+  );
+  await waitForTx(await receiver.initialize(owner, registry, deployType));
+  return receiver;
+};
+
+export const deployAirdropFlashLoanReceiverV3 = async (
+  owner: tEthereumAddress,
+  registry: tEthereumAddress,
+  deployType: string,
+  verify?: boolean
+): Promise<AirdropFlashLoanReceiverV3> => {
+  const receiver = await withSaveAndVerify(
+    await new AirdropFlashLoanReceiverV3Factory(await getDeploySigner()).deploy(),
+    eContractid.AirdropFlashLoanReceiverV3,
+    [],
     verify
   );
   await waitForTx(await receiver.initialize(owner, registry, deployType));
@@ -181,6 +201,17 @@ export const deployUserFlashclaimRegistryV2 = async (
   withSaveAndVerify(
     await new UserFlashclaimRegistryV2Factory(await getDeploySigner()).deploy(...args),
     eContractid.UserFlashclaimRegistryV2,
+    args,
+    verify
+  );
+
+export const deployUserFlashclaimRegistryV3 = async (
+  args: [string, string],
+  verify?: boolean
+): Promise<UserFlashclaimRegistryV3> =>
+  withSaveAndVerify(
+    await new UserFlashclaimRegistryV3Factory(await getDeploySigner()).deploy(...args),
+    eContractid.UserFlashclaimRegistryV3,
     args,
     verify
   );
