@@ -11,6 +11,7 @@ const interfacesContractList = ["IERC721Detailed", "IFlashLoanReceiver"];
 const miscContractList = [
   "BoundPunkGateway",
   "AirdropFlashLoanReceiver",
+  "AirdropFlashLoanReceiverV3",
   "AirdropDistribution",
   "UserFlashclaimRegistry",
   "UserFlashclaimRegistryV3",

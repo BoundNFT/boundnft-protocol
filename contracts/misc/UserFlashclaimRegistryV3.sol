@@ -36,7 +36,7 @@ contract UserFlashclaimRegistryV3 {
   }
 
   function _createReceiver() internal {
-    address receiverV3 = receiverV3Implemention.clone();
+    address payable receiverV3 = payable(receiverV3Implemention.clone());
     AirdropFlashLoanReceiverV3(receiverV3).initialize(msg.sender, bnftRegistry, 1);
 
     userReceiversV3[msg.sender] = address(receiverV3);
