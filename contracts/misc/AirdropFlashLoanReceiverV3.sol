@@ -15,8 +15,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/utils/ERC721HolderUpgra
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 
-import "hardhat/console.sol";
-
 /**
  * @title Airdrop receiver contract and implement IFlashLoanReceiver interface
  * @author BendDAO
@@ -115,8 +113,6 @@ contract AirdropFlashLoanReceiverV3 is
       vars.airdropParams,
       vars.ethValue
     ) = abi.decode(params, (uint256[], address[], uint256[], address, bytes, uint256));
-
-    console.log("ethValue", vars.ethValue, address(this).balance);
 
     require(vars.airdropTokenTypes.length > 0, "invalid airdrop token type");
     require(vars.airdropTokenAddresses.length == vars.airdropTokenTypes.length, "invalid airdrop token address length");
