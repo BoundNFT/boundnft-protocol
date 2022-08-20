@@ -387,6 +387,7 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     const { users } = testEnv;
     const nftOwner = users[0];
     const partner = users[6];
+    const hacker = users[8];
 
     const erc721TokenId = testEnv.tokenIdTracker++;
     const erc1155TokenId = 1;
@@ -439,6 +440,40 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
         .connect(nftOwner.signer)
         .transferERC1155(mockAirdropERC1155Token.address, erc1155TokenId, 1)
     ).to.be.revertedWith("token locked for partner");
+
+    console.log("hacker tries to repay tokens case 1 (revert expected)");
+    await expect(
+      _airdropFlashLoanReceiver
+        .connect(hacker.signer)
+        .repayERC20ToPartner(mockAirdropERC20Token.address, partner.address)
+    ).to.be.revertedWith("invalid caller");
+    await expect(
+      _airdropFlashLoanReceiver
+        .connect(hacker.signer)
+        .repayERC721ToPartner(mockAirdropERC721Token.address, erc721TokenId, partner.address)
+    ).to.be.revertedWith("invalid caller");
+    await expect(
+      _airdropFlashLoanReceiver
+        .connect(hacker.signer)
+        .repayERC1155ToPartner(mockAirdropERC1155Token.address, erc1155TokenId, partner.address)
+    ).to.be.revertedWith("invalid caller");
+
+    console.log("hacker tries to repay tokens case 2 (revert expected)");
+    await expect(
+      _airdropFlashLoanReceiver
+        .connect(hacker.signer)
+        .repayERC20ToPartner(mockAirdropERC20Token.address, hacker.address)
+    ).to.be.revertedWith("zero borrow amount from partner");
+    await expect(
+      _airdropFlashLoanReceiver
+        .connect(hacker.signer)
+        .repayERC721ToPartner(mockAirdropERC721Token.address, erc721TokenId, hacker.address)
+    ).to.be.revertedWith("invalid partner");
+    await expect(
+      _airdropFlashLoanReceiver
+        .connect(hacker.signer)
+        .repayERC1155ToPartner(mockAirdropERC1155Token.address, erc1155TokenId, hacker.address)
+    ).to.be.revertedWith("zero borrow amount from partner");
 
     console.log("partner can force repay tokens");
     await waitForTx(

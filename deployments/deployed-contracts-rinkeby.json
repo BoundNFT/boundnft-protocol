@@ -96,11 +96,11 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiverV3": {
-    "address": "0x6b006b8F40EaC9fe8E4D5208C2837820bB869C82",
+    "address": "0x0A7fCA49FC2FdBECdF21D1341C77cD52cbFf3f4a",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "UserFlashclaimRegistryV3": {
-    "address": "0x9640007880Af1D288Cc1877bA50DabA069BE3915",
+    "address": "0xFC1eE316Dfa727886da5BAFee8Fc42F129481f94",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
