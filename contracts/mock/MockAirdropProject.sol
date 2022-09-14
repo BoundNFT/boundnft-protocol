@@ -38,10 +38,10 @@ contract MockAirdropProject is ERC721Holder, ERC1155Holder {
     erc721Token = new MintableERC721("BNFT Mock Airdrop ERC721", "BMAD721");
     erc1155Token = new MintableERC1155();
 
-    erc20Token.mint(1000000 * 10**18);
+    erc20Token.privateMint(1000000 * 10**18);
 
     for (uint256 i = erc1155IdMin; i <= erc1155IdMax; i++) {
-      erc1155Token.mint(i, 10000);
+      erc1155Token.privateMint(i, 10000);
     }
   }
 

@@ -1,0 +1,89 @@
+{
+  "CryptoPunksMarket": {
+    "address": "0xBccC7a1E79215EC3FD36824615801BCeE0Df2eC3",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "WrappedPunk": {
+    "address": "0xbeD1e8B430FD512b82A18cb121a8442F3889E505",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "WPUNKS": {
+    "address": "0xbeD1e8B430FD512b82A18cb121a8442F3889E505",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MintableERC721": {
+    "address": "0x82C348Ef21629f5aaeE5280ef3f4389Ad82F8799",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BAYC": {
+    "address": "0x30d190032A34d6151073a7DB8793c01Aa05987ec",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "DOODLE": {
+    "address": "0x317e19Fe3DB508f1A45421379FBbd7564d0259c0",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MAYC": {
+    "address": "0x15596C27900e12A9cfC301248E21888751f61c19",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "CLONEX": {
+    "address": "0x578bc56a145A3464Adc44635C23501653138c946",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AZUKI": {
+    "address": "0x708c48AaA4Ea8B9E46Bd8DEb6470986842b9a16d",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "SDOODLE": {
+    "address": "0x82C348Ef21629f5aaeE5280ef3f4389Ad82F8799",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "ProxyAdmin": {
+    "address": "0x1C1A282F9892d1E565D7215a764E8fcd17726C3f"
+  },
+  "ProxyAdminWithoutTimelock": {
+    "address": "0x89a60BB6cE83D4514dA956165664Ba6Ee4c15687"
+  },
+  "BNFT": {
+    "address": "0x1C9Ef41AC8aEC7Ec1A9F03e42AEcAF433629fEE6",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BNFTRegistryImpl": {
+    "address": "0xdeE5158389802b006dD4610BddA929436B3FbD32"
+  },
+  "BNFTRegistry": {
+    "address": "0x37A76Db446bDB3EF1b73112a8D5E6868de06464f",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BoundPunkGatewayImpl": {
+    "address": "0xA10D91F63AbCF82D8CC0637c8a9a6148E5D1bd64"
+  },
+  "BoundPunkGateway": {
+    "address": "0x0f72Dae580E04AdAe973cD12C4f8FdCE8d23cAC6",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistry": {
+    "address": "0x830e8e47591F9eB047efde3b2A8E2F13e9235EC6",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV2": {
+    "address": "0x0EBbD387769f012a3Bbf65eaCb4Ec3db3c7693f6",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3": {
+    "address": "0x55C44d8dDCEaceD2d9a40a1e68Ca3F8bE5E96b91",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV3": {
+    "address": "0x958f36955e10FFaa0aC92aA65acB30Ef6268421c",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropDistributionImpl": {
+    "address": "0x179ab47Ab5980c70d4D08D54C47558bd8c3697B5"
+  },
+  "AirdropDistribution": {
+    "address": "0x3CF52C9ce29a1df2adCd0Ce657BbBBB63A3f9D01",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  }
+}

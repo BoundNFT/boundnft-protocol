@@ -14,6 +14,7 @@ export const MOCK_NFT_BASE_URIS = {
   WPUNKS: "https://wrappedpunks.com:3000/api/punks/metadata/",
   BAYC: "ipfs://QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/",
   DOODLE: "ipfs://QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/",
+  SDOODLE: "https://api.spacedoodles.xyz/",
   COOL: "https://api.coolcatsnft.com/cat/",
   MEEBITS: "https://meebits.larvalabs.com/meebit/1",
   MAYC: "https://boredapeyachtclub.com/api/mutants/",

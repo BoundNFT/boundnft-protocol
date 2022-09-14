@@ -92,7 +92,7 @@ export const deployAllMockNfts = async (verify?: boolean) => {
       continue;
     }
 
-    const tokenName = "Bend Mock " + tokenSymbol;
+    const tokenName = "BendDAO Mock " + tokenSymbol;
 
     tokens[tokenSymbol] = await deployMintableERC721([tokenName, tokenSymbol], verify);
     await registerContractInJsonDb(tokenSymbol.toUpperCase(), tokens[tokenSymbol]);

@@ -12,6 +12,8 @@ task("full:deploy-boundpunk-gateway", "Deploy BoundPunk Gateway for full envirom
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, DRE) => {
     await DRE.run("set-DRE");
+    await DRE.run("compile");
+
     const network = <eNetwork>DRE.network.name;
 
     const poolConfig = loadPoolConfig(pool);

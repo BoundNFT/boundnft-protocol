@@ -7,8 +7,7 @@ export interface SymbolMap<T> {
 export type eNetwork = eEthereumNetwork;
 
 export enum eEthereumNetwork {
-  develop = "develop",
-  kovan = "kovan",
+  goerli = "goerli",
   rinkeby = "rinkeby",
   main = "main",
   coverage = "coverage",
@@ -66,26 +65,20 @@ export interface iNftBase<T> {
   WPUNKS: T;
   BAYC: T;
   DOODLE: T;
-  COOL: T;
-  MEEBITS: T;
   MAYC: T;
-  WOW: T;
   CLONEX: T;
   AZUKI: T;
-  KONGZ: T;
+  SDOODLE: T;
 }
 
 export enum NftContractId {
   WPUNKS = "WPUNKS",
   BAYC = "BAYC",
   DOODLE = "DOODLE",
-  COOL = "COOL",
-  MEEBITS = "MEEBITS",
   MAYC = "MAYC",
-  WOW = "WOW",
   CLONEX = "CLONEX",
   AZUKI = "AZUKI",
-  KONGZ = "KONGZ",
+  SDOODLE = "SDOODLE",
 }
 
 export type iMultiPoolsNfts<T> = iNftCommon<T> | iBendPoolNfts<T>;
@@ -100,8 +93,7 @@ export interface iParamsPerNetworkAll<T> extends iEthereumParamsPerNetwork<T> {}
 
 export interface iEthereumParamsPerNetwork<T> {
   [eEthereumNetwork.coverage]: T;
-  [eEthereumNetwork.develop]: T;
-  [eEthereumNetwork.kovan]: T;
+  [eEthereumNetwork.goerli]: T;
   [eEthereumNetwork.rinkeby]: T;
   [eEthereumNetwork.main]: T;
   [eEthereumNetwork.hardhat]: T;

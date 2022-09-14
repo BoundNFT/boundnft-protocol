@@ -16,6 +16,8 @@ task("dev:deploy-mock-minters", "Deploy mock bnfts for dev enviroment")
   .addParam("nftAsset", "Address of ERC721 contract")
   .setAction(async ({ nftAsset }, localBRE) => {
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
+
     const network = localBRE.network.name as eNetwork;
     if (network.includes("main")) {
       throw new Error("Mocks not used at mainnet configuration.");
