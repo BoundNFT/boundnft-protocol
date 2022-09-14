@@ -8,6 +8,8 @@ interface IBNFTRegistry {
   event BNFTUpgraded(address indexed nftAsset, address bNftImpl, address bNftProxy, uint256 totals);
   event CustomeSymbolsAdded(address[] nftAssets, string[] symbols);
   event ClaimAdminUpdated(address oldAdmin, address newAdmin);
+  event CollectionTransferAdded(address indexed collection, address indexed transfer);
+  event CollectionTransferRemoved(address indexed collection);
 
   function getBNFTAddresses(address nftAsset) external view returns (address bNftProxy, address bNftImpl);
 
@@ -60,4 +62,6 @@ interface IBNFTRegistry {
    * @param symbols_ The custom symbols of the NFTs
    **/
   function addCustomeSymbols(address[] memory nftAssets_, string[] memory symbols_) external;
+
+  function checkTransferForToken(address collection) external view returns (address transfer);
 }

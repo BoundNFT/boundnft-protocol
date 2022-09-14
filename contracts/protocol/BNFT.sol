@@ -2,6 +2,8 @@
 pragma solidity 0.8.4;
 
 import {IBNFT} from "../interfaces/IBNFT.sol";
+import {IBNFTRegistry} from "../interfaces/IBNFTRegistry.sol";
+import {ITransfer} from "../interfaces/ITransfer.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
 import {IENSReverseRegistrar} from "../interfaces/IENSReverseRegistrar.sol";
 
@@ -29,6 +31,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
   address private _claimAdmin;
+  address private _bnftRegistry;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -60,7 +63,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     string calldata bNftName,
     string calldata bNftSymbol,
     address owner_,
-    address claimAdmin_
+    address claimAdmin_,
+    address bnftRegistry_
   ) external override initializer {
     __ERC721_init(bNftName, bNftSymbol);
 
@@ -69,6 +73,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     _transferOwnership(owner_);
 
     _setClaimAdmin(claimAdmin_);
+
+    _setBNFTRegistry(bnftRegistry_);
 
     emit Initialized(underlyingAsset_);
   }
@@ -149,6 +155,36 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   /**
+   * @dev Returns the address of the current bnft registry.
+   */
+  function bnftRegistry() public view virtual returns (address) {
+    return _bnftRegistry;
+  }
+
+  /**
+   * @dev Throws if called by any account other than the BNFTRegistry.
+   */
+  modifier onlyBNFTRegistry() {
+    require(bnftRegistry() == _msgSender(), "BNFT: caller is not the BNFTRegistry");
+    _;
+  }
+
+  /**
+   * @dev Set claim admin of the contract to a new account (`newAdmin`).
+   * Can only be called by the current owner.
+   */
+  function setBNFTRegistry(address newRegistry) public virtual onlyOwner {
+    require(newRegistry != address(0), "BNFT: new registry is the zero address");
+    _setBNFTRegistry(newRegistry);
+  }
+
+  function _setBNFTRegistry(address newRegistry) internal virtual {
+    address oldRegistry = _newRegistry;
+    _newRegistry = newRegistry;
+    emit BNFTRegistryUpdated(oldRegistry, newRegistry);
+  }
+
+  /**
    * @dev Mints bNFT token to the user address
    *
    * Requirements:
@@ -171,6 +207,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     _minters[tokenId] = _msgSender();
 
     // Receive NFT Tokens
+    address transfer = IBNFTRegistry.checkTransferForToken(_underlyingAsset);
+    ITransfer(transfer).transferNonFungibleToken();
     IERC721Upgradeable(_underlyingAsset).safeTransferFrom(_msgSender(), address(this), tokenId);
 
     emit Mint(_msgSender(), _underlyingAsset, tokenId, to);

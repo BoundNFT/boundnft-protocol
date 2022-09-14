@@ -5,6 +5,9 @@ import {IBNFTRegistry} from "../interfaces/IBNFTRegistry.sol";
 import {IBNFT} from "../interfaces/IBNFT.sol";
 import {BNFTUpgradeableProxy} from "../libraries/BNFTUpgradeableProxy.sol";
 
+import {ITransfer} from "../interfaces/ITransfer.sol";
+import {IERC165Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol";
+
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
@@ -22,6 +25,16 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
   address private _claimAdmin;
+  // ERC721 interfaceID
+  bytes4 public constant INTERFACE_ID_ERC721 = 0x80ac58cd;
+  // ERC1155 interfaceID
+  bytes4 public constant INTERFACE_ID_ERC1155 = 0xd9b67a26;
+  // Address of the transfer contract for ERC721 tokens
+  address public TRANSFER_ERC721;
+  // Address of the transfer contract for ERC1155 tokens
+  address public TRANSFER_ERC1155;
+  // Map collection address to transfer address
+  mapping(address => address) public transfers;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -210,6 +223,60 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   function setClaimAdmin(address newAdmin) public virtual onlyOwner {
     require(newAdmin != address(0), "BNFTR: new admin is the zero address");
     _setClaimAdmin(newAdmin);
+  }
+
+  /**
+   * @notice Set common ERC721 and ERC1155 transfer
+   * @param _transferERC721 address of the ERC721 transfer
+   * @param _transferERC1155 address of the ERC1155 transfer
+   */
+  function setCommonTransfer(address _transferERC721, address _transferERC1155) external onlyOwner {
+    TRANSFER_ERC721 = _transferERC721;
+    TRANSFER_ERC1155 = _transferERC1155;
+  }
+
+  /**
+   * @notice Add a transfer for a collection
+   * @param collection collection address to add specific transfer rule
+   * @dev It is meant to be used for exceptions only (e.g., CryptoKitties)
+   */
+  function addCollectionTransfer(address collection, address transfer) external onlyOwner {
+    require(collection != address(0), "Owner: collection cannot be null address");
+    require(transfer != address(0), "Owner: transfer cannot be null address");
+    transfers[collection] = transfer;
+
+    emit CollectionTransferAdded(collection, transfer);
+  }
+
+  /**
+   * @notice Remove a transfer for a collection
+   * @param collection collection address to remove exception
+   */
+  function removeCollectionTransfer(address collection) external onlyOwner {
+    require(transfers[collection] != address(0), "Owner: collection has no transfer");
+
+    // Set it to the address(0)
+    transfers[collection] = address(0);
+
+    emit CollectionTransferRemoved(collection);
+  }
+
+  /**
+   * @notice Check the transfer for a token
+   * @param collection collection address
+   * @dev Support for ERC165 interface is checked AFTER custom implementation
+   */
+  function checkTransferForToken(address collection) external view override returns (address transfer) {
+    // Assign transfer   (if any)
+    transfer = transfers[collection];
+
+    if (transfer == address(0)) {
+      if (IERC165Upgradeable(collection).supportsInterface(INTERFACE_ID_ERC721)) {
+        transfer = TRANSFER_ERC721;
+      } else if (IERC165Upgradeable(collection).supportsInterface(INTERFACE_ID_ERC1155)) {
+        transfer = TRANSFER_ERC1155;
+      }
+    }
   }
 
   function _setClaimAdmin(address newAdmin) internal virtual {
