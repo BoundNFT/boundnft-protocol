@@ -114,7 +114,8 @@ contract AirdropFlashLoanReceiverV3 is
       vars.ethValue
     ) = abi.decode(params, (uint256[], address[], uint256[], address, bytes, uint256));
 
-    require(vars.airdropTokenTypes.length > 0, "invalid airdrop token type");
+    // airdrop token list can be empty, no need transfer immediately after call method
+    // require(vars.airdropTokenTypes.length > 0, "invalid airdrop token type");
     require(vars.airdropTokenAddresses.length == vars.airdropTokenTypes.length, "invalid airdrop token address length");
     require(vars.airdropTokenIds.length == vars.airdropTokenTypes.length, "invalid airdrop token id length");
 

@@ -14,6 +14,7 @@ task("dev:deploy-bnft-registry", "Deploy bnft registry for dev enviroment")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, localBRE) => {
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     const proxyAdmin = await getBNFTProxyAdminById(eContractid.ProxyAdmin);
 

@@ -80,15 +80,23 @@ export const deployMockAirdrop = async (args: [string], verify?: boolean): Promi
   );
 
 export const deployMockApeCoinStaking = async (
-  args: [string, string, string, string],
+  _coinToken: string,
+  _baycToken: string,
+  _maycToken: string,
+  _bakcToken: string,
   verify?: boolean
-): Promise<MockApeCoinStaking> =>
-  withSaveAndVerify(
-    await new MockApeCoinStakingFactory(await getDeploySigner()).deploy(...args),
-    eContractid.MockAirdropProject,
-    args,
+): Promise<MockApeCoinStaking> => {
+  const contract = await withSaveAndVerify(
+    await new MockApeCoinStakingFactory(await getDeploySigner()).deploy(),
+    eContractid.MockApeCoinStaking,
+    [],
     verify
   );
+
+  await waitForTx(await contract.initialize(_coinToken, _baycToken, _maycToken, _bakcToken));
+
+  return contract;
+};
 
 export const deployGenericBNFTImpl = async (verify: boolean) =>
   withSaveAndVerify(await new BNFTFactory(await getDeploySigner()).deploy(), eContractid.BNFT, [], verify);
@@ -105,7 +113,7 @@ export const deployAllMockNfts = async (verify?: boolean) => {
       continue;
     }
 
-    const tokenName = "Bend Mock " + tokenSymbol;
+    const tokenName = "BendDAO Mock " + tokenSymbol;
 
     tokens[tokenSymbol] = await deployMintableERC721([tokenName, tokenSymbol], verify);
     await registerContractInJsonDb(tokenSymbol.toUpperCase(), tokens[tokenSymbol]);

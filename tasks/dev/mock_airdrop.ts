@@ -18,7 +18,9 @@ import { eNetwork } from "../../helpers/types";
 task("dev:deploy-mock-airdrops", "Deploy mock airdrop for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
+    await localBRE.run("compile");
     await localBRE.run("set-DRE");
+
     const network = localBRE.network.name as eNetwork;
     if (network.includes("main")) {
       throw new Error("Mocks not used at mainnet configuration.");

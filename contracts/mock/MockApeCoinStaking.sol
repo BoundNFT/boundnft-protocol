@@ -5,15 +5,17 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
+import "hardhat/console.sol";
+
 contract MockApeCoinStaking is OwnableUpgradeable {
   string public constant POOL_APECOIN = "ApeCoin";
   string public constant POOL_BAYC = "BAYC";
   string public constant POOL_MAYC = "MAYC";
   string public constant POOL_BAKC = "BAKC";
 
-  uint256 public constant MAX_BAYC_CAP = 10094;
-  uint256 public constant MAX_MAYC_CAP = 2042;
-  uint256 public constant MAX_BAKC_CAP = 856;
+  uint256 public constant MAX_BAYC_CAP = 10094 * 10**18;
+  uint256 public constant MAX_MAYC_CAP = 2042 * 10**18;
+  uint256 public constant MAX_BAKC_CAP = 856 * 10**18;
 
   address public coinToken;
   address public baycToken;
@@ -136,6 +138,8 @@ contract MockApeCoinStaking is OwnableUpgradeable {
       mainPool.userTotalStakedAmounts[msg.sender] += mainItemCoinAmount;
       stakingAmount += mainItemCoinAmount;
 
+      console.log("commit-main", mainTokenIds[i], mainItemCoinAmount);
+
       if (pairedTokenIds.length > 0) {
         if (coinAmounts[i] > mainItemCoinAmount) {
           pairedItemCoinAmount = coinAmounts[i] - mainItemCoinAmount;
@@ -146,6 +150,8 @@ contract MockApeCoinStaking is OwnableUpgradeable {
 
         pairedPool.userTotalStakedAmounts[msg.sender] += pairedItemCoinAmount;
         stakingAmount += pairedItemCoinAmount;
+
+        console.log("commit-pair", pairedTokenIds[i], pairedItemCoinAmount);
 
         tokenDatas[pairedPool.nftAsset][pairedTokenIds[i]].pairedAsset = mainPool.nftAsset;
         tokenDatas[pairedPool.nftAsset][pairedTokenIds[i]].pairedTokenId = mainTokenIds[i];
@@ -159,6 +165,11 @@ contract MockApeCoinStaking is OwnableUpgradeable {
 
   function uncommit(string calldata poolName, uint256[] calldata mainTokenIds) public {
     PoolData storage mainPool = poolDatas[poolName];
+
+    for (uint256 i = 0; i < mainTokenIds.length; i++) {
+      require(IERC721(mainPool.nftAsset).ownerOf(mainTokenIds[i]) == msg.sender, "caller not nft owner");
+      require(tokenDatas[mainPool.nftAsset][mainTokenIds[i]].valid == true, "nft not commited");
+    }
 
     uint256 stakedAmount = 0;
     uint256 rewardAmount = 0;
@@ -194,11 +205,11 @@ contract MockApeCoinStaking is OwnableUpgradeable {
     }
 
     if (rewardAmount > 0) {
-      IERC20(coinToken).transferFrom(address(this), msg.sender, rewardAmount);
+      IERC20(coinToken).transfer(msg.sender, rewardAmount);
     }
 
     if (stakedAmount > 0) {
-      IERC20(coinToken).transferFrom(address(this), msg.sender, stakedAmount);
+      IERC20(coinToken).transfer(msg.sender, stakedAmount);
     }
   }
 
@@ -221,7 +232,7 @@ contract MockApeCoinStaking is OwnableUpgradeable {
     require(coinAmount <= mainPool.userTotalStakedAmounts[msg.sender], "exceed staked amount");
     mainPool.userTotalStakedAmounts[msg.sender] -= coinAmount;
 
-    IERC20(coinToken).transferFrom(address(this), msg.sender, coinAmount);
+    IERC20(coinToken).transfer(msg.sender, coinAmount);
   }
 
   function claimRewards(string calldata poolName, uint256[] calldata tokenIds) public {
@@ -234,6 +245,6 @@ contract MockApeCoinStaking is OwnableUpgradeable {
 
     uint256 coinAmount = 100 * 10**18;
 
-    IERC20(coinToken).transferFrom(address(this), msg.sender, coinAmount);
+    IERC20(coinToken).transfer(msg.sender, coinAmount);
   }
 }

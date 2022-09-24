@@ -4,20 +4,21 @@ import {
   deployAirdropFlashLoanReceiverV3,
   deployMintableERC20,
   deployMintableERC721,
-  deployMockAirdrop,
   deployMockApeCoinStaking,
   deployMockBNFTMinter,
 } from "../helpers/contracts-deployments";
 import { AirdropFlashLoanReceiverV3, MintableERC20, MintableERC721, MockApeCoinStaking } from "../types";
-import { getMintableERC1155, getMintableERC20, getMintableERC721 } from "../helpers/contracts-getters";
 import { ethers } from "ethers";
 import { waitForTx } from "../helpers/misc-utils";
 import { getEthersSignerByAddress } from "../helpers/contracts-helpers";
+import BigNumber from "bignumber.js";
 
 const { expect } = require("chai");
 
 makeSuite("Flashclaim: ApeCoin Staking", (testEnv: TestEnv) => {
-  let _airdropFlashLoanReceiver = {} as AirdropFlashLoanReceiverV3;
+  let _flashClaimReceiver = {} as AirdropFlashLoanReceiverV3;
+  let _receiverOwnerAddress = {} as string;
+  let _receiverOwnerSigner = {} as ethers.Signer;
 
   let _mockApeCoinToken = {} as MintableERC20;
   let _mockBAYCToken = {} as MintableERC721;
@@ -26,294 +27,277 @@ makeSuite("Flashclaim: ApeCoin Staking", (testEnv: TestEnv) => {
   let _mockApeCoinStaking = {} as MockApeCoinStaking;
   let _mockBNFTMinter_BAYC = {} as MockBNFTMinter;
 
+  const oneCoin = new BigNumber(10).pow(18);
+  const _baycTokenId1 = 101;
+  const _baycTokenId2 = 102;
+  const _bakcTokenId1 = 1001;
+
   before(async () => {
     const { bayc, bBAYC, bnftRegistry } = testEnv;
 
-    _airdropFlashLoanReceiver = await deployAirdropFlashLoanReceiverV3(
-      testEnv.users[0].address,
-      bnftRegistry.address,
-      "0"
-    );
+    _flashClaimReceiver = await deployAirdropFlashLoanReceiverV3(testEnv.users[0].address, bnftRegistry.address, "0");
+    _receiverOwnerAddress = await _flashClaimReceiver.owner();
+    _receiverOwnerSigner = await getEthersSignerByAddress(_receiverOwnerAddress);
 
-    _mockApeCoinToken = await deployMintableERC20("APE", "APE", "");
+    _mockApeCoinToken = await deployMintableERC20(["APE", "APE", "18"]);
 
     _mockBAYCToken = testEnv.bayc;
     _mockMAYCToken = await deployMintableERC721(["MAYC", "MAYC"]);
     _mockBAKCToken = await deployMintableERC721(["BAKC", "BAKC"]);
 
-    _mockApeCoinStaking = await deployMockApeCoinStaking([
+    _mockApeCoinStaking = await deployMockApeCoinStaking(
       _mockApeCoinToken.address,
       _mockBAYCToken.address,
       _mockMAYCToken.address,
-      _mockBAKCToken.address,
-    ]);
+      _mockBAKCToken.address
+    );
     _mockBNFTMinter_BAYC = await deployMockBNFTMinter([bayc.address, bBAYC.address]);
+
+    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter_BAYC.address, true));
   });
 
   afterEach(async () => {});
 
-  it("Commit", async () => {
+  it("Preparing ApeCoin and BAKC tokens", async () => {
+    // ApeCoin for Pool
+    const mintAmountPool = oneCoin.multipliedBy(100000).toFixed(0);
+    await waitForTx(await _mockApeCoinToken.connect(_receiverOwnerSigner).mint(mintAmountPool));
+
+    await waitForTx(
+      await _mockApeCoinToken.connect(_receiverOwnerSigner).transfer(_mockApeCoinStaking.address, mintAmountPool)
+    );
+
+    // ApeCoin
+    const mintAmount = oneCoin.multipliedBy(1000).toFixed(0);
+    await waitForTx(await _mockApeCoinToken.connect(_receiverOwnerSigner).mint(mintAmount));
+
+    await waitForTx(
+      await _mockApeCoinToken.connect(_receiverOwnerSigner).transfer(_flashClaimReceiver.address, mintAmount)
+    );
+
+    await waitForTx(
+      await _flashClaimReceiver
+        .connect(_receiverOwnerSigner)
+        .approveERC20(_mockApeCoinToken.address, _mockApeCoinStaking.address, mintAmount)
+    );
+
+    // BAKC
+    await waitForTx(await _mockBAKCToken.connect(_receiverOwnerSigner).mint(_bakcTokenId1));
+
+    await waitForTx(
+      await _mockBAKCToken
+        .connect(_receiverOwnerSigner)
+        .transferFrom(_receiverOwnerAddress, _flashClaimReceiver.address, _bakcTokenId1)
+    );
+
+    await waitForTx(
+      await _flashClaimReceiver
+        .connect(_receiverOwnerSigner)
+        .approveERC721ForAll(_mockBAKCToken.address, _mockApeCoinStaking.address, true)
+    );
+  });
+
+  it("Commit BAYC without BAKC to ApeCoinStaking", async () => {
     const { users, bayc, bBAYC } = testEnv;
     const nftOwner = users[0];
 
-    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
+    await waitForTx(await _mockBAYCToken.mint(_baycTokenId1));
 
-    const tokenId = testEnv.tokenIdTracker++;
-    await waitForTx(await bayc.mint(tokenId));
+    await waitForTx(await _mockBNFTMinter_BAYC.mint(nftOwner.address, _baycTokenId1));
 
-    await waitForTx(await _mockBNFTMinter.mint(nftOwner.address, tokenId));
-
-    const mockAirdropERC20Address = await _mockAirdropProject.erc20Token();
-    const mockAirdropERC20Token = await getMintableERC20(mockAirdropERC20Address);
-    const mockAirdropERC721Address = await _mockAirdropProject.erc721Token();
-    const mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
-    const mockAirdropERC1155Address = await _mockAirdropProject.erc1155Token();
-    const mockAirdropERC1155Token = await getMintableERC1155(mockAirdropERC1155Address);
-
-    const erc1155Id = (await _mockAirdropProject.getERC1155TokenId(tokenId)).toString();
-    console.log("tokenId:", tokenId, "erc1155Id:", erc1155Id, "owner:", nftOwner.address);
-
-    const commitEncodedData = _mockApeCoinStaking.interface.encodeFunctionData("commit", [bayc.address, tokenId]);
+    const stakingAmount = oneCoin.multipliedBy(100).toFixed(0);
+    const commitEncodedData = _mockApeCoinStaking.interface.encodeFunctionData("commit", [
+      "BAYC",
+      [_baycTokenId1],
+      [],
+      [stakingAmount],
+    ]);
     console.log("commitEncodedData:", commitEncodedData);
 
     const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
       ["uint256[]", "address[]", "uint256[]", "address", "bytes"],
-      [
-        [1, 2, 3],
-        [mockAirdropERC20Address, mockAirdropERC721Address, mockAirdropERC1155Address],
-        [0, 0, erc1155Id],
-        _mockApeCoinStaking.address,
-        commitEncodedData,
-      ]
+      [[], [], [], _mockApeCoinStaking.address, commitEncodedData]
     );
     console.log("receiverEncodedData:", receiverEncodedData);
 
+    const receiverContractBalanceBefore = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceBefore = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
+
     await waitForTx(
-      await bBAYC.connect(nftOwner.signer).flashLoan(_airdropFlashLoanReceiver.address, [tokenId], receiverEncodedData)
+      await bBAYC.connect(nftOwner.signer).flashLoan(_flashClaimReceiver.address, [_baycTokenId1], receiverEncodedData)
     );
 
-    console.log("Airdrop ERC20 Balance:", await mockAirdropERC20Token.balanceOf(nftOwner.address));
-    console.log("Airdrop ERC721 Balance:", await mockAirdropERC721Token.balanceOf(nftOwner.address));
-    console.log("Airdrop ERC1155 Balance:", await mockAirdropERC1155Token.balanceOf(nftOwner.address, erc1155Id));
+    const stakingTokenData = await _mockApeCoinStaking.tokenDatas(_mockBAYCToken.address, _baycTokenId1);
+    expect(stakingTokenData.valid).to.be.eq(true);
 
-    expect(await mockAirdropERC20Token.balanceOf(nftOwner.address)).to.be.equal(await _mockAirdropProject.erc20Bonus());
-    expect(await mockAirdropERC721Token.balanceOf(nftOwner.address)).to.be.equal(
-      await _mockAirdropProject.erc721Bonus()
-    );
-    expect(await mockAirdropERC1155Token.balanceOf(nftOwner.address, erc1155Id)).to.be.equal(
-      await _mockAirdropProject.erc1155Bonus()
-    );
+    const receiverContractBalanceAfter = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceAfter = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
+
+    const receiverContractBalanceDelta = receiverContractBalanceBefore.sub(receiverContractBalanceAfter);
+    const stakingContractBalanceDelta = stakingContractBalanceAfter.sub(stakingContractBalanceBefore);
+    expect(stakingContractBalanceDelta).to.be.eq(receiverContractBalanceDelta);
   });
 
-  it("Apply airdrop using flashLoan - ERC721 without Enumerate", async () => {
-    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+  it("Commit BAYC with BAKC to ApeCoinStaking", async () => {
+    const { users, bayc, bBAYC } = testEnv;
     const nftOwner = users[0];
 
-    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
+    await waitForTx(await bayc.mint(_baycTokenId2));
+    await waitForTx(await _mockBNFTMinter_BAYC.mint(nftOwner.address, _baycTokenId2));
 
-    const tokenId = testEnv.tokenIdTracker++;
-    await waitForTx(await bayc.mint(tokenId));
-
-    await waitForTx(await _mockBNFTMinter.mint(nftOwner.address, tokenId));
-
-    const mockAirdropERC721Address = await _mockAirdropProject.erc721Token();
-    const mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
-    const erc721Bonus = await _mockAirdropProject.erc721Bonus();
-
-    const applyAirdropEncodedData = _mockAirdropProject.interface.encodeFunctionData("nativeApplyAirdrop", [
-      bayc.address,
-      tokenId,
+    const stakingAmount = oneCoin.multipliedBy(100).toFixed(0);
+    const commitEncodedData = _mockApeCoinStaking.interface.encodeFunctionData("commit", [
+      "BAYC",
+      [_baycTokenId2],
+      [_bakcTokenId1],
+      [stakingAmount],
     ]);
-    console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
+    console.log("commitEncodedData:", commitEncodedData);
 
     const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
       ["uint256[]", "address[]", "uint256[]", "address", "bytes"],
-      [[4], [mockAirdropERC721Address], [tokenId], _mockAirdropProject.address, applyAirdropEncodedData]
+      [[], [], [], _mockApeCoinStaking.address, commitEncodedData]
     );
     console.log("receiverEncodedData:", receiverEncodedData);
 
-    const erc721BalanceBefore = await mockAirdropERC721Token.balanceOf(nftOwner.address);
+    const receiverContractBalanceBefore = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceBefore = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
 
     await waitForTx(
-      await bBAYC.connect(nftOwner.signer).flashLoan(_airdropFlashLoanReceiver.address, [tokenId], receiverEncodedData)
+      await bBAYC.connect(nftOwner.signer).flashLoan(_flashClaimReceiver.address, [_baycTokenId2], receiverEncodedData)
     );
 
-    console.log("Airdrop ERC721 Balance:", await mockAirdropERC721Token.balanceOf(nftOwner.address));
+    const stakingTokenDataBAYC = await _mockApeCoinStaking.tokenDatas(_mockBAYCToken.address, _baycTokenId2);
+    expect(stakingTokenDataBAYC.valid).to.be.eq(true);
 
-    const erc721BalanceAfter = await mockAirdropERC721Token.balanceOf(nftOwner.address);
-    expect(erc721BalanceAfter).to.be.equal(erc721Bonus.add(erc721BalanceBefore));
+    const stakingTokenDataBAKC = await _mockApeCoinStaking.tokenDatas(_mockBAKCToken.address, _bakcTokenId1);
+    expect(stakingTokenDataBAKC.valid).to.be.eq(true);
+
+    const receiverContractBalanceAfter = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceAfter = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
+
+    const receiverContractBalanceDelta = receiverContractBalanceBefore.sub(receiverContractBalanceAfter);
+    const stakingContractBalanceDelta = stakingContractBalanceAfter.sub(stakingContractBalanceBefore);
+    expect(stakingContractBalanceDelta).to.be.eq(receiverContractBalanceDelta);
   });
 
-  it("Tries to call claim - invalid owner (revert expected)", async () => {
-    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
-    const user3 = users[3];
-
-    await expect(
-      _airdropFlashLoanReceiver.connect(user3.signer).callMethod(_mockAirdropProject.address, [1, 2, 3, 4])
-    ).to.be.revertedWith("Ownable: caller is not the owner");
-  });
-
-  it("Apply airdrop using claim - ERC20/ERC721/ERC1155", async () => {
-    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+  it("Deposit ApeCoin to ApeCoinStaking", async () => {
+    const { users, bayc, bBAYC } = testEnv;
     const nftOwner = users[0];
-    const user3 = users[3];
-
-    const receiverOwnerAddress = await _airdropFlashLoanReceiver.owner();
-    const receiverOwnerSigner = await getEthersSignerByAddress(receiverOwnerAddress);
-
-    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
 
     const tokenId = testEnv.tokenIdTracker++;
     await waitForTx(await bayc.mint(tokenId));
-    const tokenOwner = await bayc.ownerOf(tokenId);
-    const tokenSigner = await getEthersSignerByAddress(tokenOwner);
+    await waitForTx(await _mockBNFTMinter_BAYC.mint(nftOwner.address, tokenId));
+
+    const stakingAmount = oneCoin.multipliedBy(100).toFixed(0);
+    const depositEncodedData = _mockApeCoinStaking.interface.encodeFunctionData("deposit", ["BAYC", stakingAmount]);
+    console.log("depositEncodedData:", depositEncodedData);
+
+    const receiverContractBalanceBefore = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceBefore = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
 
     await waitForTx(
-      await bayc.connect(tokenSigner).transferFrom(tokenOwner, _airdropFlashLoanReceiver.address, tokenId)
+      await _flashClaimReceiver
+        .connect(_receiverOwnerSigner)
+        .callMethod(_mockApeCoinStaking.address, depositEncodedData, 0)
     );
 
-    const mockAirdropERC20Address = await _mockAirdropProject.erc20Token();
-    const mockAirdropERC20Token = await getMintableERC20(mockAirdropERC20Address);
-    const mockAirdropERC721Address = await _mockAirdropProject.erc721Token();
-    const mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
-    const mockAirdropERC1155Address = await _mockAirdropProject.erc1155Token();
-    const mockAirdropERC1155Token = await getMintableERC1155(mockAirdropERC1155Address);
+    const receiverContractBalanceAfter = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceAfter = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
 
-    const erc1155Id = (await _mockAirdropProject.getERC1155TokenId(tokenId)).toString();
-    console.log("tokenId:", tokenId, "erc1155Id:", erc1155Id, "owner:", nftOwner.address);
-
-    const applyAirdropEncodedData = _mockAirdropProject.interface.encodeFunctionData("nativeApplyAirdrop", [
-      bayc.address,
-      tokenId,
-    ]);
-    console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
-
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData)
-    );
-
-    const claimErc20Balance = await mockAirdropERC20Token.balanceOf(_airdropFlashLoanReceiver.address);
-    const claimErc721Balance = await mockAirdropERC721Token.balanceOf(_airdropFlashLoanReceiver.address);
-    const claimErc1155Balance = await mockAirdropERC1155Token.balanceOf(_airdropFlashLoanReceiver.address, erc1155Id);
-    console.log("Claim ERC20 Balance:", claimErc20Balance);
-    console.log("Claim ERC721 Balance:", claimErc721Balance);
-    console.log("Claim ERC1155 Balance:", claimErc1155Balance);
-
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .transferERC20(mockAirdropERC20Token.address, claimErc20Balance)
-    );
-    airdropERC721TokenId = tokenId.toString();
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .transferERC721(mockAirdropERC721Token.address, tokenId)
-    );
-    airdropERC1155TokenId = erc1155Id;
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .transferERC1155(mockAirdropERC1155Token.address, erc1155Id, claimErc1155Balance)
-    );
+    const receiverContractBalanceDelta = receiverContractBalanceBefore.sub(receiverContractBalanceAfter);
+    const stakingContractBalanceDelta = stakingContractBalanceAfter.sub(stakingContractBalanceBefore);
+    expect(stakingContractBalanceDelta).to.be.eq(receiverContractBalanceDelta);
   });
 
-  it("Approve user3 to transfer token - ERC20/ERC721/ERC1155", async () => {
-    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+  it("Withdraw ApeCoin from ApeCoinStaking", async () => {
+    const { users, bayc, bBAYC } = testEnv;
     const nftOwner = users[0];
-    const user3 = users[3];
-    const user4 = users[4];
 
-    const receiverOwnerAddress = await _airdropFlashLoanReceiver.owner();
-    const receiverOwnerSigner = await getEthersSignerByAddress(receiverOwnerAddress);
+    const stakingAmount = oneCoin.multipliedBy(100).toFixed(0);
+    const withdrawEncodedData = _mockApeCoinStaking.interface.encodeFunctionData("withdraw", ["BAYC", stakingAmount]);
+    console.log("withdrawEncodedData:", withdrawEncodedData);
 
-    const mockAirdropERC20Address = await _mockAirdropProject.erc20Token();
-    const mockAirdropERC20Token = await getMintableERC20(mockAirdropERC20Address);
-    const mockAirdropERC721Address = await _mockAirdropProject.erc721Token();
-    const mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
-    const mockAirdropERC1155Address = await _mockAirdropProject.erc1155Token();
-    const mockAirdropERC1155Token = await getMintableERC1155(mockAirdropERC1155Address);
+    const receiverContractBalanceBefore = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceBefore = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
 
-    console.log("nft owner transfer token to receiver");
     await waitForTx(
-      await mockAirdropERC20Token.connect(nftOwner.signer).transfer(_airdropFlashLoanReceiver.address, 1)
+      await _flashClaimReceiver
+        .connect(_receiverOwnerSigner)
+        .callMethod(_mockApeCoinStaking.address, withdrawEncodedData, 0)
     );
+
+    const receiverContractBalanceAfter = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceAfter = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
+
+    const receiverContractBalanceDelta = receiverContractBalanceAfter.sub(receiverContractBalanceBefore);
+    const stakingContractBalanceDelta = stakingContractBalanceBefore.sub(stakingContractBalanceAfter);
+    expect(stakingContractBalanceDelta).to.be.eq(receiverContractBalanceDelta);
+  });
+
+  it("Claim rewards from ApeCoinStaking", async () => {
+    const { users, bayc, bBAYC } = testEnv;
+    const nftOwner = users[0];
+
+    const claimEncodedData = _mockApeCoinStaking.interface.encodeFunctionData("claimRewards", [
+      "BAYC",
+      [_baycTokenId1, _baycTokenId2],
+    ]);
+    console.log("claimEncodedData:", claimEncodedData);
+
+    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
+      ["uint256[]", "address[]", "uint256[]", "address", "bytes"],
+      [[], [], [], _mockApeCoinStaking.address, claimEncodedData]
+    );
+    console.log("receiverEncodedData:", receiverEncodedData);
+
+    const receiverContractBalanceBefore = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceBefore = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
+
     await waitForTx(
-      await mockAirdropERC721Token
+      await bBAYC
         .connect(nftOwner.signer)
-        .transferFrom(nftOwner.address, _airdropFlashLoanReceiver.address, airdropERC721TokenId)
+        .flashLoan(_flashClaimReceiver.address, [_baycTokenId1, _baycTokenId2], receiverEncodedData)
     );
+
+    const receiverContractBalanceAfter = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceAfter = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
+
+    const receiverContractBalanceDelta = receiverContractBalanceAfter.sub(receiverContractBalanceBefore);
+    const stakingContractBalanceDelta = stakingContractBalanceBefore.sub(stakingContractBalanceAfter);
+    expect(stakingContractBalanceDelta).to.be.eq(receiverContractBalanceDelta);
+  });
+
+  it("Uncommit from ApeCoinStaking", async () => {
+    const { users, bayc, bBAYC } = testEnv;
+    const nftOwner = users[0];
+
+    const uncommitEncodedData = _mockApeCoinStaking.interface.encodeFunctionData("uncommit", ["BAYC", [_baycTokenId1]]);
+    console.log("uncommitEncodedData:", uncommitEncodedData);
+
+    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
+      ["uint256[]", "address[]", "uint256[]", "address", "bytes"],
+      [[], [], [], _mockApeCoinStaking.address, uncommitEncodedData]
+    );
+    console.log("receiverEncodedData:", receiverEncodedData);
+
+    const receiverContractBalanceBefore = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceBefore = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
+
     await waitForTx(
-      await mockAirdropERC1155Token
+      await bBAYC
         .connect(nftOwner.signer)
-        .safeTransferFrom(nftOwner.address, _airdropFlashLoanReceiver.address, airdropERC1155TokenId, 1, [])
+        .flashLoan(_flashClaimReceiver.address, [_baycTokenId1, _baycTokenId2], receiverEncodedData)
     );
 
-    console.log("receiver owner approve to user3");
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .approveERC20(mockAirdropERC20Token.address, user3.address, 100)
-    );
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .approveERC721ForAll(mockAirdropERC721Token.address, user3.address, true)
-    );
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .approveERC1155ForAll(mockAirdropERC1155Token.address, user3.address, true)
-    );
+    const stakingTokenData = await _mockApeCoinStaking.tokenDatas(_mockBAYCToken.address, _baycTokenId1);
+    expect(stakingTokenData.valid).to.be.eq(false);
 
-    console.log("user3 transfer receiver token to user4");
-    await waitForTx(
-      await mockAirdropERC20Token
-        .connect(user3.signer)
-        .transferFrom(_airdropFlashLoanReceiver.address, user4.address, 1)
-    );
-    await waitForTx(
-      await mockAirdropERC721Token
-        .connect(user3.signer)
-        .transferFrom(_airdropFlashLoanReceiver.address, user4.address, airdropERC721TokenId)
-    );
-    await waitForTx(
-      await mockAirdropERC1155Token
-        .connect(user3.signer)
-        .safeTransferFrom(_airdropFlashLoanReceiver.address, user4.address, airdropERC1155TokenId, 1, [])
-    );
+    const receiverContractBalanceAfter = await _mockApeCoinToken.balanceOf(_flashClaimReceiver.address);
+    const stakingContractBalanceAfter = await _mockApeCoinToken.balanceOf(_mockApeCoinStaking.address);
 
-    console.log("receiver owner remove approve to user3");
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .approveERC20(mockAirdropERC20Token.address, user3.address, 0)
-    );
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .approveERC721ForAll(mockAirdropERC721Token.address, user3.address, false)
-    );
-    await waitForTx(
-      await _airdropFlashLoanReceiver
-        .connect(receiverOwnerSigner)
-        .approveERC1155ForAll(mockAirdropERC1155Token.address, user3.address, false)
-    );
-
-    const erc20Allowance = await mockAirdropERC20Token.allowance(_airdropFlashLoanReceiver.address, user3.address);
-    const erc721IsApproved = await mockAirdropERC721Token.isApprovedForAll(
-      _airdropFlashLoanReceiver.address,
-      user3.address
-    );
-    const erc1155Approved = await mockAirdropERC1155Token.isApprovedForAll(
-      _airdropFlashLoanReceiver.address,
-      user3.address
-    );
-
-    expect(erc20Allowance).to.be.equal(0);
-    expect(erc721IsApproved).to.be.equal(false);
-    expect(erc1155Approved).to.be.equal(false);
+    const receiverContractBalanceDelta = receiverContractBalanceAfter.sub(receiverContractBalanceBefore);
+    const stakingContractBalanceDelta = stakingContractBalanceBefore.sub(stakingContractBalanceAfter);
+    expect(stakingContractBalanceDelta).to.be.eq(receiverContractBalanceDelta);
   });
 });

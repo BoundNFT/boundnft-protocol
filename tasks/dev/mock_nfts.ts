@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { MOCK_NFT_BASE_URIS } from "../../helpers/constants";
 import { deployAllMockNfts, deployMintableERC721 } from "../../helpers/contracts-deployments";
-import { getDeploySigner, getMintableERC721 } from "../../helpers/contracts-getters";
+import { getCryptoPunksMarket, getDeploySigner, getMintableERC721 } from "../../helpers/contracts-getters";
 import { registerContractInJsonDb, tryGetContractAddressInDb } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
 import { eNetwork, NftContractId } from "../../helpers/types";
@@ -11,6 +11,7 @@ task("dev:deploy-mock-nfts", "Deploy mock nfts for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     const network = localBRE.network.name as eNetwork;
     if (network.includes("main")) {
@@ -20,10 +21,20 @@ task("dev:deploy-mock-nfts", "Deploy mock nfts for dev enviroment")
     await deployAllMockNfts(verify);
   });
 
+task("dev:cryptopunks-init", "Doing CryptoPunks init task").setAction(async ({}, DRE) => {
+  await DRE.run("set-DRE");
+
+  const punks = await getCryptoPunksMarket();
+  await punks.allInitialOwnersAssigned();
+
+  await waitForTx(await punks.allInitialOwnersAssigned());
+});
+
 task("dev:add-mock-nfts", "Add mock nfts for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     const tokens: { [symbol: string]: MintableERC721 } = {};
 
@@ -46,6 +57,7 @@ task("dev:deploy-new-mock-nft", "Deploy new mock nft for dev enviroment")
   .addParam("symbol", "Symbol of mock nft contract")
   .setAction(async ({ verify, name, symbol }, localBRE) => {
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     const network = localBRE.network.name as eNetwork;
     if (network.includes("main")) {
@@ -59,7 +71,6 @@ task("dev:set-mock-nfts", "Set mock nfts for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
     await localBRE.run("set-DRE");
-
     for (const tokenSymbol of Object.keys(NftContractId)) {
       const contractId = tokenSymbol.toUpperCase();
       if (contractId == "WPUNKS") {

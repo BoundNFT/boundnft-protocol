@@ -9,6 +9,7 @@ task("bend:dev", "Deploy development enviroment")
     const POOL_NAME = ConfigNames.Bend;
 
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     // Prevent loss of gas verifying all the needed ENVs for Etherscan verification
     if (verify) {
