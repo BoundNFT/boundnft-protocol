@@ -36,6 +36,8 @@ import {
   UserFlashclaimRegistryV3Factory,
   AirdropFlashLoanReceiverV3,
   AirdropFlashLoanReceiverV3Factory,
+  MockApeCoinStakingFactory,
+  MockApeCoinStaking,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
@@ -72,6 +74,17 @@ export const deployMintableERC1155 = async (args: [], verify?: boolean): Promise
 export const deployMockAirdrop = async (args: [string], verify?: boolean): Promise<MockAirdropProject> =>
   withSaveAndVerify(
     await new MockAirdropProjectFactory(await getDeploySigner()).deploy(...args),
+    eContractid.MockAirdropProject,
+    args,
+    verify
+  );
+
+export const deployMockApeCoinStaking = async (
+  args: [string, string, string, string],
+  verify?: boolean
+): Promise<MockApeCoinStaking> =>
+  withSaveAndVerify(
+    await new MockApeCoinStakingFactory(await getDeploySigner()).deploy(...args),
     eContractid.MockAirdropProject,
     args,
     verify
