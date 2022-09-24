@@ -12,7 +12,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "MintableERC721": {
-    "address": "0x82C348Ef21629f5aaeE5280ef3f4389Ad82F8799",
+    "address": "0x49EdA925C67387b4597F4b41817Aaade0542EeD5",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BAYC": {
@@ -37,6 +37,10 @@
   },
   "SDOODLE": {
     "address": "0x82C348Ef21629f5aaeE5280ef3f4389Ad82F8799",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BAKC": {
+    "address": "0x49EdA925C67387b4597F4b41817Aaade0542EeD5",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "ProxyAdmin": {
