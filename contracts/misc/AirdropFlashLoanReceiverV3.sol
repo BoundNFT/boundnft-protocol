@@ -32,19 +32,6 @@ contract AirdropFlashLoanReceiverV3 is
   uint256 public deployType;
   uint256 public constant VERSION = 3;
 
-  // ERC20: token address => partner address => token amount
-  mapping(address => mapping(address => uint256)) public borrowedERC20FromPartners;
-  // ERC20: token address => total amount
-  mapping(address => uint256) public totalBorrowedERC20FromPartners;
-
-  // ERC721: token address => token id => partner address
-  mapping(address => mapping(uint256 => address)) public borrowedERC721FromPartners;
-
-  // ERC1155: token address => token id => partner address => token amount
-  mapping(address => mapping(uint256 => mapping(address => uint256))) public borrowedERC1155FromPartners;
-  // ERC1155: token address => token id => total amount
-  mapping(address => mapping(uint256 => uint256)) public totalBorrowedERC1155FromPartners;
-
   function initialize(
     address owner_,
     address bnftRegistry_,
@@ -218,11 +205,6 @@ contract AirdropFlashLoanReceiverV3 is
    */
   function transferERC20(address token, uint256 amount) external nonReentrant onlyOwner {
     address to = owner();
-
-    // borrowed tokens can not be transfer to owner
-    uint256 balance = IERC20Upgradeable(token).balanceOf(address(this));
-    require(balance >= (amount + totalBorrowedERC20FromPartners[token]), "token locked for partner");
-
     IERC20Upgradeable(token).transfer(to, amount);
   }
 
@@ -249,10 +231,6 @@ contract AirdropFlashLoanReceiverV3 is
    */
   function transferERC721(address token, uint256 id) external nonReentrant onlyOwner {
     address to = owner();
-
-    // borrowed tokens can not be transfer to owner
-    require(borrowedERC721FromPartners[token][id] == address(0), "token locked for partner");
-
     IERC721Upgradeable(token).safeTransferFrom(address(this), to, id);
   }
 
@@ -276,11 +254,6 @@ contract AirdropFlashLoanReceiverV3 is
     uint256 amount
   ) external nonReentrant onlyOwner {
     address to = owner();
-
-    // borrowed tokens can not be transfer to owner
-    uint256 balance = IERC1155Upgradeable(token).balanceOf(address(this), id);
-    require(balance >= (amount + totalBorrowedERC1155FromPartners[token][id]), "token locked for partner");
-
     IERC1155Upgradeable(token).safeTransferFrom(address(this), to, id, amount, new bytes(0));
   }
 
@@ -292,113 +265,6 @@ contract AirdropFlashLoanReceiverV3 is
     address to = owner();
     (bool success, ) = to.call{value: amount}(new bytes(0));
     require(success, "ETH_TRANSFER_FAILED");
-  }
-
-  /**
-   * @dev borrow ERC20 token from partner to contract
-   * @param token address of ERC20 token
-   * @param amount amount to send
-   * @param partner address of partner
-   */
-  function borrowERC20FromPartner(
-    address token,
-    uint256 amount,
-    address partner
-  ) external nonReentrant onlyOwner {
-    totalBorrowedERC20FromPartners[token] += amount;
-    borrowedERC20FromPartners[token][partner] += amount;
-    IERC20Upgradeable(token).transferFrom(partner, address(this), amount);
-  }
-
-  /**
-   * @dev borrow ERC721 token from partner to contract
-   * @param token address of ERC721 token
-   * @param id token item to send
-   * @param partner address of partner
-   */
-  function borrowERC721FromPartner(
-    address token,
-    uint256 id,
-    address partner
-  ) external nonReentrant onlyOwner {
-    borrowedERC721FromPartners[token][id] = partner;
-    IERC721Upgradeable(token).safeTransferFrom(partner, address(this), id);
-  }
-
-  /**
-   * @dev borrow ERC1155 token from partner to contract
-   * @param token address of ERC1155 token
-   * @param id token item to send
-   * @param amount amount to send
-   * @param partner address of partner
-   */
-  function borrowERC1155FromPartner(
-    address token,
-    uint256 id,
-    uint256 amount,
-    address partner
-  ) external nonReentrant onlyOwner {
-    totalBorrowedERC1155FromPartners[token][id] += amount;
-    borrowedERC1155FromPartners[token][id][partner] += amount;
-    IERC1155Upgradeable(token).safeTransferFrom(partner, address(this), id, amount, new bytes(0));
-  }
-
-  /**
-   * @dev repay ERC20 token from contract to partner
-   * @param token address of ERC20 token
-   * @param partner address of partner
-   */
-  function repayERC20ToPartner(address token, address partner) external nonReentrant {
-    uint256 amount = borrowedERC20FromPartners[token][partner];
-    require(amount > 0, "zero borrow amount from partner");
-    require(totalBorrowedERC20FromPartners[token] >= amount, "amount exceed total");
-
-    require((msg.sender == owner()) || (msg.sender == partner), "invalid caller");
-
-    totalBorrowedERC20FromPartners[token] -= amount;
-    borrowedERC20FromPartners[token][partner] = 0;
-    IERC20Upgradeable(token).transfer(partner, amount);
-  }
-
-  /**
-   * @dev repay ERC721 token from contract to partner
-   * @param token address of ERC721 token
-   * @param id token item to send
-   * @param partner address of partner
-   */
-  function repayERC721ToPartner(
-    address token,
-    uint256 id,
-    address partner
-  ) external nonReentrant {
-    require(borrowedERC721FromPartners[token][id] == partner, "invalid partner");
-
-    require((msg.sender == owner()) || (msg.sender == partner), "invalid caller");
-
-    borrowedERC721FromPartners[token][id] = address(0);
-    IERC721Upgradeable(token).safeTransferFrom(address(this), partner, id);
-  }
-
-  /**
-   * @dev repay ERC1155 token from contract to partner
-   * @param token address of ERC1155 token
-   * @param id token item to send
-   * @param partner address of partner
-   */
-  function repayERC1155ToPartner(
-    address token,
-    uint256 id,
-    address partner
-  ) external nonReentrant {
-    uint256 amount = borrowedERC1155FromPartners[token][id][partner];
-    require(amount > 0, "zero borrow amount from partner");
-    require(totalBorrowedERC1155FromPartners[token][id] >= amount, "amount exceed total");
-
-    require((msg.sender == owner()) || (msg.sender == partner), "invalid caller");
-
-    totalBorrowedERC1155FromPartners[token][id] -= amount;
-    borrowedERC1155FromPartners[token][id][partner] = 0;
-    IERC1155Upgradeable(token).safeTransferFrom(address(this), partner, id, amount, new bytes(0));
   }
 
   /**
