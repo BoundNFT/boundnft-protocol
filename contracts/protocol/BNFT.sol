@@ -29,6 +29,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
   address private _claimAdmin;
+  mapping(address => bool) public authorizedFlashLoanCallers;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -217,7 +218,10 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
     // only token owner can do flashloan
     for (i = 0; i < nftTokenIds.length; i++) {
-      require(ownerOf(nftTokenIds[i]) == _msgSender(), "BNFT: caller is not owner");
+      require(
+        (ownerOf(nftTokenIds[i]) == _msgSender()) || (authorizedFlashLoanCallers[_msgSender()]),
+        "BNFT: caller is not owner or authed"
+      );
     }
 
     // step 1: moving underlying asset forward to receiver contract
@@ -308,6 +312,15 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
   function setENSName(address registrar, string memory name) external nonReentrant onlyOwner returns (bytes32) {
     return IENSReverseRegistrar(registrar).setName(name);
+  }
+
+  function setAuthorizedFlashLoanCallers(address[] calldata callers, bool flag) external nonReentrant onlyOwner {
+    for (uint256 i = 0; i < callers.length; i++) {
+      require(AddressUpgradeable.isContract(callers[i]), "BNFT: caller is not contract");
+      authorizedFlashLoanCallers[callers[i]] = flag;
+
+      emit AuthorizedFlashLoanCallerUpdated(callers[i], flag);
+    }
   }
 
   function onERC721Received(

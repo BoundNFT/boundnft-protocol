@@ -57,6 +57,8 @@ interface IBNFT {
 
   event ExecuteAirdrop(address indexed airdropContract);
 
+  event AuthorizedFlashLoanCallerUpdated(address indexed caller, bool flag);
+
   /**
    * @dev Initializes the bNFT
    * @param underlyingAsset_ The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)
