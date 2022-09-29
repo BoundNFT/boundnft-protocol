@@ -185,10 +185,8 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
     const bnftOwnerAddr = await bBAYC.owner();
     const bnftOwnerSigner = await getEthersSignerByAddress(bnftOwnerAddr);
 
-    await waitForTx(
-      await bBAYC.connect(bnftOwnerSigner).setAuthorizedFlashLoanCallers([_mockBNFTMinter.address], true)
-    );
-    const callerFlag = await bBAYC.authorizedFlashLoanCallers(_mockBNFTMinter.address);
+    await waitForTx(await _mockBNFTMinter.setAuthorizedFlashLoanCallers([_mockBNFTMinter.address], true));
+    const callerFlag = await bBAYC.authorizedFlashLoanCallers(_mockBNFTMinter.address, _mockBNFTMinter.address);
     expect(callerFlag).to.be.equal(true);
 
     await waitForTx(await _mockBNFTMinter.flashLoan(_mockFlashLoanReceiver.address, [user0TokenId1], []));
