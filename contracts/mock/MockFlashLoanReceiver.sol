@@ -20,7 +20,8 @@ contract MockFlashLoanReceiver is IFlashLoanReceiver, IERC721Receiver {
   uint8 _simulateBNFTCall;
   uint256 _simulateBNFTCallTokenId;
   mapping(uint256 => bool) _tokenIdNotToApproves;
-  uint256[] _tokenIdList;
+  uint256[10] _tokenIdList;
+  uint256 _tokenIdIndex;
 
   constructor(address bnftRegistry_) {
     _bnftRegistry = bnftRegistry_;
@@ -31,8 +32,10 @@ contract MockFlashLoanReceiver is IFlashLoanReceiver, IERC721Receiver {
   }
 
   function setTokenIdNotToApprove(uint256 tokenId) public {
+    require(_tokenIdIndex < 10, "exceed max token id list");
     _tokenIdNotToApproves[tokenId] = true;
-    _tokenIdList.push(tokenId);
+    _tokenIdList[_tokenIdIndex] = tokenId;
+    _tokenIdIndex++;
   }
 
   //1:mint, 2:burn
@@ -45,11 +48,11 @@ contract MockFlashLoanReceiver is IFlashLoanReceiver, IERC721Receiver {
     _failExecution = false;
     _simulateBNFTCall = 0;
     _simulateBNFTCallTokenId = 0;
-    uint256 i;
-    for (i = 0; i < _tokenIdList.length; i++) {
-      delete _tokenIdNotToApproves[i];
-      delete _tokenIdList[i];
+    for (uint256 i = 0; i < _tokenIdList.length; i++) {
+      _tokenIdNotToApproves[_tokenIdList[i]] = false;
+      _tokenIdList[i] = type(uint256).max;
     }
+    _tokenIdIndex = 0;
   }
 
   function executeOperation(
@@ -70,7 +73,11 @@ contract MockFlashLoanReceiver is IFlashLoanReceiver, IERC721Receiver {
       return false;
     }
 
-    //IERC721(asset).setApprovalForAll(operator, true);
+    if (_tokenIdIndex == 0) {
+      IERC721(asset).setApprovalForAll(operator, true);
+    } else {
+      IERC721(asset).setApprovalForAll(operator, false);
+    }
 
     for (uint256 i = 0; i < tokenIds.length; i++) {
       //check the contract has the specified token
