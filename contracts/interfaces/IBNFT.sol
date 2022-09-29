@@ -57,7 +57,7 @@ interface IBNFT {
 
   event ExecuteAirdrop(address indexed airdropContract);
 
-  event AuthorizedFlashLoanCallerUpdated(address indexed caller, bool flag);
+  event AuthorizedFlashLoanCallerUpdated(address indexed minter, address indexed caller, bool flag);
 
   /**
    * @dev Initializes the bNFT
@@ -109,6 +109,8 @@ interface IBNFT {
     uint256[] calldata nftTokenIds,
     bytes calldata params
   ) external;
+
+  function setAuthorizedFlashLoanCallers(address[] calldata callers, bool flag) external;
 
   function claimERC20Airdrop(
     address token,
