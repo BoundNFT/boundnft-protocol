@@ -29,8 +29,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
   address private _claimAdmin;
-  // minter => caller => flag
-  mapping(address => mapping(address => bool)) public authorizedFlashLoanCallers;
+  // Mapping from owner to flash loan operator approvals
+  mapping(address => mapping(address => bool)) private _flashLoanOperatorApprovals;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -159,7 +159,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * @param to The owner address receive the bNFT token
    * @param tokenId token id of the underlying asset of NFT
    **/
-  function mint(address to, uint256 tokenId) external override nonReentrant {
+  function mint(address to, uint256 tokenId) public override nonReentrant {
     bool isCA = AddressUpgradeable.isContract(_msgSender());
     if (!isCA) {
       require(to == _msgSender(), "BNFT: caller is not to");
@@ -186,7 +186,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    *
    * @param tokenId token id of the underlying asset of NFT
    **/
-  function burn(uint256 tokenId) external override nonReentrant {
+  function burn(uint256 tokenId) public override nonReentrant {
     require(_exists(tokenId), "BNFT: nonexist token");
     require(_minters[tokenId] == _msgSender(), "BNFT: caller is not minter");
 
@@ -208,7 +208,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address receiverAddress,
     uint256[] calldata nftTokenIds,
     bytes calldata params
-  ) external override nonReentrant {
+  ) public override nonReentrant {
     uint256 i;
     IFlashLoanReceiver receiver = IFlashLoanReceiver(receiverAddress);
 
@@ -219,11 +219,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
     // only token owner can do flashloan
     for (i = 0; i < nftTokenIds.length; i++) {
-      bool checked = ownerOf(nftTokenIds[i]) == _msgSender();
-      if (!checked) {
-        checked = authorizedFlashLoanCallers[_minters[nftTokenIds[i]]][_msgSender()];
-      }
-      require(checked, "BNFT: caller is not owner or authed");
+      require(_isFlashLoanApprovedOrOwner(_msgSender(), nftTokenIds[i]), "BNFT: caller is not owner nor approved");
     }
 
     // step 1: moving underlying asset forward to receiver contract
@@ -245,14 +241,21 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     }
   }
 
-  function setAuthorizedFlashLoanCallers(address[] calldata callers, bool flag) external override nonReentrant {
-    address minter = _msgSender();
-    for (uint256 i = 0; i < callers.length; i++) {
-      require(AddressUpgradeable.isContract(callers[i]), "BNFT: caller is not contract");
-      authorizedFlashLoanCallers[minter][callers[i]] = flag;
+  /**
+   * @dev See {IBNFT-setFlashLoanApprovalForAll}.
+   */
+  function setFlashLoanApprovalForAll(address operator, bool approved) public override nonReentrant {
+    address tokenOwner = _msgSender();
+    require(tokenOwner != operator, "BNFT: operator cannot be caller");
+    _flashLoanOperatorApprovals[tokenOwner][operator] = approved;
+    emit FlashLoanApprovalForAll(tokenOwner, operator, approved);
+  }
 
-      emit AuthorizedFlashLoanCallerUpdated(minter, callers[i], flag);
-    }
+  /**
+   * @dev See {IBNFT-isFlashLoanApprovedForAll}.
+   */
+  function isFlashLoanApprovedForAll(address tokenOwner, address operator) public view override returns (bool) {
+    return _flashLoanOperatorApprovals[tokenOwner][operator];
   }
 
   /**
@@ -265,7 +268,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   /**
    * @dev See {IBNFT-contractURI}.
    */
-  function contractURI() external view override returns (string memory) {
+  function contractURI() public view override returns (string memory) {
     string memory hexAddress = StringsUpgradeable.toHexString(uint256(uint160(address(this))), 20);
     return string(abi.encodePacked("https://metadata.benddao.xyz/", hexAddress));
   }
@@ -274,7 +277,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address token,
     address to,
     uint256 amount
-  ) external override nonReentrant onlyClaimAdmin {
+  ) public override nonReentrant onlyClaimAdmin {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     require(token != address(this), "BNFT: token can not be self address");
     IERC20Upgradeable(token).transfer(to, amount);
@@ -285,7 +288,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address token,
     address to,
     uint256[] calldata ids
-  ) external override nonReentrant onlyClaimAdmin {
+  ) public override nonReentrant onlyClaimAdmin {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     require(token != address(this), "BNFT: token can not be self address");
     for (uint256 i = 0; i < ids.length; i++) {
@@ -300,7 +303,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256[] calldata ids,
     uint256[] calldata amounts,
     bytes calldata data
-  ) external override nonReentrant onlyClaimAdmin {
+  ) public override nonReentrant onlyClaimAdmin {
     require(token != _underlyingAsset, "BNFT: token can not be underlying asset");
     require(token != address(this), "BNFT: token can not be self address");
     IERC1155Upgradeable(token).safeBatchTransferFrom(address(this), to, ids, amounts, data);
@@ -308,7 +311,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   function executeAirdrop(address airdropContract, bytes calldata airdropParams)
-    external
+    public
     override
     nonReentrant
     onlyClaimAdmin
@@ -322,7 +325,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     emit ExecuteAirdrop(airdropContract);
   }
 
-  function setENSName(address registrar, string memory name) external nonReentrant onlyOwner returns (bytes32) {
+  function setENSName(address registrar, string memory name) public nonReentrant onlyOwner returns (bytes32) {
     return IENSReverseRegistrar(registrar).setName(name);
   }
 
@@ -331,7 +334,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address from,
     uint256 tokenId,
     bytes calldata data
-  ) external pure override returns (bytes4) {
+  ) public pure override returns (bytes4) {
     operator;
     from;
     tokenId;
@@ -345,7 +348,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256 id,
     uint256 value,
     bytes calldata data
-  ) external pure override returns (bytes4) {
+  ) public pure override returns (bytes4) {
     operator;
     from;
     id;
@@ -360,7 +363,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256[] calldata ids,
     uint256[] calldata values,
     bytes calldata data
-  ) external pure override returns (bytes4) {
+  ) public pure override returns (bytes4) {
     operator;
     from;
     ids;
@@ -372,7 +375,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   /**
    * @dev See {IBNFT-minterOf}.
    */
-  function minterOf(uint256 tokenId) external view override returns (address) {
+  function minterOf(uint256 tokenId) public view override returns (address) {
     address minter = _minters[tokenId];
     require(minter != address(0), "BNFT: minter query for nonexistent token");
     return minter;
@@ -381,8 +384,21 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   /**
    * @dev See {IBNFT-underlyingAsset}.
    */
-  function underlyingAsset() external view override returns (address) {
+  function underlyingAsset() public view override returns (address) {
     return _underlyingAsset;
+  }
+
+  /**
+   * @dev Returns whether `operator` is allowed to manage `tokenId`.
+   *
+   * Requirements:
+   *
+   * - `tokenId` must exist.
+   */
+  function _isFlashLoanApprovedOrOwner(address operator, uint256 tokenId) internal view returns (bool) {
+    require(_exists(tokenId), "BNFT: operator query for nonexistent token");
+    address tokenOwner = ownerOf(tokenId);
+    return (operator == tokenOwner || isFlashLoanApprovedForAll(tokenOwner, operator));
   }
 
   /**

@@ -57,7 +57,7 @@ interface IBNFT {
 
   event ExecuteAirdrop(address indexed airdropContract);
 
-  event AuthorizedFlashLoanCallerUpdated(address indexed minter, address indexed caller, bool flag);
+  event FlashLoanApprovalForAll(address indexed owner, address indexed operator, bool approved);
 
   /**
    * @dev Initializes the bNFT
@@ -110,7 +110,20 @@ interface IBNFT {
     bytes calldata params
   ) external;
 
-  function setAuthorizedFlashLoanCallers(address[] calldata callers, bool flag) external;
+  /**
+   * @dev Approve or remove the flash loan `operator` as an operator for the caller.
+   * Operators can call {flashLoan} for any token owned by the caller.
+   *
+   * Requirements:
+   *
+   * - The `operator` cannot be the caller.
+   */
+  function setFlashLoanApprovalForAll(address operator, bool approved) external;
+
+  /**
+   * @dev Returns if the `operator` is allowed to call flash loan of the assets of `owner`.
+   */
+  function isFlashLoanApprovedForAll(address owner, address operator) external view returns (bool);
 
   function claimERC20Airdrop(
     address token,
