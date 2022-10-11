@@ -13,6 +13,7 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
   let user0TokenId1 = {} as string;
   let user0TokenId2 = {} as string;
   let user1TokenId1 = {} as string;
+  let user2TokenId1 = {} as string;
 
   before(async () => {
     const { bayc, bBAYC, bnftRegistry } = testEnv;
@@ -118,7 +119,7 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
 
     await expect(
       bBAYC.connect(users[0].signer).flashLoan(_mockFlashLoanReceiver.address, [user1TokenId1], [])
-    ).to.be.revertedWith("BNFT: caller is not owner");
+    ).to.be.revertedWith("BNFT: caller is not owner nor approved");
   });
 
   it("Takes flashloan, simulating receiver execution failed (revert expected)", async () => {
@@ -179,16 +180,36 @@ makeSuite("BNFT: FlashLoan function", (testEnv: TestEnv) => {
     ).to.be.revertedWith("ReentrancyGuard: reentrant call");
   });
 
-  it("Tries to take a flashloan by authorized aucontract", async () => {
+  it("Tries to take a flashloan by approved contract", async () => {
     const { users, bayc, bBAYC } = testEnv;
+    const user2 = users[2];
 
-    const bnftOwnerAddr = await bBAYC.owner();
-    const bnftOwnerSigner = await getEthersSignerByAddress(bnftOwnerAddr);
+    testEnv.tokenIdTracker++;
+    user2TokenId1 = testEnv.tokenIdTracker.toString();
+    await waitForTx(await bayc.connect(user2.signer).mint(user2TokenId1));
+    await waitForTx(await bayc.connect(user2.signer).setApprovalForAll(bBAYC.address, true));
+    await waitForTx(await bBAYC.connect(user2.signer).mint(user2.address, user2TokenId1));
 
-    await waitForTx(await _mockBNFTMinter.setAuthorizedFlashLoanCallers([_mockBNFTMinter.address], true));
-    const callerFlag = await bBAYC.authorizedFlashLoanCallers(_mockBNFTMinter.address, _mockBNFTMinter.address);
-    expect(callerFlag).to.be.equal(true);
+    console.log("revert expected before approved");
+    await expect(_mockBNFTMinter.flashLoan(_mockFlashLoanReceiver.address, [user2TokenId1], [])).to.be.revertedWith(
+      "BNFT: caller is not owner nor approved"
+    );
 
-    await waitForTx(await _mockBNFTMinter.flashLoan(_mockFlashLoanReceiver.address, [user0TokenId1], []));
+    console.log("add approve flash loan to the mock contract");
+    await waitForTx(await bBAYC.connect(user2.signer).setFlashLoanApprovalForAll(_mockBNFTMinter.address, true));
+    const approved = await bBAYC.isFlashLoanApprovedForAll(user2.address, _mockBNFTMinter.address);
+    expect(approved).to.be.equal(true);
+
+    console.log("success expected after approved");
+    await waitForTx(await _mockBNFTMinter.flashLoan(_mockFlashLoanReceiver.address, [user2TokenId1], []));
+
+    console.log("remove approve flash loan to the mock contract");
+    await waitForTx(await bBAYC.connect(user2.signer).setFlashLoanApprovalForAll(_mockBNFTMinter.address, false));
+    const approved2 = await bBAYC.isFlashLoanApprovedForAll(user2.address, _mockBNFTMinter.address);
+    expect(approved2).to.be.equal(false);
+
+    await expect(_mockBNFTMinter.flashLoan(_mockFlashLoanReceiver.address, [user2TokenId1], [])).to.be.revertedWith(
+      "BNFT: caller is not owner nor approved"
+    );
   });
 });
