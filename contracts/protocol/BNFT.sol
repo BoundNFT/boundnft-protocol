@@ -4,6 +4,7 @@ pragma solidity 0.8.4;
 import {IBNFT} from "../interfaces/IBNFT.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
 import {IENSReverseRegistrar} from "../interfaces/IENSReverseRegistrar.sol";
+import {IBNFTInterceptor} from "../interfaces/IBNFTInterceptor.sol";
 
 import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
@@ -31,6 +32,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   address private _claimAdmin;
   // Mapping from owner to flash loan operator approvals
   mapping(address => mapping(address => bool)) private _flashLoanOperatorApprovals;
+  // Mapping from minter to approved interceptor addresses
+  mapping(address => mapping(uint256 => address[])) private _tokenInterceptors;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -188,11 +191,20 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    **/
   function burn(uint256 tokenId) public override nonReentrant {
     require(_exists(tokenId), "BNFT: nonexist token");
-    require(_minters[tokenId] == _msgSender(), "BNFT: caller is not minter");
+    address minter = minterOf(tokenId);
+    require(minter == _msgSender(), "BNFT: caller is not minter");
+
+    _preHandleBurn(tokenId);
 
     address tokenOwner = ERC721Upgradeable.ownerOf(tokenId);
 
     _burn(tokenId);
+
+    // purge the interceptors
+    for (; _tokenInterceptors[minter][tokenId].length > 0; ) {
+      _tokenInterceptors[minter][tokenId].pop();
+    }
+    delete _tokenInterceptors[minter][tokenId];
 
     delete _minters[tokenId];
 
@@ -256,6 +268,54 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    */
   function isFlashLoanApprovedForAll(address tokenOwner, address operator) public view override returns (bool) {
     return _flashLoanOperatorApprovals[tokenOwner][operator];
+  }
+
+  /**
+   * @dev See {IBNFT-addTokenInterceptor}.
+   */
+  function addTokenInterceptor(uint256 tokenId, address interceptor) public override nonReentrant {
+    address tokenMinter = _msgSender();
+    for (uint256 i = 0; i < _tokenInterceptors[tokenMinter][tokenId].length; i++) {
+      require(_tokenInterceptors[tokenMinter][tokenId][i] != interceptor, "BNFT: interceptor already existed");
+    }
+    _tokenInterceptors[tokenMinter][tokenId].push(interceptor);
+    emit TokenInterceptorUpdated(tokenMinter, tokenId, interceptor, true);
+  }
+
+  /**
+   * @dev See {IBNFT-deleteTokenInterceptor}.
+   */
+  function deleteTokenInterceptor(uint256 tokenId, address interceptor) public override nonReentrant {
+    address tokenMinter = _msgSender();
+    address[] storage interceptors = _tokenInterceptors[tokenMinter][tokenId];
+
+    bool isFind = false;
+    uint256 findIndex = 0;
+    for (; findIndex < interceptors.length; findIndex++) {
+      if (interceptors[findIndex] == interceptor) {
+        isFind = true;
+        break;
+      }
+    }
+
+    if (isFind) {
+      uint256 lastInterceptorIndex = interceptors.length;
+      // When the token to delete is the last item, the swap operation is unnecessary.
+      // Move the last interceptor to the slot of the to-delete interceptor
+      if (lastInterceptorIndex > findIndex) {
+        address lastInterceptorAddr = interceptors[lastInterceptorIndex];
+        interceptors[findIndex] = lastInterceptorAddr;
+      }
+      interceptors.pop();
+      emit TokenInterceptorUpdated(tokenMinter, tokenId, interceptor, false);
+    }
+  }
+
+  /**
+   * @dev See {IBNFT-getTokenInterceptors}.
+   */
+  function getTokenInterceptors(address tokenMinter, uint256 tokenId) public view override returns (address[] memory) {
+    return _tokenInterceptors[tokenMinter][tokenId];
   }
 
   /**
@@ -399,6 +459,22 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     require(_exists(tokenId), "BNFT: operator query for nonexistent token");
     address tokenOwner = ownerOf(tokenId);
     return (operator == tokenOwner || isFlashLoanApprovedForAll(tokenOwner, operator));
+  }
+
+  function _preHandleMint(uint256 tokenId) internal {
+    address[] storage interceptors = _tokenInterceptors[_msgSender()][tokenId];
+    for (uint256 i = 0; i < interceptors.length; i++) {
+      bool checkHandle = IBNFTInterceptor(interceptors[i]).preHandleMint(underlyingAsset(), tokenId);
+      require(checkHandle, "BNFT: call interceptor mint failed");
+    }
+  }
+
+  function _preHandleBurn(uint256 tokenId) internal {
+    address[] storage interceptors = _tokenInterceptors[_msgSender()][tokenId];
+    for (uint256 i = 0; i < interceptors.length; i++) {
+      bool checkHandle = IBNFTInterceptor(interceptors[i]).preHandleBurn(underlyingAsset(), tokenId);
+      require(checkHandle, "BNFT: call interceptor burn failed");
+    }
   }
 
   /**
