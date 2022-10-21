@@ -35,4 +35,12 @@ contract MockBNFTMinter is ERC721Holder {
   ) public {
     IBNFT(_bnftAddress).flashLoan(receiverAddress, nftTokenIds, params);
   }
+
+  function addTokenInterceptor(uint256 tokenId, address interceptor) public {
+    IBNFT(_bnftAddress).addTokenInterceptor(tokenId, interceptor);
+  }
+
+  function deleteTokenInterceptor(uint256 tokenId, address interceptor) public {
+    IBNFT(_bnftAddress).deleteTokenInterceptor(tokenId, interceptor);
+  }
 }
