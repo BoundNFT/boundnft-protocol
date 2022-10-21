@@ -1,7 +1,12 @@
 import { task } from "hardhat/config";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
 import { eNetwork } from "../../helpers/types";
-import { deployBNFTRegistry, deployGenericBNFTImpl } from "../../helpers/contracts-deployments";
+import {
+  deployBNFTRegistry,
+  deployGenericBNFTImpl,
+  deployMockTokenInterceptor,
+} from "../../helpers/contracts-deployments";
+import { getDeploySigner } from "../../helpers/contracts-getters";
 
 task("dev:deploy-new-implementation", "Deploy new implementation")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
@@ -13,6 +18,7 @@ task("dev:deploy-new-implementation", "Deploy new implementation")
 
     const network = DRE.network.name as eNetwork;
     const poolConfig = loadPoolConfig(pool);
+    const deployer = await getDeploySigner();
 
     if (contract == "BNFTRegistry") {
       const newImpl = await deployBNFTRegistry(verify);
@@ -22,5 +28,10 @@ task("dev:deploy-new-implementation", "Deploy new implementation")
     if (contract == "BNFT") {
       const newImpl = await deployGenericBNFTImpl(verify);
       console.log("BNFT generic implementation address:", newImpl.address);
+    }
+
+    if (contract == "MockTokenInterceptor") {
+      const newImpl = await deployMockTokenInterceptor(verify);
+      console.log("MockTokenInterceptor implementation address:", newImpl.address);
     }
   });

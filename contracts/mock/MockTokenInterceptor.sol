@@ -8,6 +8,9 @@ contract MockTokenInterceptor is IBNFTInterceptor {
   bool public isPreHandleMintCalled;
   bool public isPreHandleBurnCalled;
 
+  event PreHandleMint(address indexed nftAsset, uint256 nftTokenId);
+  event PreHandleBurn(address indexed nftAsset, uint256 nftTokenId);
+
   function resetCallState() public {
     isPreHandleMintCalled = false;
     isPreHandleBurnCalled = false;
@@ -17,6 +20,7 @@ contract MockTokenInterceptor is IBNFTInterceptor {
     nftAsset;
     nftTokenId;
     isPreHandleMintCalled = true;
+    emit PreHandleMint(nftAsset, nftTokenId);
     return true;
   }
 
@@ -24,6 +28,7 @@ contract MockTokenInterceptor is IBNFTInterceptor {
     nftAsset;
     nftTokenId;
     isPreHandleBurnCalled = true;
+    emit PreHandleBurn(nftAsset, nftTokenId);
     return true;
   }
 }

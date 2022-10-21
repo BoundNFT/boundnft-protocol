@@ -36,6 +36,7 @@ import {
   UserFlashclaimRegistryV3Factory,
   AirdropFlashLoanReceiverV3,
   AirdropFlashLoanReceiverV3Factory,
+  MockTokenInterceptorFactory,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
@@ -243,3 +244,11 @@ export const deployBoundPunkGateway = async (verify?: boolean) => {
   await insertContractAddressInDb(eContractid.BoundPunkGatewayImpl, punkImpl.address);
   return withSaveAndVerify(punkImpl, eContractid.BoundPunkGateway, [], verify);
 };
+
+export const deployMockTokenInterceptor = async (verify: boolean) =>
+  withSaveAndVerify(
+    await new MockTokenInterceptorFactory(await getDeploySigner()).deploy(),
+    eContractid.MockTokenInterceptor,
+    [],
+    verify
+  );

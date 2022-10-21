@@ -89,5 +89,9 @@
   "AirdropDistribution": {
     "address": "0x3CF52C9ce29a1df2adCd0Ce657BbBBB63A3f9D01",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MockTokenInterceptor": {
+    "address": "0xb8eC17aA514fbe005154E3959692d3DDB52ac987",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

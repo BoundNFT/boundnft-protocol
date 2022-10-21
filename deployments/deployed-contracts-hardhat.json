@@ -1,6 +1,6 @@
 {
   "MintableERC721": {
-    "address": "0xAAF09660FafD2138fC9e5dA036D2a101A623b52F",
+    "address": "0xC7F247a33C79BB0fABc3605479372D3Ba188fcbc",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "WPUNKS": {
@@ -16,7 +16,7 @@
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "BNFT": {
-    "address": "0x6be4a054629ff10Af2680696A5a5Dc8C525D977F",
+    "address": "0x1864c9342339c36588F7f31d1079690a7003c7a2",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "BNFTRegistryImpl": {
