@@ -2,33 +2,32 @@
 pragma solidity 0.8.4;
 
 import "../interfaces/IBNFT.sol";
-import "../interfaces/IBNFTInterceptor.sol";
+import "../interfaces/IBNFTBurnInterceptor.sol";
 
-contract MockTokenInterceptor is IBNFTInterceptor {
-  bool public isPreHandleMintCalled;
-  bool public isPreHandleBurnCalled;
+contract MockTokenInterceptor is IBNFTBurnInterceptor {
+  bool public isBeforeTokenBurnCalled;
+  bool public isAfterTokenBurnCalled;
 
-  event PreHandleMint(address indexed nftAsset, uint256 nftTokenId);
-  event PreHandleBurn(address indexed nftAsset, uint256 nftTokenId);
+  event BeforeTokenBurn(address indexed nftAsset, uint256 nftTokenId);
+  event AfterTokenBurn(address indexed nftAsset, uint256 nftTokenId);
 
   function resetCallState() public {
-    isPreHandleMintCalled = false;
-    isPreHandleBurnCalled = false;
+    isBeforeTokenBurnCalled = false;
   }
 
-  function preHandleMint(address nftAsset, uint256 nftTokenId) public override returns (bool) {
+  function beforeTokenBurn(address nftAsset, uint256 nftTokenId) public override returns (bool) {
     nftAsset;
     nftTokenId;
-    isPreHandleMintCalled = true;
-    emit PreHandleMint(nftAsset, nftTokenId);
+    isBeforeTokenBurnCalled = true;
+    emit BeforeTokenBurn(nftAsset, nftTokenId);
     return true;
   }
 
-  function preHandleBurn(address nftAsset, uint256 nftTokenId) public override returns (bool) {
+  function afterTokenBurn(address nftAsset, uint256 nftTokenId) public override returns (bool) {
     nftAsset;
     nftTokenId;
-    isPreHandleBurnCalled = true;
-    emit PreHandleBurn(nftAsset, nftTokenId);
+    isAfterTokenBurnCalled = true;
+    emit AfterTokenBurn(nftAsset, nftTokenId);
     return true;
   }
 }

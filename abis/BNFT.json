@@ -346,7 +346,7 @@
         "type": "bool"
       }
     ],
-    "name": "TokenInterceptorUpdated",
+    "name": "TokenBurnInterceptorUpdated",
     "type": "event"
   },
   {
@@ -387,7 +387,7 @@
         "type": "address"
       }
     ],
-    "name": "addTokenInterceptor",
+    "name": "addTokenBurnInterceptor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -560,7 +560,7 @@
         "type": "address"
       }
     ],
-    "name": "deleteTokenInterceptor",
+    "name": "deleteTokenBurnInterceptor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -638,7 +638,7 @@
         "type": "uint256"
       }
     ],
-    "name": "getTokenInterceptors",
+    "name": "getTokenBurnInterceptors",
     "outputs": [
       {
         "internalType": "address[]",
