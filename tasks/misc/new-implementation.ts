@@ -1,11 +1,7 @@
 import { task } from "hardhat/config";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
 import { eNetwork } from "../../helpers/types";
-import {
-  deployBNFTRegistry,
-  deployGenericBNFTImpl,
-  deployMockTokenInterceptor,
-} from "../../helpers/contracts-deployments";
+import { deployBNFTRegistry, deployGenericBNFTImpl } from "../../helpers/contracts-deployments";
 import { getDeploySigner } from "../../helpers/contracts-getters";
 
 task("dev:deploy-new-implementation", "Deploy new implementation")
@@ -28,10 +24,5 @@ task("dev:deploy-new-implementation", "Deploy new implementation")
     if (contract == "BNFT") {
       const newImpl = await deployGenericBNFTImpl(verify);
       console.log("BNFT generic implementation address:", newImpl.address);
-    }
-
-    if (contract == "MockTokenInterceptor") {
-      const newImpl = await deployMockTokenInterceptor(verify);
-      console.log("MockTokenInterceptor implementation address:", newImpl.address);
     }
   });
