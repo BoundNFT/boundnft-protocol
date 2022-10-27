@@ -22,4 +22,5 @@ export const MOCK_NFT_BASE_URIS = {
   CLONEX: "https://clonex-assets.rtfkt.com/",
   AZUKI: "https://ikzttp.mypinata.cloud/ipfs/QmQFkLSQysj94s5GvTHPyzTxrawwtjgiiYS2TBLgrvw8CW/",
   KONGZ: "https://kongz.herokuapp.com/api/metadata/",
+  OTHR: "https://api.otherside.xyz/lands/",
 };

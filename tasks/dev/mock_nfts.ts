@@ -64,7 +64,8 @@ task("dev:deploy-new-mock-nft", "Deploy new mock nft for dev enviroment")
       throw new Error("Mocks not used at mainnet configuration.");
     }
 
-    await deployMintableERC721([name, symbol], verify);
+    const instance = await deployMintableERC721([name, symbol], verify);
+    await registerContractInJsonDb(symbol, instance);
   });
 
 task("dev:set-mock-nfts", "Set mock nfts for dev enviroment")

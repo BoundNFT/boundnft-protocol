@@ -12,7 +12,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "MintableERC721": {
-    "address": "0x49EdA925C67387b4597F4b41817Aaade0542EeD5",
+    "address": "0xf7Aa08BeF8598B9F264FC3E8E977b8545292CFDb",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BAYC": {
@@ -92,6 +92,10 @@
   },
   "MockTokenInterceptor": {
     "address": "0xb8eC17aA514fbe005154E3959692d3DDB52ac987",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "OTHR": {
+    "address": "0xf7Aa08BeF8598B9F264FC3E8E977b8545292CFDb",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
