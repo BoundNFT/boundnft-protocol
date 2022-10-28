@@ -31,6 +31,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   address private _claimAdmin;
   // Mapping from owner to flash loan operator approvals
   mapping(address => mapping(address => bool)) private _flashLoanOperatorApprovals;
+  // Deprecated & Compatible with Goerli, Mapping from minter to approved burn interceptor addresses
+  mapping(address => mapping(uint256 => address[])) private _deprecatedGap1;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
