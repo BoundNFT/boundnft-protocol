@@ -9,6 +9,7 @@ task("dev:deploy-new-implementation", "Deploy new implementation")
   .addParam("contract", "Contract name")
   .setAction(async ({ verify, pool, contract }, DRE) => {
     await DRE.run("set-DRE");
+    await DRE.run("compile");
 
     const network = DRE.network.name as eNetwork;
     const poolConfig = loadPoolConfig(pool);

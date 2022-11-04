@@ -13,6 +13,8 @@ task("full:deploy-bnft-tokens", "Deploy bnft tokens for full enviroment")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, DRE) => {
     await DRE.run("set-DRE");
+    await DRE.run("compile");
+
     const network = <eNetwork>DRE.network.name;
     const ownerSigner = await getPoolOwnerSigner();
 

@@ -17,6 +17,8 @@ import {
   BoundPunkGatewayFactory,
   AirdropDistributionFactory,
   AirdropFlashLoanReceiverV2Factory,
+  AirdropFlashLoanReceiverV3Factory,
+  UserFlashclaimRegistryV3Factory,
 } from "../types";
 import { IERC721DetailedFactory } from "../types/IERC721DetailedFactory";
 import { getEthersSigners, getParamPerNetwork, MockNftMap } from "./contracts-helpers";
@@ -140,6 +142,12 @@ export const getAirdropFlashLoanReceiverV2 = async (address?: tEthereumAddress) 
     await getDeploySigner()
   );
 
+export const getAirdropFlashLoanReceiverV3 = async (address?: tEthereumAddress) =>
+  await AirdropFlashLoanReceiverV3Factory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.AirdropFlashLoanReceiverV3}`).value()).address,
+    await getDeploySigner()
+  );
+
 export const getUserFlashclaimRegistry = async (address?: tEthereumAddress) =>
   await UserFlashclaimRegistryFactory.connect(
     address || (await getDb(DRE.network.name).get(`${eContractid.UserFlashclaimRegistry}`).value()).address,
@@ -149,6 +157,12 @@ export const getUserFlashclaimRegistry = async (address?: tEthereumAddress) =>
 export const getUserFlashclaimRegistryV2 = async (address?: tEthereumAddress) =>
   await UserFlashclaimRegistryV2Factory.connect(
     address || (await getDb(DRE.network.name).get(`${eContractid.UserFlashclaimRegistryV2}`).value()).address,
+    await getDeploySigner()
+  );
+
+export const getUserFlashclaimRegistryV3 = async (address?: tEthereumAddress) =>
+  await UserFlashclaimRegistryV3Factory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.UserFlashclaimRegistryV3}`).value()).address,
     await getDeploySigner()
   );
 

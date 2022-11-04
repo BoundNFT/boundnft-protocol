@@ -12,6 +12,8 @@ task("bend:mainnet", "Deploy full enviroment")
   .setAction(async ({ verify, skipRegistry }, DRE) => {
     const POOL_NAME = ConfigNames.Bend;
     await DRE.run("set-DRE");
+    await DRE.run("compile");
+
     const poolConfig = loadPoolConfig(POOL_NAME);
 
     const deployerSigner = await getDeploySigner();

@@ -13,6 +13,8 @@ import {
   getAirdropDistributionImpl,
   getAirdropFlashLoanReceiverV2,
   getUserFlashclaimRegistryV2,
+  getUserFlashclaimRegistryV3,
+  getAirdropFlashLoanReceiverV3,
 } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress } from "../../helpers/misc-utils";
@@ -182,17 +184,20 @@ task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Ethersca
 
   const bnftRegistry = await getBNFTRegistryProxy();
 
-  console.log("Verifying UserFlashclaimRegistryV2 ...\n");
-  const flashclaimRegistryV2 = await getUserFlashclaimRegistryV2();
-  await verifyContract(eContractid.UserFlashclaimRegistryV2, flashclaimRegistryV2, [
+  const receiverV3Contract = await getAirdropFlashLoanReceiverV3();
+  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV3Contract, []);
+
+  console.log("Verifying UserFlashclaimRegistryV3 ...\n");
+  const flashclaimRegistryV3 = await getUserFlashclaimRegistryV3();
+  await verifyContract(eContractid.UserFlashclaimRegistryV3, flashclaimRegistryV3, [
     bnftRegistry.address,
-    flashclaimRegistryV2.address,
+    flashclaimRegistryV3.address,
   ]);
 
-  console.log("Verifying AirdropFlashLoanReceiverV2 Implemention ...\n");
-  const receiverImplV2Address = await flashclaimRegistryV2.receiverV2Implemention();
-  const receiverImplV2Contract = await getAirdropFlashLoanReceiverV2(receiverImplV2Address);
-  await verifyContract(eContractid.AirdropFlashLoanReceiverV2, receiverImplV2Contract, []);
+  console.log("Verifying AirdropFlashLoanReceiverV3 Implemention ...\n");
+  const receiverImplV3Address = await flashclaimRegistryV3.receiverV3Implemention();
+  const receiverImplV3Contract = await getAirdropFlashLoanReceiverV3(receiverImplV3Address);
+  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverImplV3Contract, []);
 
   console.log("Verifying AirdropDistributionImpl ...\n");
   const airdropDistribution = await getAirdropDistributionImpl();

@@ -12,6 +12,8 @@ task("full:deploy-proxy-admin", "Deploy proxy admin contract")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, DRE) => {
     await DRE.run("set-DRE");
+    await DRE.run("compile");
+
     const poolConfig = loadPoolConfig(pool);
     const network = <eNetwork>DRE.network.name;
 

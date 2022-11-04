@@ -9,6 +9,7 @@ task("dev:deploy-bnft-tokens", "Deploy bnft tokens for dev enviroment")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, localBRE) => {
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     const poolConfig = loadPoolConfig(pool);
 

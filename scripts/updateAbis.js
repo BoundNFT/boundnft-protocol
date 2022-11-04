@@ -13,6 +13,7 @@ const miscContractList = [
   "AirdropFlashLoanReceiver",
   "AirdropDistribution",
   "UserFlashclaimRegistry",
+  "UserFlashclaimRegistryV3",
 ];
 
 const updateAbis = async (subDir, contractList) => {
