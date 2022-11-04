@@ -57,6 +57,10 @@ interface IBNFT {
 
   event ExecuteAirdrop(address indexed airdropContract);
 
+  event FlashLoanApproval(address indexed minter, address indexed operator, bool approved);
+
+  event FlashLoanLocking(uint256 tokenId, address indexed minter, address indexed operator, bool approved);
+
   /**
    * @dev Initializes the bNFT
    * @param underlyingAsset_ The address of the underlying asset of this bNFT (E.g. PUNK for bPUNK)
@@ -107,6 +111,40 @@ interface IBNFT {
     uint256[] calldata nftTokenIds,
     bytes calldata params
   ) external;
+
+  /**
+   * @dev Approve or remove the flash loan `operator` as an operator for the minter.
+   * Operators can call {flashLoan} for any token minted by the minter.
+   *
+   */
+  function setFlashLoanApproval(address operator, bool approved) external;
+
+  /**
+   * @dev Returns if the `operator` is allowed to call flash loan of the assets of `minter`.
+   */
+  function isFlashLoanApproved(address minter, address operator) external view returns (bool);
+
+  /**
+   * @dev Lock or unlock the flash loan `operator` as an operator for the minter.
+   * Operators can call {flashLoan} for any token minted by the minter.
+   *
+   */
+  function setFlashLoanLocking(
+    uint256 tokenId,
+    address operator,
+    bool locked
+  ) external;
+
+  /**
+   * @dev Returns if the `operator` is allowed to call flash loan of the assets of `minter`.
+   */
+  function isFlashLoanLocked(
+    uint256 tokenId,
+    address minter,
+    address operator
+  ) external view returns (bool);
+
+  function getFlashLoanLocked(uint256 tokenId, address minter) external view returns (address[] memory);
 
   function claimERC20Airdrop(
     address token,
