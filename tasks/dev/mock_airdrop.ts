@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { task } from "hardhat/config";
 import { ConfigNames } from "../../helpers/configuration";
-import { deployMockAirdrop } from "../../helpers/contracts-deployments";
+import { deployMockAirdrop, deployMockFlashLoanReceiver } from "../../helpers/contracts-deployments";
 import {
   getAirdropFlashLoanReceiver,
   getBNFT,
@@ -14,6 +14,22 @@ import {
 import { getEthersSignerByAddress } from "../../helpers/contracts-helpers";
 import { waitForTx } from "../../helpers/misc-utils";
 import { eNetwork } from "../../helpers/types";
+
+task("dev:deploy-mock-receiver", "Deploy mock receiver for dev enviroment")
+  .addFlag("verify", "Verify contracts at Etherscan")
+  .setAction(async ({ verify }, localBRE) => {
+    await localBRE.run("compile");
+    await localBRE.run("set-DRE");
+
+    const network = localBRE.network.name as eNetwork;
+    if (network.includes("main")) {
+      throw new Error("Mocks not used at mainnet configuration.");
+    }
+    const registry = await getBNFTRegistryProxy();
+    console.log("BNFTRegistry:", registry.address);
+    await deployMockFlashLoanReceiver([registry.address], verify);
+    console.log("OK");
+  });
 
 task("dev:deploy-mock-airdrops", "Deploy mock airdrop for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
@@ -28,6 +44,7 @@ task("dev:deploy-mock-airdrops", "Deploy mock airdrop for dev enviroment")
     const registry = await getBNFTRegistryProxy();
     console.log("BNFTRegistry:", registry.address);
     await deployMockAirdrop([registry.address], verify);
+    console.log("OK");
   });
 
 task("dev:apply-airdrop", "Doing apply style airdrop for dev enviroment")
