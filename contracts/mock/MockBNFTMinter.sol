@@ -27,4 +27,24 @@ contract MockBNFTMinter is ERC721Holder {
 
     IERC721(_nftAddress).safeTransferFrom(address(this), msg.sender, tokenId);
   }
+
+  function flashLoan(
+    address receiverAddress,
+    uint256[] calldata nftTokenIds,
+    bytes calldata params
+  ) public {
+    IBNFT(_bnftAddress).flashLoan(receiverAddress, nftTokenIds, params);
+  }
+
+  function setFlashLoanApproval(address operator, bool approved) public {
+    IBNFT(_bnftAddress).setFlashLoanApproval(operator, approved);
+  }
+
+  function setFlashLoanLocking(
+    uint256 tokenId,
+    address operator,
+    bool locked
+  ) public {
+    IBNFT(_bnftAddress).setFlashLoanLocking(tokenId, operator, locked);
+  }
 }

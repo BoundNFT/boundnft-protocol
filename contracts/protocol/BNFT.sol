@@ -7,6 +7,8 @@ import {IENSReverseRegistrar} from "../interfaces/IENSReverseRegistrar.sol";
 
 import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
+import {EnumerableSetUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
+
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import {ERC721EnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
 import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
@@ -21,6 +23,8 @@ import {IERC1155ReceiverUpgradeable} from "@openzeppelin/contracts-upgradeable/t
  * @dev Implements the methods for the bNFT protocol
  **/
 contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable, IERC1155ReceiverUpgradeable {
+  using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
   address private _underlyingAsset;
   // Mapping from token ID to minter address
   mapping(uint256 => address) private _minters;
@@ -29,6 +33,10 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
   address private _claimAdmin;
+  // Mapping from minter to flash loan operator approval address
+  mapping(address => mapping(address => bool)) private _flashLoanOperatorApprovals;
+  // Mapping from minter & token ID to flash loan operator locking address
+  mapping(address => mapping(uint256 => EnumerableSetUpgradeable.AddressSet)) private _flashLoanOperatorLockings;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -217,7 +225,12 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
     // only token owner can do flashloan
     for (i = 0; i < nftTokenIds.length; i++) {
-      require(ownerOf(nftTokenIds[i]) == _msgSender(), "BNFT: caller is not owner");
+      address minter = minterOf(nftTokenIds[i]);
+      if (_flashLoanOperatorLockings[minter][nftTokenIds[i]].length() > 0) {
+        require(isFlashLoanLocked(nftTokenIds[i], minter, _msgSender()), "BNFT: caller without permission");
+      } else {
+        require(_isFlashLoanApprovedOrOwner(nftTokenIds[i], _msgSender()), "BNFT: caller without permission");
+      }
     }
 
     // step 1: moving underlying asset forward to receiver contract
@@ -237,6 +250,50 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
       emit FlashLoan(receiverAddress, _msgSender(), _underlyingAsset, nftTokenIds[i]);
     }
+  }
+
+  /**
+   * @dev See {IBNFT-setFlashLoanApproval}.
+   */
+  function setFlashLoanApproval(address operator, bool approved) public override nonReentrant {
+    address minter = _msgSender();
+    _flashLoanOperatorApprovals[minter][operator] = approved;
+    emit FlashLoanApproval(minter, operator, approved);
+  }
+
+  /**
+   * @dev See {IBNFT-isFlashLoanApproved}.
+   */
+  function isFlashLoanApproved(address minter, address operator) public view override returns (bool) {
+    return _flashLoanOperatorApprovals[minter][operator];
+  }
+
+  function setFlashLoanLocking(
+    uint256 tokenId,
+    address operator,
+    bool locked
+  ) public override {
+    if (locked) {
+      _flashLoanOperatorLockings[_msgSender()][tokenId].add(operator);
+
+      emit FlashLoanLocking(tokenId, _msgSender(), operator, true);
+    } else {
+      _flashLoanOperatorLockings[_msgSender()][tokenId].remove(operator);
+
+      emit FlashLoanLocking(tokenId, _msgSender(), operator, false);
+    }
+  }
+
+  function isFlashLoanLocked(
+    uint256 tokenId,
+    address minter,
+    address operator
+  ) public view override returns (bool) {
+    return _flashLoanOperatorLockings[minter][tokenId].contains(operator);
+  }
+
+  function getFlashLoanLocked(uint256 tokenId, address minter) public view override returns (address[] memory) {
+    return _flashLoanOperatorLockings[minter][tokenId].values();
   }
 
   /**
@@ -356,7 +413,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   /**
    * @dev See {IBNFT-minterOf}.
    */
-  function minterOf(uint256 tokenId) external view override returns (address) {
+  function minterOf(uint256 tokenId) public view override returns (address) {
     address minter = _minters[tokenId];
     require(minter != address(0), "BNFT: minter query for nonexistent token");
     return minter;
@@ -365,7 +422,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   /**
    * @dev See {IBNFT-underlyingAsset}.
    */
-  function underlyingAsset() external view override returns (address) {
+  function underlyingAsset() public view override returns (address) {
     return _underlyingAsset;
   }
 
@@ -429,5 +486,14 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     to;
     tokenId;
     revert("TRANSFER_NOT_SUPPORTED");
+  }
+
+  /**
+   * @dev Returns whether `operator` is allowed to flash loan `tokenId`.
+   */
+  function _isFlashLoanApprovedOrOwner(uint256 tokenId, address operator) internal view returns (bool) {
+    address tokenOwner = ownerOf(tokenId);
+    address tokenMinter = minterOf(tokenId);
+    return (operator == tokenOwner || isFlashLoanApproved(tokenMinter, operator));
   }
 }
