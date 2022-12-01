@@ -92,5 +92,9 @@
   "MockFlashLoanReceiver": {
     "address": "0x407Ba431311fF4FD28935eb79213aB92894756eb",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV2": {
+    "address": "0xff56C32de5BcE41D7c2200Dcf74eB3866c836c0F",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

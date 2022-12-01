@@ -163,7 +163,7 @@ export const deployAirdropFlashLoanReceiverV2 = async (
   const receiver = await withSaveAndVerify(
     await new AirdropFlashLoanReceiverV2Factory(await getDeploySigner()).deploy(),
     eContractid.AirdropFlashLoanReceiverV2,
-    [owner, registry, deployType],
+    [],
     verify
   );
   await waitForTx(await receiver.initialize(owner, registry, deployType));

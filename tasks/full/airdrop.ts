@@ -3,6 +3,7 @@ import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
 import { ZERO_ADDRESS } from "../../helpers/constants";
 import {
   deployAirdropDistribution,
+  deployAirdropFlashLoanReceiverV2,
   deployAirdropFlashLoanReceiverV3,
   deployBNFTUpgradeableProxy,
   deployUserFlashclaimRegistry,
@@ -27,6 +28,24 @@ import { getParamPerNetwork, insertContractAddressInDb } from "../../helpers/con
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
 import { eContractid, eNetwork } from "../../helpers/types";
 import { AirdropDistribution, BNFTUpgradeableProxy } from "../../types";
+
+task("full:deploy-flashclaim-receiver-v2", "Deploy airdrop flashloan receiver for dev enviroment")
+  .addFlag("verify", "Verify contracts at Etherscan")
+  .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
+  .setAction(async ({ verify, pool }, localBRE) => {
+    await localBRE.run("set-DRE");
+    await localBRE.run("compile");
+
+    const network = localBRE.network.name as eNetwork;
+
+    const registry = await getBNFTRegistryProxy();
+    console.log("BNFTRegistry:", registry.address);
+
+    const owner = await (await getDeploySigner()).getAddress();
+
+    const airdropFlashloan = await deployAirdropFlashLoanReceiverV2(owner, registry.address, "0", verify);
+    console.log("AirdropFlashLoanReceiverV2:", airdropFlashloan.address);
+  });
 
 task("full:deploy-flashclaim-receiver-v3", "Deploy airdrop flashloan receiver for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
