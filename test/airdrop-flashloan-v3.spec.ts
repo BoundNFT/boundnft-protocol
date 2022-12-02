@@ -147,16 +147,13 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     ]);
     console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
 
-    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
-      ["uint256[]", "address[]", "uint256[]", "address", "bytes", "uint256"],
-      [
-        [1, 2, 3],
-        [mockAirdropERC20Token.address, mockAirdropERC721Token.address, mockAirdropERC1155Token.address],
-        [0, 0, erc1155Id],
-        _mockAirdropProject.address,
-        applyAirdropEncodedData,
-        ethValue,
-      ]
+    const receiverEncodedData = await _airdropFlashLoanReceiver.encodeFlashLoanParams(
+      [1, 2, 3],
+      [mockAirdropERC20Token.address, mockAirdropERC721Token.address, mockAirdropERC1155Token.address],
+      [0, 0, erc1155Id],
+      _mockAirdropProject.address,
+      applyAirdropEncodedData,
+      ethValue
     );
     console.log("receiverEncodedData:", receiverEncodedData);
 
@@ -206,9 +203,13 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     ]);
     console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
 
-    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
-      ["uint256[]", "address[]", "uint256[]", "address", "bytes", "uint256"],
-      [[4], [mockAirdropERC721Address], [tokenId], _mockAirdropProject.address, applyAirdropEncodedData, ethValue]
+    const receiverEncodedData = await _airdropFlashLoanReceiver.encodeFlashLoanParams(
+      [4],
+      [mockAirdropERC721Address],
+      [tokenId],
+      _mockAirdropProject.address,
+      applyAirdropEncodedData,
+      ethValue
     );
     console.log("receiverEncodedData:", receiverEncodedData);
 
@@ -256,9 +257,13 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     ]);
     console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
 
-    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
-      ["uint256[]", "address[]", "uint256[]", "address", "bytes", "uint256"],
-      [[5], [mockAirdropERC721Address], [0], _mockAirdropProject.address, applyAirdropEncodedData, ethValue]
+    const receiverEncodedData = await _airdropFlashLoanReceiver.encodeFlashLoanParams(
+      [5],
+      [mockAirdropERC721Address],
+      [0],
+      _mockAirdropProject.address,
+      applyAirdropEncodedData,
+      ethValue
     );
     console.log("receiverEncodedData:", receiverEncodedData);
 

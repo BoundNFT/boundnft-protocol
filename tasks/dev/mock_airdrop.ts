@@ -105,15 +105,12 @@ task("dev:flashloan-airdrop", "Doing flash loan for airdrop")
     ]);
     console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
 
-    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
-      ["uint256[]", "address[]", "uint256[]", "address", "bytes"],
-      [
-        [1, 2, 3],
-        [mockAirdropERC20Address, mockAirdropERC721Address, mockAirdropERC1155Address],
-        [0, 0, nftTokenId],
-        mockAirdropContract.address,
-        applyAirdropEncodedData,
-      ]
+    const receiverEncodedData = await airdropFlashloanReceiver.encodeFlashLoanParams(
+      [1, 2, 3],
+      [mockAirdropERC20Address, mockAirdropERC721Address, mockAirdropERC1155Address],
+      [0, 0, nftTokenId],
+      mockAirdropContract.address,
+      applyAirdropEncodedData
     );
     console.log("receiverEncodedData:", receiverEncodedData);
 

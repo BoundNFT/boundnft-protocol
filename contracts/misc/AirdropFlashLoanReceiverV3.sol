@@ -296,9 +296,11 @@ contract AirdropFlashLoanReceiverV3 is
     address[] calldata airdropTokenAddresses,
     uint256[] calldata airdropTokenIds,
     address airdropContract,
-    bytes calldata airdropParams
+    bytes calldata airdropParams,
+    uint256 ethValue
   ) public pure returns (bytes memory) {
-    return abi.encode(airdropTokenTypes, airdropTokenAddresses, airdropTokenIds, airdropContract, airdropParams);
+    return
+      abi.encode(airdropTokenTypes, airdropTokenAddresses, airdropTokenIds, airdropContract, airdropParams, ethValue);
   }
 
   /**

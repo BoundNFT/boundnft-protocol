@@ -186,14 +186,14 @@ task("verify:airdrop-flashloan-v2", "Verify airdrop flashloan contracts at Ether
     const bnftRegistry = await getBNFTRegistryProxy();
 
     const receiverV2Contract = await getAirdropFlashLoanReceiverV2();
-    //await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV2Contract, []);
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV2Contract, []);
 
     console.log("Verifying UserFlashclaimRegistryV2 ...\n");
     const flashclaimRegistryV2 = await getUserFlashclaimRegistryV2();
-    // await verifyContract(eContractid.UserFlashclaimRegistryV2, flashclaimRegistryV2, [
-    //   bnftRegistry.address,
-    //   flashclaimRegistryV2.address,
-    // ]);
+    await verifyContract(eContractid.UserFlashclaimRegistryV2, flashclaimRegistryV2, [
+      bnftRegistry.address,
+      flashclaimRegistryV2.address,
+    ]);
 
     console.log("Verifying AirdropFlashLoanReceiverV2 Implemention ...\n");
     const receiverImplV2Address = await flashclaimRegistryV2.receiverV2Implemention();
@@ -202,33 +202,43 @@ task("verify:airdrop-flashloan-v2", "Verify airdrop flashloan contracts at Ether
   }
 );
 
-task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Etherscan").setAction(async ({}, localDRE) => {
-  await localDRE.run("set-DRE");
-  const network = localDRE.network.name as eNetwork;
+task("verify:airdrop-flashloan-v3", "Verify airdrop flashloan contracts at Etherscan").setAction(
+  async ({}, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
 
-  const bnftRegistry = await getBNFTRegistryProxy();
+    const bnftRegistry = await getBNFTRegistryProxy();
 
-  const receiverV2Contract = await getAirdropFlashLoanReceiverV2();
-  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV2Contract, []);
+    const receiverV3Contract = await getAirdropFlashLoanReceiverV3();
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV3Contract, []);
 
-  const receiverV3Contract = await getAirdropFlashLoanReceiverV3();
-  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV3Contract, []);
+    console.log("Verifying UserFlashclaimRegistryV3 ...\n");
+    const flashclaimRegistryV3 = await getUserFlashclaimRegistryV3();
+    await verifyContract(eContractid.UserFlashclaimRegistryV3, flashclaimRegistryV3, [
+      bnftRegistry.address,
+      flashclaimRegistryV3.address,
+    ]);
 
-  console.log("Verifying UserFlashclaimRegistryV3 ...\n");
-  const flashclaimRegistryV3 = await getUserFlashclaimRegistryV3();
-  await verifyContract(eContractid.UserFlashclaimRegistryV3, flashclaimRegistryV3, [
-    bnftRegistry.address,
-    flashclaimRegistryV3.address,
-  ]);
+    console.log("Verifying AirdropFlashLoanReceiverV3 Implemention ...\n");
+    const receiverImplV3Address = await flashclaimRegistryV3.receiverV3Implemention();
+    const receiverImplV3Contract = await getAirdropFlashLoanReceiverV3(receiverImplV3Address);
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverImplV3Contract, []);
 
-  console.log("Verifying AirdropFlashLoanReceiverV3 Implemention ...\n");
-  const receiverImplV3Address = await flashclaimRegistryV3.receiverV3Implemention();
-  const receiverImplV3Contract = await getAirdropFlashLoanReceiverV3(receiverImplV3Address);
-  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverImplV3Contract, []);
+    console.log("Finished verifications.");
+  }
+);
 
-  console.log("Verifying AirdropDistributionImpl ...\n");
-  const airdropDistribution = await getAirdropDistributionImpl();
-  await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
+task("verify:airdrop-distribution", "Verify airdrop distribution contracts at Etherscan").setAction(
+  async ({}, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
 
-  console.log("Finished verifications.");
-});
+    const bnftRegistry = await getBNFTRegistryProxy();
+
+    console.log("Verifying AirdropDistributionImpl ...\n");
+    const airdropDistribution = await getAirdropDistributionImpl();
+    await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
+
+    console.log("Finished verifications.");
+  }
+);

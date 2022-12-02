@@ -15,6 +15,9 @@ contract UserFlashclaimRegistryV3 {
   address public immutable receiverV3Implemention;
   address public immutable flashClaimRegistryV2;
   uint256 public constant VERSION = 3;
+  bool public constant FORCE_UPGRADE = true;
+
+  event ReceiverCreated(address indexed user, address indexed receiver);
 
   constructor(address bnftRegistry_, address flashClaimRegistryV2_) {
     bnftRegistry = bnftRegistry_;
@@ -40,6 +43,8 @@ contract UserFlashclaimRegistryV3 {
     AirdropFlashLoanReceiverV3(receiverV3).initialize(msg.sender, bnftRegistry, 1);
 
     userReceiversV3[msg.sender] = address(receiverV3);
+
+    emit ReceiverCreated(msg.sender, address(receiverV3));
   }
 
   function userReceivers(address user) public view returns (address) {

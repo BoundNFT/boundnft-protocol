@@ -75,11 +75,11 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "UserFlashclaimRegistryV3": {
-    "address": "0x55C44d8dDCEaceD2d9a40a1e68Ca3F8bE5E96b91",
+    "address": "0xcdAeD24a337CC35006b5CF79a7A858561686E783",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiverV3": {
-    "address": "0x958f36955e10FFaa0aC92aA65acB30Ef6268421c",
+    "address": "0x382c1856D25CbB835D4C1d732EB69f3e0d9Ba104",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropDistributionImpl": {
