@@ -2,6 +2,8 @@ import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { deployMockBNFTMinter } from "../helpers/contracts-deployments";
 import { CommonsConfig } from "../configs/commons";
 import { MockBNFTMinter } from "../types";
+import { waitForTx } from "../helpers/misc-utils";
+import { ZERO_ADDRESS } from "../helpers/constants";
 
 const { expect } = require("chai");
 
@@ -30,6 +32,9 @@ makeSuite("BNFT: Contract Address", (testEnv: TestEnv) => {
     const bBontractURI = await bBAYC.contractURI();
     console.log("contractURI:", bBontractURI);
     expect(bBontractURI).to.be.contains(bBAYC.address.toLowerCase());
+
+    const nftAsset = await bBAYC.underlyingAsset();
+    expect(nftAsset).to.be.equal(bayc.address);
 
     testEnv.tokenIdTracker++;
     const tokenId = testEnv.tokenIdTracker.toString();
@@ -118,5 +123,18 @@ makeSuite("BNFT: Contract Address", (testEnv: TestEnv) => {
         .connect(users[0].signer)
         ["safeTransferFrom(address,address,uint256,bytes)"](users[0].address, users[1].address, tokenId, "0x1234")
     ).to.be.revertedWith("TRANSFER_NOT_SUPPORTED");
+  });
+
+  it("Manage contract owner", async () => {
+    const { bBAYC, users } = testEnv;
+    const newOwnerUser = users[5];
+
+    await waitForTx(await bBAYC.transferOwnership(newOwnerUser.address));
+    const newOwnerAddr = await bBAYC.owner();
+    expect(newOwnerAddr).to.equal(newOwnerUser.address);
+
+    await waitForTx(await bBAYC.connect(newOwnerUser.signer).renounceOwnership());
+    const newOwnerAddr2 = await bBAYC.owner();
+    expect(newOwnerAddr2).to.equal(ZERO_ADDRESS);
   });
 });

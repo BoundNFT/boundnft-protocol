@@ -50,15 +50,14 @@
     "address": "0x89a60BB6cE83D4514dA956165664Ba6Ee4c15687"
   },
   "BNFT": {
-    "address": "0xD6ED460Dea089C07DA8ca7d292BfF830C6A294A9",
+    "address": "0x67B08a6791673F14039358137150c4f1A1CBFa9c",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0xdeE5158389802b006dD4610BddA929436B3FbD32"
+    "address": "0x4327B65CE2455F062B6Aa54c349491d4912390cf"
   },
   "BNFTRegistry": {
-    "address": "0x37A76Db446bDB3EF1b73112a8D5E6868de06464f",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+    "address": "0x37A76Db446bDB3EF1b73112a8D5E6868de06464f"
   },
   "BoundPunkGatewayImpl": {
     "address": "0xA10D91F63AbCF82D8CC0637c8a9a6148E5D1bd64"
@@ -88,6 +87,14 @@
   },
   "AirdropDistribution": {
     "address": "0x3CF52C9ce29a1df2adCd0Ce657BbBBB63A3f9D01",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MockFlashLoanReceiver": {
+    "address": "0x407Ba431311fF4FD28935eb79213aB92894756eb",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV2": {
+    "address": "0xff56C32de5BcE41D7c2200Dcf74eB3866c836c0F",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

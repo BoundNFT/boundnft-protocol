@@ -178,11 +178,38 @@ task("verify:bnft", "Verify bnft contracts at Etherscan")
     console.log("Finished verifications.");
   });
 
+task("verify:airdrop-flashloan-v2", "Verify airdrop flashloan contracts at Etherscan").setAction(
+  async ({}, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
+
+    const bnftRegistry = await getBNFTRegistryProxy();
+
+    const receiverV2Contract = await getAirdropFlashLoanReceiverV2();
+    //await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV2Contract, []);
+
+    console.log("Verifying UserFlashclaimRegistryV2 ...\n");
+    const flashclaimRegistryV2 = await getUserFlashclaimRegistryV2();
+    // await verifyContract(eContractid.UserFlashclaimRegistryV2, flashclaimRegistryV2, [
+    //   bnftRegistry.address,
+    //   flashclaimRegistryV2.address,
+    // ]);
+
+    console.log("Verifying AirdropFlashLoanReceiverV2 Implemention ...\n");
+    const receiverImplV2Address = await flashclaimRegistryV2.receiverV2Implemention();
+    const receiverImplV2Contract = await getAirdropFlashLoanReceiverV2(receiverImplV2Address);
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV2, receiverImplV2Contract, []);
+  }
+);
+
 task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Etherscan").setAction(async ({}, localDRE) => {
   await localDRE.run("set-DRE");
   const network = localDRE.network.name as eNetwork;
 
   const bnftRegistry = await getBNFTRegistryProxy();
+
+  const receiverV2Contract = await getAirdropFlashLoanReceiverV2();
+  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV2Contract, []);
 
   const receiverV3Contract = await getAirdropFlashLoanReceiverV3();
   await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV3Contract, []);

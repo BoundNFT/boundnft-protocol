@@ -15,6 +15,7 @@ const miscContractList = [
   "AirdropDistribution",
   "UserFlashclaimRegistry",
   "UserFlashclaimRegistryV3",
+  "ICloneXEgg",
 ];
 
 const updateAbis = async (subDir, contractList) => {

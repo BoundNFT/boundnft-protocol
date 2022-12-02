@@ -154,4 +154,17 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
     const wantName = (await bnftRegistry.namePrefix()) + " " + "CTNFT";
     expect(wantName).to.equal(await bnftTest.name());
   });
+
+  it("Manage claim admin", async () => {
+    const { bnftRegistry, users } = testEnv;
+    const claimAdmin = users[5];
+
+    const oldAdmin = await bnftRegistry.claimAdmin();
+
+    await waitForTx(await bnftRegistry.setClaimAdmin(claimAdmin.address));
+    const newAdmin = await bnftRegistry.claimAdmin();
+    expect(newAdmin).to.equal(claimAdmin.address);
+
+    await waitForTx(await bnftRegistry.setClaimAdmin(oldAdmin));
+  });
 });

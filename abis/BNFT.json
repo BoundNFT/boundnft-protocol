@@ -236,7 +236,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "owner",
+        "name": "minter",
         "type": "address"
       },
       {
@@ -252,7 +252,38 @@
         "type": "bool"
       }
     ],
-    "name": "FlashLoanApprovalForAll",
+    "name": "FlashLoanApproval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "minter",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "FlashLoanLocking",
     "type": "event"
   },
   {
@@ -324,37 +355,6 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "minter",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "interceptor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "approved",
-        "type": "bool"
-      }
-    ],
-    "name": "TokenInterceptorUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "from",
         "type": "address"
       },
@@ -373,24 +373,6 @@
     ],
     "name": "Transfer",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "interceptor",
-        "type": "address"
-      }
-    ],
-    "name": "addTokenInterceptor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "inputs": [
@@ -550,24 +532,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "interceptor",
-        "type": "address"
-      }
-    ],
-    "name": "deleteTokenInterceptor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "airdropContract",
         "type": "address"
@@ -628,17 +592,17 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "tokenMinter",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "minter",
+        "type": "address"
       }
     ],
-    "name": "getTokenInterceptors",
+    "name": "getFlashLoanLocked",
     "outputs": [
       {
         "internalType": "address[]",
@@ -710,7 +674,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "tokenOwner",
+        "name": "minter",
         "type": "address"
       },
       {
@@ -719,7 +683,36 @@
         "type": "address"
       }
     ],
-    "name": "isFlashLoanApprovedForAll",
+    "name": "isFlashLoanApproved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "minter",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "isFlashLoanLocked",
     "outputs": [
       {
         "internalType": "bool",
@@ -1050,7 +1043,30 @@
         "type": "bool"
       }
     ],
-    "name": "setFlashLoanApprovalForAll",
+    "name": "setFlashLoanApproval",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "locked",
+        "type": "bool"
+      }
+    ],
+    "name": "setFlashLoanLocking",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

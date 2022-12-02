@@ -17,7 +17,7 @@ This repository contains the smart contracts source code and configuration for B
 
 ## What is Bound NFT?
 
-Bound NFT is a NFT Promissory Note protocol where lending protocols can participate as minters.
+Bound NFT is a Soul Bound of NFT protocol where application protocols can participate as minters.
 
 ## Documentation
 
