@@ -20,7 +20,8 @@ task("clonex:bnft-mint-egg", "Doing claim airdrop for dev enviroment")
   .setAction(async ({ clonex, ids, egg, user }, localBRE) => {
     await localBRE.run("set-DRE");
 
-    const userSigner = await getEthersSignerByAddress(user);
+    //const userSigner = await getEthersSignerByAddress(user);
+    const userSigner = await getDeploySigner();
 
     const bnftRegistry = await getBNFTRegistryProxy();
     const bnftAddresses = await bnftRegistry.getBNFTAddresses(clonex);
@@ -31,19 +32,19 @@ task("clonex:bnft-mint-egg", "Doing claim airdrop for dev enviroment")
     const bnftToken = await getBNFT(bnftAddresses.bNftProxy);
     console.log("BoundNFT:", bnftAddresses.bNftProxy);
 
-    const clonexContract = IERC721EnumerableFactory.connect(clonex, await getDeploySigner());
-    const eggContract = ICloneXEggFactory.connect(egg, await getDeploySigner());
+    const clonexContract = IERC721EnumerableFactory.connect(clonex, userSigner);
+    const eggContract = ICloneXEggFactory.connect(egg, userSigner);
 
     let idsList: string[] = [];
 
     if (ids == undefined || ids == "") {
-      const tokenNum = await bnftToken.balanceOf(await userSigner.getAddress());
+      const tokenNum = await bnftToken.balanceOf(user);
       console.log("balanceOf:", tokenNum.toNumber());
 
       for (let tokenIdx = 0; tokenIdx < tokenNum.toNumber(); tokenIdx++) {
         for (let tries = 3; tries > 0; tries--) {
           try {
-            const tokenId = await bnftToken.tokenOfOwnerByIndex(await userSigner.getAddress(), tokenIdx);
+            const tokenId = await bnftToken.tokenOfOwnerByIndex(user, tokenIdx);
             const canClaim = await eggContract.claimedClone(tokenId);
             if (!canClaim) {
               console.log("claimedClone:", tokenId.toString());
@@ -66,12 +67,12 @@ task("clonex:bnft-mint-egg", "Doing claim airdrop for dev enviroment")
     console.log("mintEncodedData:", mintEncodedData);
 
     const flashclaimRegistry = await getUserFlashclaimRegistryV2();
-    const flashclaimRecvAddr = await flashclaimRegistry.userReceivers(await userSigner.getAddress());
+    const flashclaimRecvAddr = await flashclaimRegistry.userReceivers(user);
     console.log("flashclaimRecvAddr:", flashclaimRecvAddr);
 
     const flashclaimRecv = await getAirdropFlashLoanReceiverV2(flashclaimRecvAddr);
     const recvEncodedData = await flashclaimRecv.encodeFlashLoanParams(
-      [2],
+      [5],
       [eggContract.address],
       [0],
       eggContract.address,
@@ -92,7 +93,8 @@ task("clonex:native-mint-egg", "Doing claim airdrop for dev enviroment")
   .setAction(async ({ clonex, ids, egg, user }, localBRE) => {
     await localBRE.run("set-DRE");
 
-    const userSigner = await getEthersSignerByAddress(user);
+    //const userSigner = await getEthersSignerByAddress(user);
+    const userSigner = await getDeploySigner();
 
     const clonexContract = IERC721EnumerableFactory.connect(clonex, await getDeploySigner());
     const eggContract = ICloneXEggFactory.connect(egg, await getDeploySigner());
@@ -100,13 +102,13 @@ task("clonex:native-mint-egg", "Doing claim airdrop for dev enviroment")
     let idsList: string[] = [];
 
     if (ids == undefined || ids == "") {
-      const tokenNum = await clonexContract.balanceOf(await userSigner.getAddress());
+      const tokenNum = await clonexContract.balanceOf(user);
       console.log("balanceOf:", tokenNum.toNumber());
 
       for (let tokenIdx = 0; tokenIdx < tokenNum.toNumber(); tokenIdx++) {
         for (let tries = 3; tries > 0; tries--) {
           try {
-            const tokenId = await clonexContract.tokenOfOwnerByIndex(await userSigner.getAddress(), tokenIdx);
+            const tokenId = await clonexContract.tokenOfOwnerByIndex(user, tokenIdx);
             const canClaim = await eggContract.claimedClone(tokenId);
             if (!canClaim) {
               console.log("claimedClone:", tokenId.toString());
@@ -128,7 +130,7 @@ task("clonex:native-mint-egg", "Doing claim airdrop for dev enviroment")
     const mintEncodedData = eggContract.interface.encodeFunctionData("mint", [idsList]);
     console.log("mintEncodedData:", mintEncodedData);
 
-    await waitForTx(await eggContract.connect(userSigner).mint(idsList));
+    //await waitForTx(await eggContract.connect(userSigner).mint(idsList));
 
     console.log("OK");
   });
