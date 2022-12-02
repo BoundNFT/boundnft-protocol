@@ -36,8 +36,6 @@ import {
   UserFlashclaimRegistryV3Factory,
   AirdropFlashLoanReceiverV3,
   AirdropFlashLoanReceiverV3Factory,
-  MockApeCoinStakingFactory,
-  MockApeCoinStaking,
 } from "../types";
 import { withSaveAndVerify, registerContractInJsonDb, insertContractAddressInDb } from "./contracts-helpers";
 
@@ -78,25 +76,6 @@ export const deployMockAirdrop = async (args: [string], verify?: boolean): Promi
     args,
     verify
   );
-
-export const deployMockApeCoinStaking = async (
-  _coinToken: string,
-  _baycToken: string,
-  _maycToken: string,
-  _bakcToken: string,
-  verify?: boolean
-): Promise<MockApeCoinStaking> => {
-  const contract = await withSaveAndVerify(
-    await new MockApeCoinStakingFactory(await getDeploySigner()).deploy(),
-    eContractid.MockApeCoinStaking,
-    [],
-    verify
-  );
-
-  await waitForTx(await contract.initialize(_coinToken, _baycToken, _maycToken, _bakcToken));
-
-  return contract;
-};
 
 export const deployGenericBNFTImpl = async (verify: boolean) =>
   withSaveAndVerify(await new BNFTFactory(await getDeploySigner()).deploy(), eContractid.BNFT, [], verify);

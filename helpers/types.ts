@@ -36,7 +36,6 @@ export enum eContractid {
   MockBNFTMinter = "MockBNFTMinter",
   MockFlashLoanReceiver = "MockFlashLoanReceiver",
   MockVRFCoordinatorV2 = "MockVRFCoordinatorV2",
-  MockApeCoinStaking = "MockApeCoinStaking",
 
   AirdropFlashLoanReceiver = "AirdropFlashLoanReceiver",
   AirdropFlashLoanReceiverV2 = "AirdropFlashLoanReceiverV2",
