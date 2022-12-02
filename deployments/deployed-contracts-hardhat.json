@@ -128,5 +128,13 @@
   "SDOODLE": {
     "address": "0xC7F247a33C79BB0fABc3605479372D3Ba188fcbc",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MintableERC20": {
+    "address": "0x4C8871d8f224eE3Cd12a14fF3B691a1A0dB392ec",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
+  },
+  "MockApeCoinStaking": {
+    "address": "0x0A66e11653e32D082F3330Dc99687ce42Eb53121",
+    "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   }
 }

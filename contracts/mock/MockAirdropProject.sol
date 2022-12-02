@@ -45,19 +45,19 @@ contract MockAirdropProject is ERC721Holder, ERC1155Holder {
     }
   }
 
-  function nativeApplyAirdrop(address nftAsset, uint256 tokenId) public {
+  function nativeApplyAirdrop(address nftAsset, uint256 tokenId) public payable {
     _airdrop(nftAsset, tokenId, true, true);
   }
 
-  function bnftApplyAirdrop(address nftAsset, uint256 tokenId) public {
+  function bnftApplyAirdrop(address nftAsset, uint256 tokenId) public payable {
     _airdrop(nftAsset, tokenId, false, true);
   }
 
-  function bnftSnapshotAirdrop(address nftAsset, uint256 tokenId) public {
+  function bnftSnapshotAirdrop(address nftAsset, uint256 tokenId) public payable {
     _airdrop(nftAsset, tokenId, false, false);
   }
 
-  function bnftSnapshotAirdropBatch(address nftAsset, uint256[] calldata tokenIds) public {
+  function bnftSnapshotAirdropBatch(address nftAsset, uint256[] calldata tokenIds) public payable {
     for (uint256 i = 0; i < tokenIds.length; i++) {
       _airdrop(nftAsset, tokenIds[i], false, false);
     }
@@ -109,4 +109,6 @@ contract MockAirdropProject is ERC721Holder, ERC1155Holder {
   function getERC1155TokenId(uint256 nftTokenId) public view returns (uint256) {
     return (nftTokenId % erc1155IdMax) + 1;
   }
+
+  receive() external payable {}
 }

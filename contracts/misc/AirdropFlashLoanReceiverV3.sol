@@ -15,6 +15,11 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/utils/ERC721HolderUpgra
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 
+/**
+ * @title Airdrop receiver contract and implement IFlashLoanReceiver interface
+ * @author BendDAO
+ * @dev implement a flashloan-compatible flashLoanReceiver contract
+ **/
 contract AirdropFlashLoanReceiverV3 is
   IFlashLoanReceiver,
   ReentrancyGuardUpgradeable,
@@ -55,8 +60,17 @@ contract AirdropFlashLoanReceiverV3 is
     uint256 airdropBalance;
     uint256 airdropTokenId;
     bytes32 airdropKeyHash;
+    uint256 ethValue;
   }
 
+  /**
+   * @dev Implement the flash loan receiver interface of boundNFT
+   * @param nftAsset address of original NFT contract
+   * @param nftTokenIds id list of original NFT token
+   * @param initiator address of original msg sender (caller)
+   * @param operator address of bound NFT contract
+   * @param params parameters to call third party contract
+   */
   function executeOperation(
     address nftAsset,
     uint256[] calldata nftTokenIds,
@@ -83,10 +97,12 @@ contract AirdropFlashLoanReceiverV3 is
       vars.airdropTokenAddresses,
       vars.airdropTokenIds,
       vars.airdropContract,
-      vars.airdropParams
-    ) = abi.decode(params, (uint256[], address[], uint256[], address, bytes));
+      vars.airdropParams,
+      vars.ethValue
+    ) = abi.decode(params, (uint256[], address[], uint256[], address, bytes, uint256));
 
-    require(vars.airdropTokenTypes.length > 0, "invalid airdrop token type");
+    // airdrop token list can be empty, no need transfer immediately after call method
+    // require(vars.airdropTokenTypes.length > 0, "invalid airdrop token type");
     require(vars.airdropTokenAddresses.length == vars.airdropTokenTypes.length, "invalid airdrop token address length");
     require(vars.airdropTokenIds.length == vars.airdropTokenTypes.length, "invalid airdrop token id length");
 
@@ -97,7 +113,12 @@ contract AirdropFlashLoanReceiverV3 is
     IERC721Upgradeable(nftAsset).setApprovalForAll(operator, true);
 
     // call project aidrop contract
-    AddressUpgradeable.functionCall(vars.airdropContract, vars.airdropParams, "call airdrop method failed");
+    AddressUpgradeable.functionCallWithValue(
+      vars.airdropContract,
+      vars.airdropParams,
+      vars.ethValue,
+      "call airdrop method failed"
+    );
 
     vars.airdropKeyHash = getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
     airdropClaimRecords[vars.airdropKeyHash] = true;
@@ -152,12 +173,21 @@ contract AirdropFlashLoanReceiverV3 is
     return true;
   }
 
-  function callMethod(address targetContract, bytes calldata callParams) external nonReentrant onlyOwner {
+  /**
+   * @dev call third party contract method, etc. staking, claim...
+   * @param targetContract address of target contract
+   * @param callParams parameters to call target contract
+   */
+  function callMethod(
+    address targetContract,
+    bytes calldata callParams,
+    uint256 ethValue
+  ) external payable nonReentrant onlyOwner {
     require(targetContract != address(0), "invalid contract address");
     require(callParams.length >= 4, "invalid call parameters");
 
     // call project claim contract
-    AddressUpgradeable.functionCall(targetContract, callParams, "call method failed");
+    AddressUpgradeable.functionCallWithValue(targetContract, callParams, ethValue, "call method failed");
   }
 
   function approveERC20(
@@ -168,6 +198,11 @@ contract AirdropFlashLoanReceiverV3 is
     IERC20Upgradeable(token).approve(spender, amount);
   }
 
+  /**
+   * @dev transfer ERC20 token from contract to owner
+   * @param token address of ERC20 token
+   * @param amount amount to send
+   */
   function transferERC20(address token, uint256 amount) external nonReentrant onlyOwner {
     address to = owner();
     IERC20Upgradeable(token).transfer(to, amount);
@@ -189,6 +224,11 @@ contract AirdropFlashLoanReceiverV3 is
     IERC721Upgradeable(token).setApprovalForAll(operator, approved);
   }
 
+  /**
+   * @dev transfer ERC721 token from contract to owner
+   * @param token address of ERC721 token
+   * @param id token item to send
+   */
   function transferERC721(address token, uint256 id) external nonReentrant onlyOwner {
     address to = owner();
     IERC721Upgradeable(token).safeTransferFrom(address(this), to, id);
@@ -202,6 +242,12 @@ contract AirdropFlashLoanReceiverV3 is
     IERC1155Upgradeable(token).setApprovalForAll(operator, approved);
   }
 
+  /**
+   * @dev transfer ERC1155 token from contract to owner
+   * @param token address of ERC1155 token
+   * @param id token item to send
+   * @param amount amount to send
+   */
   function transferERC1155(
     address token,
     uint256 id,
@@ -211,12 +257,19 @@ contract AirdropFlashLoanReceiverV3 is
     IERC1155Upgradeable(token).safeTransferFrom(address(this), to, id, amount, new bytes(0));
   }
 
+  /**
+   * @dev transfer native Ether from contract to owner
+   * @param amount amount to send
+   */
   function transferEther(uint256 amount) external nonReentrant onlyOwner {
     address to = owner();
     (bool success, ) = to.call{value: amount}(new bytes(0));
     require(success, "ETH_TRANSFER_FAILED");
   }
 
+  /**
+   * @dev query claim record
+   */
   function getAirdropClaimRecord(
     address initiator,
     address nftAsset,
@@ -227,6 +280,9 @@ contract AirdropFlashLoanReceiverV3 is
     return airdropClaimRecords[airdropKeyHash];
   }
 
+  /**
+   * @dev encode flash claim parameters
+   */
   function encodeFlashLoanParams(
     uint256[] calldata airdropTokenTypes,
     address[] calldata airdropTokenAddresses,
@@ -237,6 +293,9 @@ contract AirdropFlashLoanReceiverV3 is
     return abi.encode(airdropTokenTypes, airdropTokenAddresses, airdropTokenIds, airdropContract, airdropParams);
   }
 
+  /**
+   * @dev query claim key hash
+   */
   function getClaimKeyHash(
     address initiator,
     address nftAsset,
@@ -245,4 +304,6 @@ contract AirdropFlashLoanReceiverV3 is
   ) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(initiator, nftAsset, nftTokenIds, params));
   }
+
+  receive() external payable {}
 }
