@@ -110,7 +110,9 @@ contract AirdropFlashLoanReceiverV3 is
     require(vars.airdropParams.length >= 4, "invalid airdrop parameters");
 
     // allow operator transfer borrowed nfts back to bnft
-    IERC721Upgradeable(nftAsset).setApprovalForAll(operator, true);
+    for (uint256 idIdx = 0; idIdx < nftTokenIds.length; idIdx++) {
+      IERC721Upgradeable(nftAsset).approve(operator, nftTokenIds[idIdx]);
+    }
 
     // call project aidrop contract
     AddressUpgradeable.functionCallWithValue(
@@ -161,12 +163,14 @@ contract AirdropFlashLoanReceiverV3 is
           new bytes(0)
         );
       } else if (vars.airdropTokenTypes[typeIndex] == 4) {
-        // ERC721 without Enumerate
+        // ERC721 without Enumerate but can know the droped token id
         IERC721EnumerableUpgradeable(vars.airdropTokenAddresses[typeIndex]).safeTransferFrom(
           address(this),
           initiator,
           vars.airdropTokenIds[typeIndex]
         );
+      } else if (vars.airdropTokenTypes[typeIndex] == 5) {
+        // ERC721 without Enumerate and can not know the droped token id
       }
     }
 
@@ -185,6 +189,10 @@ contract AirdropFlashLoanReceiverV3 is
   ) external payable nonReentrant onlyOwner {
     require(targetContract != address(0), "invalid contract address");
     require(callParams.length >= 4, "invalid call parameters");
+
+    if (ethValue > 0) {
+      require((address(this).balance + msg.value) >= ethValue, "insufficient eth");
+    }
 
     // call project claim contract
     AddressUpgradeable.functionCallWithValue(targetContract, callParams, ethValue, "call method failed");

@@ -177,7 +177,7 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     );
   });
 
-  it("Apply airdrop using flashLoan - ERC721 without Enumerate", async () => {
+  it("Apply airdrop using flashLoan - ERC721 without Enumerate but know the ID", async () => {
     const { users, bayc, bBAYC } = testEnv;
     const nftOwner = users[0];
 
@@ -222,6 +222,59 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
 
     const erc721BalanceAfter = await mockAirdropERC721Token.balanceOf(nftOwner.address);
     expect(erc721BalanceAfter).to.be.equal(erc721Bonus.add(erc721BalanceBefore));
+
+    const dropedTokenOwner = await mockAirdropERC721Token.ownerOf(tokenId);
+    expect(dropedTokenOwner).to.be.equal(nftOwner.address);
+  });
+
+  it("Apply airdrop using flashLoan - ERC721 without Enumerate and can not know ID", async () => {
+    const { users, bayc, bBAYC } = testEnv;
+    const nftOwner = users[0];
+
+    const ethValue = ethers.utils.parseEther("0");
+    // await waitForTx(
+    //   await nftOwner.signer.sendTransaction({
+    //     to: _airdropFlashLoanReceiver.address,
+    //     value: ethValue,
+    //   })
+    // );
+
+    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
+
+    const tokenId = testEnv.tokenIdTracker++;
+    await waitForTx(await bayc.mint(tokenId));
+
+    await waitForTx(await _mockBNFTMinter.mint(nftOwner.address, tokenId));
+
+    const mockAirdropERC721Address = await _mockAirdropProject.erc721Token();
+    const mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
+    const erc721Bonus = await _mockAirdropProject.erc721Bonus();
+
+    const applyAirdropEncodedData = _mockAirdropProject.interface.encodeFunctionData("nativeApplyAirdrop", [
+      bayc.address,
+      tokenId,
+    ]);
+    console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
+
+    const receiverEncodedData = ethers.utils.defaultAbiCoder.encode(
+      ["uint256[]", "address[]", "uint256[]", "address", "bytes", "uint256"],
+      [[5], [mockAirdropERC721Address], [0], _mockAirdropProject.address, applyAirdropEncodedData, ethValue]
+    );
+    console.log("receiverEncodedData:", receiverEncodedData);
+
+    const erc721BalanceBefore = await mockAirdropERC721Token.balanceOf(_airdropFlashLoanReceiver.address);
+
+    await waitForTx(
+      await bBAYC.connect(nftOwner.signer).flashLoan(_airdropFlashLoanReceiver.address, [tokenId], receiverEncodedData)
+    );
+
+    console.log("Airdrop ERC721 Balance:", await mockAirdropERC721Token.balanceOf(nftOwner.address));
+
+    const erc721BalanceAfter = await mockAirdropERC721Token.balanceOf(_airdropFlashLoanReceiver.address);
+    expect(erc721BalanceAfter).to.be.equal(erc721Bonus.add(erc721BalanceBefore));
+
+    const dropedTokenOwner = await mockAirdropERC721Token.ownerOf(tokenId);
+    expect(dropedTokenOwner).to.be.equal(_airdropFlashLoanReceiver.address);
   });
 
   it("Tries to call claim - invalid owner (revert expected)", async () => {
@@ -233,10 +286,18 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     ).to.be.revertedWith("Ownable: caller is not the owner");
   });
 
-  it("Apply airdrop using claim - ERC20/ERC721/ERC1155", async () => {
+  it("Apply airdrop using claim without ETH - ERC20/ERC721/ERC1155", async () => {
     const { users, bayc } = testEnv;
     const nftOwner = users[0];
     const user3 = users[3];
+
+    const ethValue = ethers.utils.parseEther("0");
+    // await waitForTx(
+    //   await nftOwner.signer.sendTransaction({
+    //     to: _airdropFlashLoanReceiver.address,
+    //     value: ethValue,
+    //   })
+    // );
 
     const receiverOwnerAddress = await _airdropFlashLoanReceiver.owner();
     const receiverOwnerSigner = await getEthersSignerByAddress(receiverOwnerAddress);
@@ -264,7 +325,75 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     await waitForTx(
       await _airdropFlashLoanReceiver
         .connect(receiverOwnerSigner)
-        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData, 0)
+        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData, ethValue)
+    );
+
+    const claimErc20Balance = await mockAirdropERC20Token.balanceOf(_airdropFlashLoanReceiver.address);
+    const claimErc721Balance = await mockAirdropERC721Token.balanceOf(_airdropFlashLoanReceiver.address);
+    const claimErc1155Balance = await mockAirdropERC1155Token.balanceOf(_airdropFlashLoanReceiver.address, erc1155Id);
+    console.log("Claim ERC20 Balance:", claimErc20Balance);
+    console.log("Claim ERC721 Balance:", claimErc721Balance);
+    console.log("Claim ERC1155 Balance:", claimErc1155Balance);
+
+    await waitForTx(
+      await _airdropFlashLoanReceiver
+        .connect(receiverOwnerSigner)
+        .transferERC20(mockAirdropERC20Token.address, claimErc20Balance)
+    );
+    airdropERC721TokenId = tokenId.toString();
+    await waitForTx(
+      await _airdropFlashLoanReceiver
+        .connect(receiverOwnerSigner)
+        .transferERC721(mockAirdropERC721Token.address, tokenId)
+    );
+    airdropERC1155TokenId = erc1155Id;
+    await waitForTx(
+      await _airdropFlashLoanReceiver
+        .connect(receiverOwnerSigner)
+        .transferERC1155(mockAirdropERC1155Token.address, erc1155Id, claimErc1155Balance)
+    );
+  });
+
+  it("Apply airdrop using claim with ETH - ERC20/ERC721/ERC1155", async () => {
+    const { users, bayc } = testEnv;
+    const nftOwner = users[0];
+    const user3 = users[3];
+
+    const ethValue = ethers.utils.parseEther("10.0");
+    await waitForTx(
+      await nftOwner.signer.sendTransaction({
+        to: _airdropFlashLoanReceiver.address,
+        value: ethValue,
+      })
+    );
+
+    const receiverOwnerAddress = await _airdropFlashLoanReceiver.owner();
+    const receiverOwnerSigner = await getEthersSignerByAddress(receiverOwnerAddress);
+
+    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
+
+    const tokenId = testEnv.tokenIdTracker++;
+    await waitForTx(await bayc.mint(tokenId));
+    const tokenOwner = await bayc.ownerOf(tokenId);
+    const tokenSigner = await getEthersSignerByAddress(tokenOwner);
+
+    await waitForTx(
+      await bayc.connect(tokenSigner).transferFrom(tokenOwner, _airdropFlashLoanReceiver.address, tokenId)
+    );
+
+    const erc1155Id = (await _mockAirdropProject.getERC1155TokenId(tokenId)).toString();
+    console.log("tokenId:", tokenId, "erc1155Id:", erc1155Id, "owner:", nftOwner.address);
+
+    const applyAirdropEncodedData = _mockAirdropProject.interface.encodeFunctionData("nativeApplyAirdrop", [
+      bayc.address,
+      tokenId,
+    ]);
+    console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
+
+    await waitForTx(
+      await _airdropFlashLoanReceiver
+        .connect(receiverOwnerSigner)
+        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData, ethValue)
     );
 
     const claimErc20Balance = await mockAirdropERC20Token.balanceOf(_airdropFlashLoanReceiver.address);
