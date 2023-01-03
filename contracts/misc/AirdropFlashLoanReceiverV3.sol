@@ -29,14 +29,9 @@ contract AirdropFlashLoanReceiverV3 is
 {
   address public bnftRegistry;
   mapping(bytes32 => bool) public airdropClaimRecords;
-  uint256 public deployType;
   uint256 public constant VERSION = 3;
 
-  function initialize(
-    address owner_,
-    address bnftRegistry_,
-    uint256 deployType_
-  ) public initializer {
+  function initialize(address owner_, address bnftRegistry_) public initializer {
     __ReentrancyGuard_init();
     __Ownable_init();
     __ERC721Holder_init();
@@ -46,7 +41,6 @@ contract AirdropFlashLoanReceiverV3 is
     require(bnftRegistry_ != address(0), "zero registry address");
 
     bnftRegistry = bnftRegistry_;
-    deployType = deployType_;
 
     _transferOwnership(owner_);
   }
@@ -78,16 +72,14 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     bytes calldata params
   ) external override returns (bool) {
+    initiator;
+
     ExecuteOperationLocalVars memory vars;
+    address targetOwner = owner();
 
     // check caller and owner
     (address bnftProxy, ) = IBNFTRegistry(bnftRegistry).getBNFTAddresses(nftAsset);
     require(bnftProxy == msg.sender, "caller not bnft");
-
-    // 0 = used for public, created by BendDAO, 1 - used for private, created by owner
-    if (deployType != 0) {
-      require(initiator == owner(), "initiator not owner");
-    }
 
     require(nftTokenIds.length > 0, "empty token list");
 
@@ -122,7 +114,7 @@ contract AirdropFlashLoanReceiverV3 is
       "call airdrop method failed"
     );
 
-    vars.airdropKeyHash = getClaimKeyHash(initiator, nftAsset, nftTokenIds, params);
+    vars.airdropKeyHash = getClaimKeyHash(targetOwner, nftAsset, nftTokenIds, params);
     airdropClaimRecords[vars.airdropKeyHash] = true;
 
     // transfer airdrop tokens to borrower
@@ -133,7 +125,7 @@ contract AirdropFlashLoanReceiverV3 is
         // ERC20
         vars.airdropBalance = IERC20Upgradeable(vars.airdropTokenAddresses[typeIndex]).balanceOf(address(this));
         if (vars.airdropBalance > 0) {
-          IERC20Upgradeable(vars.airdropTokenAddresses[typeIndex]).transfer(initiator, vars.airdropBalance);
+          IERC20Upgradeable(vars.airdropTokenAddresses[typeIndex]).transfer(targetOwner, vars.airdropBalance);
         }
       } else if (vars.airdropTokenTypes[typeIndex] == 2) {
         // ERC721 with Enumerate
@@ -145,7 +137,7 @@ contract AirdropFlashLoanReceiverV3 is
           );
           IERC721EnumerableUpgradeable(vars.airdropTokenAddresses[typeIndex]).safeTransferFrom(
             address(this),
-            initiator,
+            targetOwner,
             vars.airdropTokenId
           );
         }
@@ -157,7 +149,7 @@ contract AirdropFlashLoanReceiverV3 is
         );
         IERC1155Upgradeable(vars.airdropTokenAddresses[typeIndex]).safeTransferFrom(
           address(this),
-          initiator,
+          targetOwner,
           vars.airdropTokenIds[typeIndex],
           vars.airdropBalance,
           new bytes(0)
@@ -166,7 +158,7 @@ contract AirdropFlashLoanReceiverV3 is
         // ERC721 without Enumerate but can know the droped token id
         IERC721EnumerableUpgradeable(vars.airdropTokenAddresses[typeIndex]).safeTransferFrom(
           address(this),
-          initiator,
+          targetOwner,
           vars.airdropTokenIds[typeIndex]
         );
       } else if (vars.airdropTokenTypes[typeIndex] == 5) {

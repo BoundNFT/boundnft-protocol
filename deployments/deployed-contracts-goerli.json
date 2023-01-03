@@ -74,14 +74,6 @@
     "address": "0x0EBbD387769f012a3Bbf65eaCb4Ec3db3c7693f6",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
-  "UserFlashclaimRegistryV3": {
-    "address": "0xcdAeD24a337CC35006b5CF79a7A858561686E783",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
-  },
-  "AirdropFlashLoanReceiverV3": {
-    "address": "0x382c1856D25CbB835D4C1d732EB69f3e0d9Ba104",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
-  },
   "AirdropDistributionImpl": {
     "address": "0x179ab47Ab5980c70d4D08D54C47558bd8c3697B5"
   },

@@ -209,9 +209,6 @@ task("verify:airdrop-flashloan-v3", "Verify airdrop flashloan contracts at Ether
 
     const bnftRegistry = await getBNFTRegistryProxy();
 
-    const receiverV3Contract = await getAirdropFlashLoanReceiverV3();
-    await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV3Contract, []);
-
     console.log("Verifying UserFlashclaimRegistryV3 ...\n");
     const flashclaimRegistryV3 = await getUserFlashclaimRegistryV3();
     await verifyContract(eContractid.UserFlashclaimRegistryV3, flashclaimRegistryV3, [
@@ -222,7 +219,7 @@ task("verify:airdrop-flashloan-v3", "Verify airdrop flashloan contracts at Ether
     console.log("Verifying AirdropFlashLoanReceiverV3 Implemention ...\n");
     const receiverImplV3Address = await flashclaimRegistryV3.receiverV3Implemention();
     const receiverImplV3Contract = await getAirdropFlashLoanReceiverV3(receiverImplV3Address);
-    await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverImplV3Contract, []);
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV3Impl, receiverImplV3Contract, []);
 
     console.log("Finished verifications.");
   }

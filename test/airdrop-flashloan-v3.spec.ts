@@ -1,12 +1,13 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { MockBNFTMinter } from "../types/MockBNFTMinter";
 import {
-  deployAirdropFlashLoanReceiverV3,
+  deployAirdropFlashLoanReceiverV3Impl,
   deployMockAirdrop,
   deployMockBNFTMinter,
 } from "../helpers/contracts-deployments";
 import {
   AirdropFlashLoanReceiverV3,
+  AirdropFlashLoanReceiverV3Factory,
   MintableERC1155,
   MintableERC20,
   MintableERC721,
@@ -33,11 +34,8 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
   before(async () => {
     const { bayc, bBAYC, bnftRegistry } = testEnv;
 
-    _airdropFlashLoanReceiver = await deployAirdropFlashLoanReceiverV3(
-      testEnv.users[0].address,
-      bnftRegistry.address,
-      "0"
-    );
+    _airdropFlashLoanReceiver = await new AirdropFlashLoanReceiverV3Factory(testEnv.deployer.signer).deploy();
+    await waitForTx(await _airdropFlashLoanReceiver.initialize(testEnv.users[0].address, bnftRegistry.address));
 
     _mockAirdropProject = await deployMockAirdrop([bnftRegistry.address]);
     _mockBNFTMinter = await deployMockBNFTMinter([bayc.address, bBAYC.address]);
