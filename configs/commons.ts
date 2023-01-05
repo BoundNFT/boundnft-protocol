@@ -81,7 +81,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',
     [eEthereumNetwork.localhost]: '',
-    [eEthereumNetwork.goerli]: '',
+    [eEthereumNetwork.goerli]: '0x9f7E2921ed5edb3217598988A303D1711fBB0909',
     [eEthereumNetwork.rinkeby]: '',
     [eEthereumNetwork.main]: '',
   },

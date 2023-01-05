@@ -4,6 +4,8 @@ import {
   AirdropFlashLoanReceiverV3,
   AirdropFlashLoanReceiverV3Factory,
   MockAirdropProject,
+  MockLendPoolAddressesProvider,
+  MockLendPoolAddressesProviderFactory,
   MockLendPoolLoan,
   MockLendPoolLoanFactory,
   MockStakeManager,
@@ -21,6 +23,7 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
   let _flashClaimRegistryV3 = {} as UserFlashclaimRegistryV3;
   let _mockLendPoolLoan = {} as MockLendPoolLoan;
   let _mockStakeManager = {} as MockStakeManager;
+  let _mockAddressProvider = {} as MockLendPoolAddressesProvider;
   let _mockReceiverV3Impl = {} as AirdropFlashLoanReceiverV3;
 
   let _mockAirdropProject1 = {} as MockAirdropProject;
@@ -31,12 +34,16 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
 
     _mockLendPoolLoan = await new MockLendPoolLoanFactory(testEnv.deployer.signer).deploy(bnftRegistry.address);
     _mockStakeManager = await new MockStakeManagerFactory(testEnv.deployer.signer).deploy(bnftRegistry.address);
+
+    _mockAddressProvider = await new MockLendPoolAddressesProviderFactory(testEnv.deployer.signer).deploy();
+    await waitForTx(await _mockAddressProvider.setLendPoolLoan(_mockLendPoolLoan.address));
+
     _mockReceiverV3Impl = await new AirdropFlashLoanReceiverV3Factory(testEnv.deployer.signer).deploy();
     _flashClaimRegistryV3 = await deployUserFlashclaimRegistryV3();
     await waitForTx(
       await _flashClaimRegistryV3.initialize(
         bnftRegistry.address,
-        _mockLendPoolLoan.address,
+        _mockAddressProvider.address,
         _mockStakeManager.address,
         _mockReceiverV3Impl.address
       )

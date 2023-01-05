@@ -88,5 +88,16 @@
   "AirdropFlashLoanReceiverV2": {
     "address": "0xff56C32de5BcE41D7c2200Dcf74eB3866c836c0F",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV3Impl": {
+    "address": "0x6925388958B0c249750284996264CAb8A267DbdC",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3Impl": {
+    "address": "0x05ef86a5B21B0420436a1d941D9C2D19b2982195",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3": {
+    "address": "0x9f7E2921ed5edb3217598988A303D1711fBB0909"
   }
 }

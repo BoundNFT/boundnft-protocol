@@ -86,9 +86,9 @@ task("full:deploy-flashclaim-registry-v2", "Deploy airdrop flashclaim registry f
 task("full:deploy-flashclaim-registry-v3", "Deploy airdrop flashclaim registry for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
-  .addParam("poolLoan", "Address of LendPoolLoan")
+  .addParam("addressProvider", "Address of AddressProvider")
   .addParam("stakeManager", "Address of StakeManager")
-  .setAction(async ({ verify, pool, poolLoan, stakeManager }, localBRE) => {
+  .setAction(async ({ verify, pool, addressProvider, stakeManager }, localBRE) => {
     await localBRE.run("set-DRE");
     await localBRE.run("compile");
 
@@ -101,9 +101,7 @@ task("full:deploy-flashclaim-registry-v3", "Deploy airdrop flashclaim registry f
     const proxyAdmin = await getBNFTProxyAdminById(eContractid.ProxyAdminWithoutTimelock);
     const proxyOwnerAddress = await proxyAdmin.owner();
 
-    const receiverV3Impl = await deployAirdropFlashLoanReceiverV3Impl(verify);
-    console.log("Deploying new AirdropFlashLoanReceiverV3 implementation...");
-
+    console.log("Deploying new UserFlashclaimRegistryV3 implementation...");
     const flashclaimRegistryImpl = await deployUserFlashclaimRegistryV3(verify);
 
     let flashclaimRegistry: UserFlashclaimRegistryV3;
@@ -113,9 +111,12 @@ task("full:deploy-flashclaim-registry-v3", "Deploy airdrop flashclaim registry f
     if (flashclaimRegistryProxyAddress == undefined || !notFalsyOrZeroAddress(flashclaimRegistryProxyAddress)) {
       console.log("Deploying new UserFlashclaimRegistryV3 proxy & implementation...");
 
+      console.log("Deploying new AirdropFlashLoanReceiverV3 implementation...");
+      const receiverV3Impl = await deployAirdropFlashLoanReceiverV3Impl(verify);
+
       const initEncodedData = flashclaimRegistryImpl.interface.encodeFunctionData("initialize", [
         bnftRegistry.address,
-        poolLoan,
+        addressProvider,
         stakeManager,
         receiverV3Impl.address,
       ]);

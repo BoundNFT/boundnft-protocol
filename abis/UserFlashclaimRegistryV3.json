@@ -89,6 +89,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "addressProvider",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -226,7 +239,7 @@
       },
       {
         "internalType": "address",
-        "name": "lendPoolLoan_",
+        "name": "addressProvider_",
         "type": "address"
       },
       {
@@ -264,19 +277,6 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "lendPoolLoan",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",

@@ -114,7 +114,7 @@
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "UserFlashclaimRegistryV3": {
-    "address": "0x44e12d4D37f6DDAA00c086442998B1A61365BCa9",
+    "address": "0x0A66e11653e32D082F3330Dc99687ce42Eb53121",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "AirdropFlashLoanReceiverV3": {
@@ -138,7 +138,7 @@
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "UserFlashclaimRegistryV3Impl": {
-    "address": "0x44e12d4D37f6DDAA00c086442998B1A61365BCa9",
+    "address": "0x0A66e11653e32D082F3330Dc99687ce42Eb53121",
     "deployer": "0x5b69E6884C70f42819Fb35Bf3C25578ee11AAA15"
   },
   "MockVRFCoordinatorV2": {

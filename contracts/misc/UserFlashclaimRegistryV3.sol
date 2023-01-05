@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
 import "../interfaces/IBNFT.sol";
+import "./ILendPoolAddressesProvider.sol";
 import "./ILendPoolLoan.sol";
 import "./IStakeManager.sol";
 
@@ -26,7 +27,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
   mapping(address => bool) public allReceiversV3;
   address public receiverV3Implemention;
   mapping(address => EnumerableSetUpgradeable.AddressSet) private _airdropContractWhiteList;
-  address public lendPoolLoan;
+  address public addressProvider;
   address public stakeManager;
 
   event ReceiverV3ImplementionUpdated(address indexed receiverV3Implemention);
@@ -35,14 +36,14 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
 
   function initialize(
     address bnftRegistry_,
-    address lendPoolLoan_,
+    address addressProvider_,
     address stakeManager_,
     address receiverV3Implemention_
   ) public initializer {
     __Ownable_init();
 
     bnftRegistry = bnftRegistry_;
-    lendPoolLoan = lendPoolLoan_;
+    addressProvider = addressProvider_;
     stakeManager = stakeManager_;
 
     receiverV3Implemention = receiverV3Implemention_;
@@ -95,6 +96,8 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     uint256[] calldata nftTokenIds,
     bytes calldata params
   ) public override nonReentrant {
+    address lendPoolLoan = ILendPoolAddressesProvider(addressProvider).getLendPoolLoan();
+
     (address bnftProxy, ) = IBNFTRegistry(bnftRegistry).getBNFTAddresses(nftAsset);
     require(bnftProxy != address(0), "invalid nft asset");
 
@@ -133,10 +136,23 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     }
   }
 
+  /**
+   * @dev Query user receiver, only compatable with v2.
+   */
+  function userReceivers(address user) public view returns (address) {
+    return getUserReceiver(user);
+  }
+
+  /**
+   * @dev Query user receiver, current in used.
+   */
   function getUserReceiver(address user) public view override returns (address) {
     return userReceiversV3[user];
   }
 
+  /**
+   * @dev Query user receiver, latest version.
+   */
   function getUserReceiverLatestVersion(address user) public view override returns (uint256, address) {
     address receiverV3 = userReceiversV3[user];
     if (receiverV3 != address(0)) {
@@ -146,6 +162,9 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     return (0, address(0));
   }
 
+  /**
+   * @dev Query user receiver, all versions.
+   */
   function getUserReceiverAllVersions(address user) public view override returns (uint256[] memory, address[] memory) {
     uint256 length;
     uint256[3] memory versions;
