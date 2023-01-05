@@ -31,6 +31,11 @@ contract AirdropFlashLoanReceiverV3 is
   mapping(bytes32 => bool) public airdropClaimRecords;
   uint256 public constant VERSION = 3;
 
+  event ApproveERC20(address indexed token, address indexed spender, uint256 amount);
+  event ApproveERC721(address indexed token, address indexed operator, uint256 amount);
+  event ApproveERC721ForAll(address indexed token, address indexed operator, bool approved);
+  event ApproveERC1155ForAll(address indexed token, address indexed operator, bool approved);
+
   function initialize(address owner_, address bnftRegistry_) public initializer {
     __ReentrancyGuard_init();
     __Ownable_init();
@@ -182,9 +187,7 @@ contract AirdropFlashLoanReceiverV3 is
     require(targetContract != address(0), "invalid contract address");
     require(callParams.length >= 4, "invalid call parameters");
 
-    if (ethValue > 0) {
-      require(address(this).balance >= ethValue, "insufficient eth");
-    }
+    require(address(this).balance >= ethValue, "insufficient eth");
 
     // call project claim contract
     AddressUpgradeable.functionCallWithValue(targetContract, callParams, ethValue, "call method failed");
@@ -196,6 +199,7 @@ contract AirdropFlashLoanReceiverV3 is
     uint256 amount
   ) external nonReentrant onlyOwner {
     IERC20Upgradeable(token).approve(spender, amount);
+    emit ApproveERC20(token, spender, amount);
   }
 
   /**
@@ -214,6 +218,7 @@ contract AirdropFlashLoanReceiverV3 is
     uint256 tokenId
   ) external nonReentrant onlyOwner {
     IERC721Upgradeable(token).approve(operator, tokenId);
+    emit ApproveERC721(token, operator, tokenId);
   }
 
   function approveERC721ForAll(
@@ -222,6 +227,7 @@ contract AirdropFlashLoanReceiverV3 is
     bool approved
   ) external nonReentrant onlyOwner {
     IERC721Upgradeable(token).setApprovalForAll(operator, approved);
+    emit ApproveERC721ForAll(token, operator, approved);
   }
 
   /**
@@ -240,6 +246,7 @@ contract AirdropFlashLoanReceiverV3 is
     bool approved
   ) external nonReentrant onlyOwner {
     IERC1155Upgradeable(token).setApprovalForAll(operator, approved);
+    emit ApproveERC1155ForAll(token, operator, approved);
   }
 
   /**
