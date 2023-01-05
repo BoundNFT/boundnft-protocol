@@ -1,10 +1,6 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { MockBNFTMinter } from "../types/MockBNFTMinter";
-import {
-  deployAirdropFlashLoanReceiverV3Impl,
-  deployMockAirdrop,
-  deployMockBNFTMinter,
-} from "../helpers/contracts-deployments";
+import { deployMockAirdrop, deployMockBNFTMinter } from "../helpers/contracts-deployments";
 import {
   AirdropFlashLoanReceiverV3,
   AirdropFlashLoanReceiverV3Factory,
@@ -17,7 +13,6 @@ import { getMintableERC1155, getMintableERC20, getMintableERC721 } from "../help
 import { ethers } from "ethers";
 import { waitForTx } from "../helpers/misc-utils";
 import { getEthersSignerByAddress } from "../helpers/contracts-helpers";
-import { MAX_UINT_AMOUNT } from "../helpers/constants";
 
 const { expect } = require("chai");
 
@@ -295,12 +290,6 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     const user3 = users[3];
 
     const ethValue = ethers.utils.parseEther("0");
-    // await waitForTx(
-    //   await nftOwner.signer.sendTransaction({
-    //     to: _airdropFlashLoanReceiver.address,
-    //     value: ethValue,
-    //   })
-    // );
 
     const receiverOwnerAddress = await _airdropFlashLoanReceiver.owner();
     const receiverOwnerSigner = await getEthersSignerByAddress(receiverOwnerAddress);
@@ -328,7 +317,7 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     await waitForTx(
       await _airdropFlashLoanReceiver
         .connect(receiverOwnerSigner)
-        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData, ethValue)
+        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData, ethValue, { value: ethValue })
     );
 
     const claimErc20Balance = await mockAirdropERC20Token.balanceOf(_airdropFlashLoanReceiver.address);
@@ -363,12 +352,6 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     const user3 = users[3];
 
     const ethValue = ethers.utils.parseEther("10.0");
-    await waitForTx(
-      await nftOwner.signer.sendTransaction({
-        to: _airdropFlashLoanReceiver.address,
-        value: ethValue,
-      })
-    );
 
     const receiverOwnerAddress = await _airdropFlashLoanReceiver.owner();
     const receiverOwnerSigner = await getEthersSignerByAddress(receiverOwnerAddress);
@@ -396,7 +379,7 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     await waitForTx(
       await _airdropFlashLoanReceiver
         .connect(receiverOwnerSigner)
-        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData, ethValue)
+        .callMethod(_mockAirdropProject.address, applyAirdropEncodedData, ethValue, { value: ethValue })
     );
 
     const claimErc20Balance = await mockAirdropERC20Token.balanceOf(_airdropFlashLoanReceiver.address);

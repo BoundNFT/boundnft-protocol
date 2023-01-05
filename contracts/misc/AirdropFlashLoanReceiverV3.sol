@@ -183,7 +183,7 @@ contract AirdropFlashLoanReceiverV3 is
     require(callParams.length >= 4, "invalid call parameters");
 
     if (ethValue > 0) {
-      require((address(this).balance + msg.value) >= ethValue, "insufficient eth");
+      require(address(this).balance >= ethValue, "insufficient eth");
     }
 
     // call project claim contract
