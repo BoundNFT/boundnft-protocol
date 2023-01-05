@@ -5,6 +5,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
 import "../interfaces/IBNFT.sol";
 import "./ILendPoolLoan.sol";
@@ -16,6 +17,7 @@ import "./AirdropFlashLoanReceiverV3.sol";
 
 contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradeable, IUserFlashclaimRegistryV3 {
   using ClonesUpgradeable for address;
+  using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
   uint256 public constant VERSION = 3;
 
@@ -23,7 +25,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
   mapping(address => address) public userReceiversV3;
   mapping(address => bool) public allReceiversV3;
   address public receiverV3Implemention;
-  mapping(address => bool) public airdropContractWhiteList;
+  mapping(address => EnumerableSetUpgradeable.AddressSet) private _airdropContractWhiteList;
   address public lendPoolLoan;
   address public stakeManager;
 
@@ -52,8 +54,16 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     emit ReceiverV3ImplementionUpdated(receiverV3Implemention_);
   }
 
-  function setAirdropContractWhiteList(address airdropContract, bool flag) public onlyOwner {
-    airdropContractWhiteList[airdropContract] = flag;
+  function setAirdropContractWhiteList(
+    address nftAsset,
+    address airdropContract,
+    bool flag
+  ) public onlyOwner {
+    if (flag) {
+      _airdropContractWhiteList[nftAsset].add(airdropContract);
+    } else {
+      _airdropContractWhiteList[nftAsset].remove(airdropContract);
+    }
 
     emit AirdropContractWhiteListUpdated(airdropContract, flag);
   }
@@ -92,7 +102,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     require(receiverAddress != address(0), "empty user receiver");
 
     // check airdrop contract MUST in the whitelist
-    _checkValidAirdropContract(params);
+    _checkValidAirdropContract(nftAsset, params);
 
     // check owner and set locking flag
     for (uint256 i = 0; i < nftTokenIds.length; i++) {
@@ -158,6 +168,10 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     return (retVersions, retAddresses);
   }
 
+  function isAirdropContractInWhiteList(address nftAsset, address airdropContract) public view returns (bool) {
+    return _airdropContractWhiteList[nftAsset].contains(airdropContract);
+  }
+
   function _createReceiver() internal {
     address payable receiverV3 = payable(receiverV3Implemention.clone());
     AirdropFlashLoanReceiverV3(receiverV3).initialize(msg.sender, bnftRegistry);
@@ -168,12 +182,12 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     emit ReceiverCreated(msg.sender, address(receiverV3), VERSION);
   }
 
-  function _checkValidAirdropContract(bytes calldata params) internal view {
+  function _checkValidAirdropContract(address nftAsset, bytes calldata params) internal view {
     // decode parameters
     (, , , address airdropContract, , ) = abi.decode(
       params,
       (uint256[], address[], uint256[], address, bytes, uint256)
     );
-    require(airdropContractWhiteList[airdropContract] == true, "invalid airdrop contract");
+    require(isAirdropContractInWhiteList(nftAsset, airdropContract) == true, "invalid airdrop contract");
   }
 }

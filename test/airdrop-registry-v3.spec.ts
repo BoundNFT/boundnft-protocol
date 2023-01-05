@@ -93,7 +93,9 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
     await waitForTx(await _flashClaimRegistryV3.connect(user4.signer).createReceiver());
     await waitForTx(await _flashClaimRegistryV3.connect(user5.signer).createReceiver());
 
-    await _flashClaimRegistryV3.connect(ownerSigner).setAirdropContractWhiteList(_mockAirdropProject1.address, true);
+    await _flashClaimRegistryV3
+      .connect(ownerSigner)
+      .setAirdropContractWhiteList(bayc.address, _mockAirdropProject1.address, true);
   });
 
   it("User 2 tries to flash loan with invalid airdrop contract. (revert expected)", async () => {
