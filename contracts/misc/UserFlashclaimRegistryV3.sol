@@ -31,7 +31,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
   address public stakeManager;
 
   event ReceiverV3ImplementionUpdated(address indexed receiverV3Implemention);
-  event AirdropContractWhiteListUpdated(address indexed airdropContract, bool flag);
+  event AirdropContractWhiteListChanged(address indexed nftAsset, address indexed airdropContract, bool flag);
   event ReceiverCreated(address indexed user, address indexed receiver, uint256 version);
 
   function initialize(
@@ -66,7 +66,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
       _airdropContractWhiteList[nftAsset].remove(airdropContract);
     }
 
-    emit AirdropContractWhiteListUpdated(airdropContract, flag);
+    emit AirdropContractWhiteListChanged(nftAsset, airdropContract, flag);
   }
 
   /**

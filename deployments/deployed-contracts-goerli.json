@@ -94,10 +94,18 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "UserFlashclaimRegistryV3Impl": {
-    "address": "0x05ef86a5B21B0420436a1d941D9C2D19b2982195",
+    "address": "0x03285c816B3BdeF283435Db33653c8ce98f06030",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "UserFlashclaimRegistryV3": {
     "address": "0x9f7E2921ed5edb3217598988A303D1711fBB0909"
+  },
+  "MockAirdropProjectInWL": {
+    "address": "0x3D3CC003982cb41e1F5c6E42162a5Ec57aaaDc40",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MockAirdropProject": {
+    "address": "0xF352e70f8374719359F0a296d87981F6169d7C08",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

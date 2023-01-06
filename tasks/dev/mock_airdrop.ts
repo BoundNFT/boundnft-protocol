@@ -18,8 +18,8 @@ import { eNetwork } from "../../helpers/types";
 task("dev:deploy-mock-receiver", "Deploy mock receiver for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
-    await localBRE.run("compile");
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     const network = localBRE.network.name as eNetwork;
     if (network.includes("main")) {
@@ -31,11 +31,11 @@ task("dev:deploy-mock-receiver", "Deploy mock receiver for dev enviroment")
     console.log("OK");
   });
 
-task("dev:deploy-mock-airdrops", "Deploy mock airdrop for dev enviroment")
+task("dev:deploy-mock-airdrop", "Deploy mock airdrop for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .setAction(async ({ verify }, localBRE) => {
-    await localBRE.run("compile");
     await localBRE.run("set-DRE");
+    await localBRE.run("compile");
 
     const network = localBRE.network.name as eNetwork;
     if (network.includes("main")) {
