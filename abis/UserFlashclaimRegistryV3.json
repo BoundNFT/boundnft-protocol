@@ -5,6 +5,12 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "nftAsset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "airdropContract",
         "type": "address"
       },
@@ -15,7 +21,7 @@
         "type": "bool"
       }
     ],
-    "name": "AirdropContractWhiteListUpdated",
+    "name": "AirdropContractWhiteListChanged",
     "type": "event"
   },
   {
@@ -375,6 +381,25 @@
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "userReceivers",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
