@@ -166,6 +166,12 @@ export const getUserFlashclaimRegistryV3 = async (address?: tEthereumAddress) =>
     await getDeploySigner()
   );
 
+export const getUserFlashclaimRegistryV3Impl = async (address?: tEthereumAddress) =>
+  await UserFlashclaimRegistryV3Factory.connect(
+    address || (await getDb(DRE.network.name).get(`${eContractid.UserFlashclaimRegistryV3Impl}`).value()).address,
+    await getDeploySigner()
+  );
+
 export const getAirdropDistribution = async (address?: tEthereumAddress) =>
   await AirdropDistributionFactory.connect(
     address || (await getDb(DRE.network.name).get(`${eContractid.AirdropDistribution}`).value()).address,

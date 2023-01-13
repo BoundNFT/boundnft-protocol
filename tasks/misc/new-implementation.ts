@@ -1,7 +1,11 @@
 import { task } from "hardhat/config";
 import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
 import { eNetwork } from "../../helpers/types";
-import { deployBNFTRegistry, deployGenericBNFTImpl } from "../../helpers/contracts-deployments";
+import {
+  deployAirdropFlashLoanReceiverV3Impl,
+  deployBNFTRegistry,
+  deployGenericBNFTImpl,
+} from "../../helpers/contracts-deployments";
 
 task("dev:deploy-new-implementation", "Deploy new implementation")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
@@ -22,5 +26,10 @@ task("dev:deploy-new-implementation", "Deploy new implementation")
     if (contract == "BNFT") {
       const newImpl = await deployGenericBNFTImpl(verify);
       console.log("BNFT generic implementation address:", newImpl.address);
+    }
+
+    if (contract == "AirdropFlashLoanReceiverV3") {
+      const newImpl = await deployAirdropFlashLoanReceiverV3Impl(verify);
+      console.log("AirdropFlashLoanReceiverV3 implementation address:", newImpl.address);
     }
   });

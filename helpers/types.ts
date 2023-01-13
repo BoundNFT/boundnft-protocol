@@ -44,6 +44,8 @@ export enum eContractid {
   AirdropDistributionImpl = "AirdropDistributionImpl",
   UserFlashclaimRegistry = "UserFlashclaimRegistry",
   UserFlashclaimRegistryV2 = "UserFlashclaimRegistryV2",
+  AirdropFlashLoanReceiverV3Impl = "AirdropFlashLoanReceiverV3Impl",
+  UserFlashclaimRegistryV3Impl = "UserFlashclaimRegistryV3Impl",
   UserFlashclaimRegistryV3 = "UserFlashclaimRegistryV3",
 
   CryptoPunksMarket = "CryptoPunksMarket",
@@ -129,6 +131,7 @@ export interface ICommonConfiguration {
   WrappedPunkToken: iParamsPerNetwork<tEthereumAddress | undefined>;
   BoundPunkGateway: iParamsPerNetwork<tEthereumAddress | undefined>;
 
+  UserFlashclaimRegistryV3: iParamsPerNetwork<tEthereumAddress | undefined>;
   AirdropDistribution: iParamsPerNetwork<tEthereumAddress | undefined>;
 
   NftsAssets: iParamsPerNetwork<SymbolMap<tEthereumAddress>>;

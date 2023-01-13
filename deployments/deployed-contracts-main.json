@@ -41,13 +41,5 @@
   "UserFlashclaimRegistryV2": {
     "address": "0x699b138fb22AA6E735d27Aa996fF42ECc9dEBD03",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
-  },
-  "AirdropFlashLoanReceiverV3": {
-    "address": "0x35723601fc9DE14601960B7a0DEE8E7e8d24Ba8f",
-    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
-  },
-  "UserFlashclaimRegistryV3": {
-    "address": "0x9DCFf7CEa4863e643fA601e939E9aC1645f83ef3",
-    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   }
 }
