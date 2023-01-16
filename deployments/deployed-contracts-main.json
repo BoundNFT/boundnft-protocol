@@ -43,12 +43,11 @@
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "UserFlashclaimRegistryV3Impl": {
-    "address": "0x4d7531D3996f22d52449B5C09D7874d8312D00C8",
+    "address": "0x60Bd3aFd304208d7df17d59d3b733dA2274E993B",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "UserFlashclaimRegistryV3": {
-    "address": "0x14f167aBdBa026C379142436a68d8979a342EcB5",
-    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
+    "address": "0x14f167aBdBa026C379142436a68d8979a342EcB5"
   },
   "AirdropFlashLoanReceiverV3Impl": {
     "address": "0xb1a4b4B6D492C618B60fEf2F72A81D54420EF022",

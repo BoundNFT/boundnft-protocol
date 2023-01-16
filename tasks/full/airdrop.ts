@@ -24,6 +24,7 @@ import {
   getUserFlashclaimRegistry,
   getUserFlashclaimRegistryV2,
   getUserFlashclaimRegistryV3,
+  getUserFlashclaimRegistryV3Impl,
 } from "../../helpers/contracts-getters";
 import { getParamPerNetwork, insertContractAddressInDb } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
@@ -103,6 +104,7 @@ task("full:deploy-flashclaim-registry-v3", "Deploy airdrop flashclaim registry f
 
     console.log("Deploying new UserFlashclaimRegistryV3 implementation...");
     const flashclaimRegistryImpl = await deployUserFlashclaimRegistryV3(verify);
+    //const flashclaimRegistryImpl = await getUserFlashclaimRegistryV3Impl();
 
     let flashclaimRegistry: UserFlashclaimRegistryV3;
     let flashclaimRegistryProxy: BNFTUpgradeableProxy;
