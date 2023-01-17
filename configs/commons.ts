@@ -83,7 +83,7 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.localhost]: '',
     [eEthereumNetwork.goerli]: '0x9f7E2921ed5edb3217598988A303D1711fBB0909',
     [eEthereumNetwork.rinkeby]: '',
-    [eEthereumNetwork.main]: '',
+    [eEthereumNetwork.main]: '0x14f167aBdBa026C379142436a68d8979a342EcB5',
   },
   AirdropDistribution: {
     [eEthereumNetwork.coverage]: '',

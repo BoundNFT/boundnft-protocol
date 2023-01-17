@@ -222,6 +222,9 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
 
     await waitForTx(await _mockLendPoolLoan.connect(user2.signer).setFlashLoanLocking(bayc.address, tokenId, true));
 
+    const isLocked = await _flashClaimRegistryV3.isNftFlashLoanLocked(bayc.address, tokenId);
+    expect(isLocked).to.be.equal(true);
+
     const mockAirdropERC20Token = await getMintableERC20(await _mockAirdropProject1.erc20Token());
     const erc20Bonus = await _mockAirdropProject1.erc20Bonus();
 

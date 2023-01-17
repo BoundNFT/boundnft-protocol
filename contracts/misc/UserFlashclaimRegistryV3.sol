@@ -191,6 +191,15 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     return _airdropContractWhiteList[nftAsset].contains(airdropContract);
   }
 
+  function isNftFlashLoanLocked(address nftAsset, uint256 tokenId) public view returns (bool) {
+    (address bnftProxy, ) = IBNFTRegistry(bnftRegistry).getBNFTAddresses(nftAsset);
+    require(bnftProxy != address(0), "invalid nft asset");
+
+    address minterAddr = IBNFT(bnftProxy).minterOf(tokenId);
+    address[] memory lockers = IBNFT(bnftProxy).getFlashLoanLocked(tokenId, minterAddr);
+    return (lockers.length > 0);
+  }
+
   function _createReceiver() internal {
     address payable receiverV3 = payable(receiverV3Implemention.clone());
     AirdropFlashLoanReceiverV3(receiverV3).initialize(msg.sender, bnftRegistry);
