@@ -70,7 +70,8 @@ interface IBNFT {
     string calldata bNftName,
     string calldata bNftSymbol,
     address owner_,
-    address claimAdmin_
+    address claimAdmin_,
+    address bnftRegistry_
   ) external;
 
   /**

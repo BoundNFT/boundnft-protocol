@@ -8,6 +8,7 @@ interface IBNFTRegistry {
   event BNFTUpgraded(address indexed nftAsset, address bNftImpl, address bNftProxy, uint256 totals);
   event CustomeSymbolsAdded(address[] nftAssets, string[] symbols);
   event ClaimAdminUpdated(address oldAdmin, address newAdmin);
+  event DelegateCashUpdated(address oldDelegateCash, address newDelegateCash);
 
   function getBNFTAddresses(address nftAsset) external view returns (address bNftProxy, address bNftImpl);
 
@@ -16,6 +17,8 @@ interface IBNFTRegistry {
   function getBNFTAssetList() external view returns (address[] memory);
 
   function allBNFTAssetLength() external view returns (uint256);
+
+  function getDelegateCashContract() external view returns (address);
 
   function initialize(
     address genericImpl,
