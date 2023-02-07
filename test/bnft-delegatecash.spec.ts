@@ -47,6 +47,10 @@ makeSuite("BNFT: Delegate Cash", (testEnv: TestEnv) => {
     const user0 = users[0];
 
     await waitForTx(await bBAYC.connect(user0.signer).setDelegateCashForToken([cachedTokenId1, cachedTokenId2], true));
+    const hasCheck1 = await bBAYC.hasDelegateCashForToken(cachedTokenId1);
+    const hasCheck2 = await bBAYC.hasDelegateCashForToken(cachedTokenId2);
+    expect(hasCheck1).to.be.equal(true);
+    expect(hasCheck1).to.be.equal(true);
 
     const check1 = await mockDelegateCash.checkDelegateForToken(
       user0.address,
