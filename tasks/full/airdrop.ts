@@ -3,7 +3,8 @@ import { ConfigNames, loadPoolConfig } from "../../helpers/configuration";
 import { ZERO_ADDRESS } from "../../helpers/constants";
 import {
   deployAirdropDistribution,
-  deployAirdropFlashLoanReceiverV3,
+  deployAirdropFlashLoanReceiverV2,
+  deployAirdropFlashLoanReceiverV3Impl,
   deployBNFTUpgradeableProxy,
   deployUserFlashclaimRegistry,
   deployUserFlashclaimRegistryV2,
@@ -22,13 +23,15 @@ import {
   getMockAirdropProject,
   getUserFlashclaimRegistry,
   getUserFlashclaimRegistryV2,
+  getUserFlashclaimRegistryV3,
+  getUserFlashclaimRegistryV3Impl,
 } from "../../helpers/contracts-getters";
 import { getParamPerNetwork, insertContractAddressInDb } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress, waitForTx } from "../../helpers/misc-utils";
 import { eContractid, eNetwork } from "../../helpers/types";
-import { AirdropDistribution, BNFTUpgradeableProxy } from "../../types";
+import { AirdropDistribution, BNFTUpgradeableProxy, UserFlashclaimRegistryV3 } from "../../types";
 
-task("full:deploy-flashclaim-receiver-v3", "Deploy airdrop flashloan receiver for dev enviroment")
+task("full:deploy-flashclaim-receiver-v2", "Deploy airdrop flashloan receiver for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
   .setAction(async ({ verify, pool }, localBRE) => {
@@ -42,8 +45,8 @@ task("full:deploy-flashclaim-receiver-v3", "Deploy airdrop flashloan receiver fo
 
     const owner = await (await getDeploySigner()).getAddress();
 
-    const airdropFlashloan = await deployAirdropFlashLoanReceiverV3(owner, registry.address, "0", verify);
-    console.log("AirdropFlashLoanReceiverV3:", airdropFlashloan.address);
+    const airdropFlashloan = await deployAirdropFlashLoanReceiverV2(owner, registry.address, "0", verify);
+    console.log("AirdropFlashLoanReceiverV2:", airdropFlashloan.address);
   });
 
 task("full:deploy-flashclaim-registry-v1", "Deploy airdrop flashclaim registry for dev enviroment")
@@ -84,20 +87,71 @@ task("full:deploy-flashclaim-registry-v2", "Deploy airdrop flashclaim registry f
 task("full:deploy-flashclaim-registry-v3", "Deploy airdrop flashclaim registry for dev enviroment")
   .addFlag("verify", "Verify contracts at Etherscan")
   .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
-  .setAction(async ({ verify, pool }, localBRE) => {
+  .addParam("addressProvider", "Address of AddressProvider")
+  .addParam("stakeManager", "Address of StakeManager")
+  .setAction(async ({ verify, pool, addressProvider, stakeManager }, localBRE) => {
     await localBRE.run("set-DRE");
     await localBRE.run("compile");
 
     const network = localBRE.network.name as eNetwork;
+    const poolConfig = loadPoolConfig(pool);
 
     const bnftRegistry = await getBNFTRegistryProxy();
     console.log("BNFTRegistry:", bnftRegistry.address);
 
-    const v2Registry = await getUserFlashclaimRegistryV2();
-    console.log("UserFlashclaimRegistryV2:", v2Registry.address);
+    const proxyAdmin = await getBNFTProxyAdminById(eContractid.ProxyAdminWithoutTimelock);
+    const proxyOwnerAddress = await proxyAdmin.owner();
 
-    const flashclaimRegistry = await deployUserFlashclaimRegistryV3([bnftRegistry.address, v2Registry.address], verify);
-    console.log("UserFlashclaimRegistryV3:", flashclaimRegistry.address);
+    console.log("Deploying new UserFlashclaimRegistryV3 implementation...");
+    const flashclaimRegistryImpl = await deployUserFlashclaimRegistryV3(verify);
+    //const flashclaimRegistryImpl = await getUserFlashclaimRegistryV3Impl();
+
+    let flashclaimRegistry: UserFlashclaimRegistryV3;
+    let flashclaimRegistryProxy: BNFTUpgradeableProxy;
+
+    let flashclaimRegistryProxyAddress = getParamPerNetwork(poolConfig.UserFlashclaimRegistryV3, network);
+    if (flashclaimRegistryProxyAddress == undefined || !notFalsyOrZeroAddress(flashclaimRegistryProxyAddress)) {
+      console.log("Deploying new UserFlashclaimRegistryV3 proxy & implementation...");
+
+      console.log("Deploying new AirdropFlashLoanReceiverV3 implementation...");
+      const receiverV3Impl = await deployAirdropFlashLoanReceiverV3Impl(verify);
+
+      const initEncodedData = flashclaimRegistryImpl.interface.encodeFunctionData("initialize", [
+        bnftRegistry.address,
+        addressProvider,
+        stakeManager,
+        receiverV3Impl.address,
+      ]);
+
+      flashclaimRegistryProxy = await deployBNFTUpgradeableProxy(
+        eContractid.UserFlashclaimRegistryV3,
+        proxyAdmin.address,
+        flashclaimRegistryImpl.address,
+        initEncodedData,
+        verify
+      );
+
+      flashclaimRegistry = await getUserFlashclaimRegistryV3(flashclaimRegistryProxy.address);
+    } else {
+      console.log("Upgrading exist UserFlashclaimRegistryV3 proxy to new implementation...");
+      await insertContractAddressInDb(eContractid.UserFlashclaimRegistryV3, flashclaimRegistryProxyAddress);
+
+      flashclaimRegistryProxy = await getBNFTUpgradeableProxy(flashclaimRegistryProxyAddress);
+
+      // only proxy admin can do upgrading
+      const ownerSigner = localBRE.ethers.provider.getSigner(proxyOwnerAddress);
+      await waitForTx(
+        await proxyAdmin.connect(ownerSigner).upgrade(flashclaimRegistryProxy.address, flashclaimRegistryImpl.address)
+      );
+
+      flashclaimRegistry = await getUserFlashclaimRegistryV3(flashclaimRegistryProxy.address);
+    }
+
+    console.log(
+      "UserFlashclaimRegistryV3: proxy %s, implementation %s",
+      flashclaimRegistry.address,
+      flashclaimRegistryImpl.address
+    );
   });
 
 task("full:deploy-airdrop-distribution", "Deploy airdrop distribution for dev enviroment")

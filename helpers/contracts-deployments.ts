@@ -119,7 +119,7 @@ export const deployMockFlashLoanReceiver = async (args: [tEthereumAddress], veri
 export const deployMockMockVRFCoordinatorV2 = async (args: [string, string], verify?: boolean) =>
   withSaveAndVerify(
     await new MockVRFCoordinatorV2Factory(await getDeploySigner()).deploy(...args),
-    eContractid.MockFlashLoanReceiver,
+    eContractid.MockVRFCoordinatorV2,
     args,
     verify
   );
@@ -163,28 +163,20 @@ export const deployAirdropFlashLoanReceiverV2 = async (
   const receiver = await withSaveAndVerify(
     await new AirdropFlashLoanReceiverV2Factory(await getDeploySigner()).deploy(),
     eContractid.AirdropFlashLoanReceiverV2,
-    [owner, registry, deployType],
-    verify
-  );
-  await waitForTx(await receiver.initialize(owner, registry, deployType));
-  return receiver;
-};
-
-export const deployAirdropFlashLoanReceiverV3 = async (
-  owner: tEthereumAddress,
-  registry: tEthereumAddress,
-  deployType: string,
-  verify?: boolean
-): Promise<AirdropFlashLoanReceiverV3> => {
-  const receiver = await withSaveAndVerify(
-    await new AirdropFlashLoanReceiverV3Factory(await getDeploySigner()).deploy(),
-    eContractid.AirdropFlashLoanReceiverV3,
     [],
     verify
   );
   await waitForTx(await receiver.initialize(owner, registry, deployType));
   return receiver;
 };
+
+export const deployAirdropFlashLoanReceiverV3Impl = async (verify?: boolean): Promise<AirdropFlashLoanReceiverV3> =>
+  withSaveAndVerify(
+    await new AirdropFlashLoanReceiverV3Factory(await getDeploySigner()).deploy(),
+    eContractid.AirdropFlashLoanReceiverV3Impl,
+    [],
+    verify
+  );
 
 export const deployUserFlashclaimRegistry = async (args: [string], verify?: boolean): Promise<UserFlashclaimRegistry> =>
   withSaveAndVerify(
@@ -205,16 +197,15 @@ export const deployUserFlashclaimRegistryV2 = async (
     verify
   );
 
-export const deployUserFlashclaimRegistryV3 = async (
-  args: [string, string],
-  verify?: boolean
-): Promise<UserFlashclaimRegistryV3> =>
-  withSaveAndVerify(
-    await new UserFlashclaimRegistryV3Factory(await getDeploySigner()).deploy(...args),
-    eContractid.UserFlashclaimRegistryV3,
-    args,
+export const deployUserFlashclaimRegistryV3 = async (verify?: boolean): Promise<UserFlashclaimRegistryV3> => {
+  const registryImpl = await withSaveAndVerify(
+    await new UserFlashclaimRegistryV3Factory(await getDeploySigner()).deploy(),
+    eContractid.UserFlashclaimRegistryV3Impl,
+    [],
     verify
   );
+  return withSaveAndVerify(registryImpl, eContractid.UserFlashclaimRegistryV3, [], verify);
+};
 
 export const deployAirdropDistribution = async (verify?: boolean) => {
   const contractImpl = await new AirdropDistributionFactory(await getDeploySigner()).deploy();

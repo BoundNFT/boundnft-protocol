@@ -41,12 +41,12 @@ export const NETWORKS_RPC_URL: iParamsPerNetwork<string> = {
 };
 
 export const NETWORKS_DEFAULT_GAS: iParamsPerNetwork<number> = {
-  [eEthereumNetwork.goerli]: 65 * GWEI,
-  [eEthereumNetwork.rinkeby]: 65 * GWEI,
+  [eEthereumNetwork.goerli]: 35 * GWEI,
+  [eEthereumNetwork.rinkeby]: 35 * GWEI,
   [eEthereumNetwork.main]: 35 * GWEI,
-  [eEthereumNetwork.coverage]: 65 * GWEI,
-  [eEthereumNetwork.hardhat]: 65 * GWEI,
-  [eEthereumNetwork.localhost]: 65 * GWEI,
+  [eEthereumNetwork.coverage]: 35 * GWEI,
+  [eEthereumNetwork.hardhat]: 35 * GWEI,
+  [eEthereumNetwork.localhost]: 35 * GWEI,
 };
 
 export const BLOCK_TO_FORK: iParamsPerNetwork<number | undefined> = {

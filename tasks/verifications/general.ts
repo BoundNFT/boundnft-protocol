@@ -15,6 +15,7 @@ import {
   getUserFlashclaimRegistryV2,
   getUserFlashclaimRegistryV3,
   getAirdropFlashLoanReceiverV3,
+  getUserFlashclaimRegistryV3Impl,
 } from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { notFalsyOrZeroAddress } from "../../helpers/misc-utils";
@@ -178,30 +179,84 @@ task("verify:bnft", "Verify bnft contracts at Etherscan")
     console.log("Finished verifications.");
   });
 
-task("verify:airdrop-flashloan", "Verify airdrop flashloan contracts at Etherscan").setAction(async ({}, localDRE) => {
-  await localDRE.run("set-DRE");
-  const network = localDRE.network.name as eNetwork;
+task("verify:airdrop-flashclaim-v2", "Verify airdrop flashloan contracts at Etherscan").setAction(
+  async ({}, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
 
-  const bnftRegistry = await getBNFTRegistryProxy();
+    const bnftRegistry = await getBNFTRegistryProxy();
 
-  const receiverV3Contract = await getAirdropFlashLoanReceiverV3();
-  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV3Contract, []);
+    const receiverV2Contract = await getAirdropFlashLoanReceiverV2();
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverV2Contract, []);
 
-  console.log("Verifying UserFlashclaimRegistryV3 ...\n");
-  const flashclaimRegistryV3 = await getUserFlashclaimRegistryV3();
-  await verifyContract(eContractid.UserFlashclaimRegistryV3, flashclaimRegistryV3, [
-    bnftRegistry.address,
-    flashclaimRegistryV3.address,
-  ]);
+    console.log("Verifying UserFlashclaimRegistryV2 ...\n");
+    const flashclaimRegistryV2 = await getUserFlashclaimRegistryV2();
+    await verifyContract(eContractid.UserFlashclaimRegistryV2, flashclaimRegistryV2, [
+      bnftRegistry.address,
+      flashclaimRegistryV2.address,
+    ]);
 
-  console.log("Verifying AirdropFlashLoanReceiverV3 Implemention ...\n");
-  const receiverImplV3Address = await flashclaimRegistryV3.receiverV3Implemention();
-  const receiverImplV3Contract = await getAirdropFlashLoanReceiverV3(receiverImplV3Address);
-  await verifyContract(eContractid.AirdropFlashLoanReceiverV3, receiverImplV3Contract, []);
+    console.log("Verifying AirdropFlashLoanReceiverV2 Implemention ...\n");
+    const receiverImplV2Address = await flashclaimRegistryV2.receiverV2Implemention();
+    const receiverImplV2Contract = await getAirdropFlashLoanReceiverV2(receiverImplV2Address);
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV2, receiverImplV2Contract, []);
+  }
+);
 
-  console.log("Verifying AirdropDistributionImpl ...\n");
-  const airdropDistribution = await getAirdropDistributionImpl();
-  await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
+task("verify:airdrop-flashclaim-v3", "Verify airdrop flashloan contracts at Etherscan")
+  .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
+  .setAction(async ({ pool }, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
+    const poolConfig = loadPoolConfig(pool);
 
-  console.log("Finished verifications.");
-});
+    const bnftRegistry = await getBNFTRegistryProxy();
+
+    const proxyAdminAddress = getParamPerNetwork(poolConfig.ProxyAdminWithoutTimelock, network);
+    if (proxyAdminAddress == undefined || !notFalsyOrZeroAddress(proxyAdminAddress)) {
+      throw Error("Invalid proxy admin address in pool config");
+    }
+    const proxyAdmin = await getBNFTProxyAdminByAddress(proxyAdminAddress);
+
+    console.log("Verifying UserFlashclaimRegistryV3 ...\n");
+
+    console.log("\n- Verifying UserFlashclaimRegistryV3 Implementation ...\n");
+    const flashclaimRegistryV3Impl = await getUserFlashclaimRegistryV3Impl();
+    await verifyContract(eContractid.UserFlashclaimRegistryV3Impl, flashclaimRegistryV3Impl, []);
+
+    console.log("\n- Verifying UserFlashclaimRegistryV3 Proxy ...\n");
+    const flashclaimRegistryV3 = await getUserFlashclaimRegistryV3();
+    const initEncodedData = flashclaimRegistryV3Impl.interface.encodeFunctionData("initialize", [
+      bnftRegistry.address,
+      await flashclaimRegistryV3.addressProvider(),
+      await flashclaimRegistryV3.stakeManager(),
+      await flashclaimRegistryV3.receiverV3Implemention(),
+    ]);
+    await verifyContract(eContractid.BNFTUpgradeableProxy, flashclaimRegistryV3, [
+      flashclaimRegistryV3Impl.address,
+      proxyAdmin.address,
+      initEncodedData,
+    ]);
+
+    console.log("\n- Verifying AirdropFlashLoanReceiverV3 Implemention ...\n");
+    const receiverImplV3Address = await flashclaimRegistryV3.receiverV3Implemention();
+    const receiverImplV3Contract = await getAirdropFlashLoanReceiverV3(receiverImplV3Address);
+    await verifyContract(eContractid.AirdropFlashLoanReceiverV3Impl, receiverImplV3Contract, []);
+
+    console.log("Finished verifications.");
+  });
+
+task("verify:airdrop-distribution", "Verify airdrop distribution contracts at Etherscan").setAction(
+  async ({}, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
+
+    const bnftRegistry = await getBNFTRegistryProxy();
+
+    console.log("Verifying AirdropDistributionImpl ...\n");
+    const airdropDistribution = await getAirdropDistributionImpl();
+    await verifyContract(eContractid.AirdropDistributionImpl, airdropDistribution, []);
+
+    console.log("Finished verifications.");
+  }
+);

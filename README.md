@@ -21,49 +21,18 @@ Bound NFT is a Soul Bound of NFT protocol where application protocols can partic
 
 ## Documentation
 
-The documentation of Bound NFT Protocol is in the following [BNFT documentation](https://docs.bnftdao.org) link. At the documentation you can learn more about the protocol, see the contract interfaces, integration guides and audits.
+The documentation of Bound NFT Protocol is in the following [Developers Documentation](https://docs.benddao.xyz/developers/) link. At the documentation you can learn more about the protocol, see the contract interfaces, integration guides and audits.
 
-For getting the latest contracts addresses, please check the [Deployed contracts](https://docs.bnftdao.org/deployed-contracts/deployed-contracts) page at the documentation to stay up to date.
+For getting the latest contracts addresses, please check the [Deployed contracts](https://docs.benddao.xyz/developers/deployed-contracts/boundnft-protocol) page at the documentation to stay up to date.
 
-A more detailed and technical description of the protocol can be found in this repository, [here](./bnft-v1-whitepaper.pdf)
+A more detailed and technical description of the protocol can be found in this repository, [here](./docs).
 
 ## Audits
-TODO
+Please look at [here](https://docs.benddao.xyz/portal/risk/security-and-audits).
 
 ## Connect with the community
 
-You can join at the [Discord](https://bnftdao.org/discord) channel or at the [Governance Forum](https://governance.bnftdao.org/) for asking questions about the protocol or talk about BNFT with other peers.
-
-## Getting Started
-
-You can install `@bnft/bnft-protocol` as an NPM package in your Hardhat, Buidler or Truffle project to import the contracts and interfaces:
-
-`npm install @bnft/bnft-protocol`
-
-Import at Solidity files:
-
-```
-import {IBNFT} from "@bnft/bnft-protocol/contracts/interfaces/IBNFT.sol";
-
-contract Misc {
-
-  function mint(address bnft, uint256 token, address user) public {
-    IBNFT(bnft).mint(token, user);
-    {...}
-  }
-}
-```
-
-The JSON artifacts with the ABI and Bytecode are also included into the bundled NPM package at `artifacts/` directory.
-
-Import JSON file via Node JS `require`:
-
-```
-const BNFTArtifact = require('@bnft/bnft-protocol/artifacts/contracts/protocol/BNFT.sol/BNFT.json');
-
-// Log the ABI into console
-console.log(BNFTArtifact.abi)
-```
+You can join at the [Discord](https://discord.gg/benddao) channel or at the [Governance Forum](https://governance.benddao.xyz/) for asking questions about the protocol or talk about BoundNFT with other peers.
 
 ## Setup
 

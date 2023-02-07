@@ -76,6 +76,15 @@ export const CommonsConfig: ICommonConfiguration = {
     [eEthereumNetwork.rinkeby]: '0xF482E6E29c0fe449b2A7326CDe850dcf8CE62e32',
     [eEthereumNetwork.main]: '0x9f3A8d7F61F6407190fe5264ad88F88F39e214a8',
   },
+
+  UserFlashclaimRegistryV3: {
+    [eEthereumNetwork.coverage]: '',
+    [eEthereumNetwork.hardhat]: '',
+    [eEthereumNetwork.localhost]: '',
+    [eEthereumNetwork.goerli]: '0x9f7E2921ed5edb3217598988A303D1711fBB0909',
+    [eEthereumNetwork.rinkeby]: '',
+    [eEthereumNetwork.main]: '0x14f167aBdBa026C379142436a68d8979a342EcB5',
+  },
   AirdropDistribution: {
     [eEthereumNetwork.coverage]: '',
     [eEthereumNetwork.hardhat]: '',

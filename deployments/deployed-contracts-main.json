@@ -7,7 +7,7 @@
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFT": {
-    "address": "0xbf061F61E6375e4f55d912432a51b98C28b9E591",
+    "address": "0xE1772456d971c8e873a3f5408155c22b6b447249",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFTRegistryImpl": {
@@ -42,12 +42,16 @@
     "address": "0x699b138fb22AA6E735d27Aa996fF42ECc9dEBD03",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
-  "AirdropFlashLoanReceiverV3": {
-    "address": "0x35723601fc9DE14601960B7a0DEE8E7e8d24Ba8f",
+  "UserFlashclaimRegistryV3Impl": {
+    "address": "0x4d7531D3996f22d52449B5C09D7874d8312D00C8",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "UserFlashclaimRegistryV3": {
-    "address": "0x9DCFf7CEa4863e643fA601e939E9aC1645f83ef3",
+    "address": "0x14f167aBdBa026C379142436a68d8979a342EcB5",
+    "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
+  },
+  "AirdropFlashLoanReceiverV3Impl": {
+    "address": "0xb1a4b4B6D492C618B60fEf2F72A81D54420EF022",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   }
 }

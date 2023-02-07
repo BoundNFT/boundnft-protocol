@@ -50,15 +50,14 @@
     "address": "0x89a60BB6cE83D4514dA956165664Ba6Ee4c15687"
   },
   "BNFT": {
-    "address": "0x1C9Ef41AC8aEC7Ec1A9F03e42AEcAF433629fEE6",
+    "address": "0x67B08a6791673F14039358137150c4f1A1CBFa9c",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0xdeE5158389802b006dD4610BddA929436B3FbD32"
+    "address": "0x4327B65CE2455F062B6Aa54c349491d4912390cf"
   },
   "BNFTRegistry": {
-    "address": "0x37A76Db446bDB3EF1b73112a8D5E6868de06464f",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+    "address": "0x37A76Db446bDB3EF1b73112a8D5E6868de06464f"
   },
   "BoundPunkGatewayImpl": {
     "address": "0xA10D91F63AbCF82D8CC0637c8a9a6148E5D1bd64"
@@ -75,19 +74,38 @@
     "address": "0x0EBbD387769f012a3Bbf65eaCb4Ec3db3c7693f6",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
-  "UserFlashclaimRegistryV3": {
-    "address": "0x55C44d8dDCEaceD2d9a40a1e68Ca3F8bE5E96b91",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
-  },
-  "AirdropFlashLoanReceiverV3": {
-    "address": "0x958f36955e10FFaa0aC92aA65acB30Ef6268421c",
-    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
-  },
   "AirdropDistributionImpl": {
     "address": "0x179ab47Ab5980c70d4D08D54C47558bd8c3697B5"
   },
   "AirdropDistribution": {
     "address": "0x3CF52C9ce29a1df2adCd0Ce657BbBBB63A3f9D01",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MockFlashLoanReceiver": {
+    "address": "0x407Ba431311fF4FD28935eb79213aB92894756eb",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV2": {
+    "address": "0xff56C32de5BcE41D7c2200Dcf74eB3866c836c0F",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV3Impl": {
+    "address": "0x6925388958B0c249750284996264CAb8A267DbdC",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3Impl": {
+    "address": "0x9b22498f134BC8faB7412DeBdE535Eb9F14EbE79",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3": {
+    "address": "0x9f7E2921ed5edb3217598988A303D1711fBB0909"
+  },
+  "MockAirdropProjectInWL": {
+    "address": "0x3D3CC003982cb41e1F5c6E42162a5Ec57aaaDc40",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MockAirdropProject": {
+    "address": "0xF352e70f8374719359F0a296d87981F6169d7C08",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

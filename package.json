@@ -1,7 +1,7 @@
 {
-  "name": "@bnft/bnft-protocol",
+  "name": "@boundnft/boundnft-protocol",
   "version": "1.0.0",
-  "description": "BNFT Protocol smart contracts",
+  "description": "BoundNFT Protocol smart contracts",
   "files": [
     "contracts",
     "artifacts"
@@ -24,8 +24,7 @@
     "dev:update-abis": "npm run compile && node ./scripts/updateAbis && npm run prettier:abis",
     "dev:export-storage-layout": "hardhat compile --force && hardhat export-storage-layout",
     "prettier:abis": "prettier --write 'abis/**/*.json'",
-    "prettier:check": "npx prettier -c 'tasks/**/*.ts' 'contracts/**/*.sol' 'helpers/**/*.ts'  'test/**/*.ts'",
-    "prettier:write": "prettier --write 'tasks/**/*.ts' 'contracts/**/*.sol' 'helpers/**/*.ts'  'test/**/*.ts'",
+    "prettier:code": "prettier --write 'tasks/**/*.ts' 'contracts/**/*.sol' 'helpers/**/*.ts'  'test/**/*.ts'",
     "ci:test": "npm run compile && npm run test",
     "ci:clean": "hardhat clean && rm -rf ./artifacts ./cache ./types",
     "hardhat:dev:migration": "npm run compile && npm run hardhat -- bend:dev",
