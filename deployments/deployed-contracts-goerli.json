@@ -50,14 +50,15 @@
     "address": "0x89a60BB6cE83D4514dA956165664Ba6Ee4c15687"
   },
   "BNFT": {
-    "address": "0x67B08a6791673F14039358137150c4f1A1CBFa9c",
+    "address": "0x7C41737979800FF9984Ff73aa14739c779cEbf9c",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0x4327B65CE2455F062B6Aa54c349491d4912390cf"
+    "address": "0x15570102bA121C5427dce3b42647b7eF0C628972"
   },
   "BNFTRegistry": {
-    "address": "0x37A76Db446bDB3EF1b73112a8D5E6868de06464f"
+    "address": "0x15570102bA121C5427dce3b42647b7eF0C628972",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BoundPunkGatewayImpl": {
     "address": "0xA10D91F63AbCF82D8CC0637c8a9a6148E5D1bd64"
