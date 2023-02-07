@@ -1,9 +1,11 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { deployMockBNFTMinter } from "../helpers/contracts-deployments";
 import { CommonsConfig } from "../configs/commons";
-import { MockBNFTMinter } from "../types";
+import { BNFTFactory, BNFTRegistryFactory, MintableERC721Factory, MockBNFTMinter } from "../types";
 import { waitForTx } from "../helpers/misc-utils";
 import { ZERO_ADDRESS } from "../helpers/constants";
+import { getBNFT, getDeploySigner } from "../helpers/contracts-getters";
+import { getEthersSignerByAddress } from "../helpers/contracts-helpers";
 
 const { expect } = require("chai");
 
@@ -126,15 +128,48 @@ makeSuite("BNFT: Contract Address", (testEnv: TestEnv) => {
   });
 
   it("Manage contract owner", async () => {
-    const { bBAYC, users } = testEnv;
+    const { bnftRegistry, users } = testEnv;
     const newOwnerUser = users[5];
 
-    await waitForTx(await bBAYC.transferOwnership(newOwnerUser.address));
-    const newOwnerAddr = await bBAYC.owner();
+    const testErc721 = await new MintableERC721Factory(await getDeploySigner()).deploy("TEST", "TEST");
+    await waitForTx(await bnftRegistry.createBNFT(testErc721.address));
+    const testBnftAddrs = await bnftRegistry.getBNFTAddresses(testErc721.address);
+    const testBnft = await getBNFT(testBnftAddrs.bNftProxy);
+
+    await waitForTx(await testBnft.transferOwnership(newOwnerUser.address));
+    const newOwnerAddr = await testBnft.owner();
     expect(newOwnerAddr).to.equal(newOwnerUser.address);
 
-    await waitForTx(await bBAYC.connect(newOwnerUser.signer).renounceOwnership());
-    const newOwnerAddr2 = await bBAYC.owner();
+    await waitForTx(await testBnft.connect(newOwnerUser.signer).renounceOwnership());
+    const newOwnerAddr2 = await testBnft.owner();
     expect(newOwnerAddr2).to.equal(ZERO_ADDRESS);
+  });
+
+  it("Manage bnft registry without permission (revert expect)", async () => {
+    const { bBAYC, users } = testEnv;
+    const user5 = users[5];
+
+    const testRegistry = await new BNFTRegistryFactory(await getDeploySigner()).deploy();
+
+    await expect(bBAYC.connect(user5.signer).setBNFTRegistry(testRegistry.address)).to.be.revertedWith(
+      "BNFT: caller without permission"
+    );
+  });
+
+  it("Manage bnft registry", async () => {
+    const { bBAYC, users } = testEnv;
+
+    const curOwnerAddr = await bBAYC.owner();
+    const curOwnerSinger = await getEthersSignerByAddress(curOwnerAddr);
+
+    const oldRegistryAddr = await bBAYC.getBNFTRegistry();
+
+    const testRegistry = await new BNFTRegistryFactory(await getDeploySigner()).deploy();
+
+    await waitForTx(await bBAYC.connect(curOwnerSinger).setBNFTRegistry(testRegistry.address));
+    const newRegistryAddr = await bBAYC.getBNFTRegistry();
+    expect(newRegistryAddr).to.equal(testRegistry.address);
+
+    await waitForTx(await bBAYC.connect(curOwnerSinger).setBNFTRegistry(oldRegistryAddr));
   });
 });
