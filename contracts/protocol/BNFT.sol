@@ -406,7 +406,11 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     return IENSReverseRegistrar(registrar).setName(name);
   }
 
-  function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) external nonReentrant {
+  function hasDelegateCashForToken(uint256 tokenId) public view override returns (bool) {
+    return _hasDelegateCashes[tokenId];
+  }
+
+  function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) public override nonReentrant {
     IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
 
     for (uint256 i = 0; i < tokenIds.length; i++) {

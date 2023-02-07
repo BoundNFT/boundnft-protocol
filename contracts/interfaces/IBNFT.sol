@@ -147,6 +147,10 @@ interface IBNFT {
 
   function getFlashLoanLocked(uint256 tokenId, address minter) external view returns (address[] memory);
 
+  function hasDelegateCashForToken(uint256 tokenId) external view returns (bool);
+
+  function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) external;
+
   function claimERC20Airdrop(
     address token,
     address to,
