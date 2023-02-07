@@ -5,6 +5,8 @@ import {IBNFT} from "../interfaces/IBNFT.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
 import {IENSReverseRegistrar} from "../interfaces/IENSReverseRegistrar.sol";
 
+import {IMoonbirds} from "../interfaces/IMoonbirds.sol";
+
 import {StringsUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {EnumerableSetUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
@@ -354,8 +356,11 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     nonReentrant
     onlyClaimAdmin
   {
-    require(airdropContract != address(0), "invalid airdrop contract address");
-    require(airdropParams.length >= 4, "invalid airdrop parameters");
+    require(airdropContract != _underlyingAsset, "BNFT: airdrop can not be underlying asset");
+    require(airdropContract != address(this), "BNFT: airdrop can not be self address");
+
+    require(airdropContract != address(0), "BNFT: invalid airdrop contract address");
+    require(airdropParams.length >= 4, "BNFT: invalid airdrop parameters");
 
     // call project aidrop contract
     AddressUpgradeable.functionCall(airdropContract, airdropParams, "call airdrop method failed");
@@ -365,6 +370,14 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
   function setENSName(address registrar, string memory name) external nonReentrant onlyOwner returns (bytes32) {
     return IENSReverseRegistrar(registrar).setName(name);
+  }
+
+  /**
+    @dev Changes the nesting flag. Only for Moonbirds.
+    * Some users can bypass the nesting and deposit birds to BNFT contract.
+     */
+  function toggleMoonirdsNesting(uint256[] calldata tokenIds) public nonReentrant onlyOwner {
+    IMoonbirds(_underlyingAsset).toggleNesting(tokenIds);
   }
 
   function onERC721Received(

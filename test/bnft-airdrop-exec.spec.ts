@@ -21,18 +21,48 @@ makeSuite("BNFT: Airdrop Execute", (testEnv: TestEnv) => {
 
   afterEach(async () => {});
 
-  it("Execute airdrop", async () => {
+  it("Execute airdrop using invalid contract (revert expect)", async () => {
+    const { users, bayc, bBAYC, bnftRegistry } = testEnv;
+    const nftOwner1 = users[1];
+    const nftOwner2 = users[2];
+
+    await waitForTx(await bayc.connect(nftOwner1.signer).setApprovalForAll(_mockBNFTMinter.address, true));
+    await waitForTx(await bayc.connect(nftOwner2.signer).setApprovalForAll(_mockBNFTMinter.address, true));
+
+    const claimAdminAddr = await bBAYC.claimAdmin();
+    const claimAdminSigner = await getEthersSignerByAddress(claimAdminAddr);
+
+    const tokenId = testEnv.tokenIdTracker++;
+    await waitForTx(await bayc.connect(nftOwner1.signer).mint(tokenId));
+    await waitForTx(await _mockBNFTMinter.connect(nftOwner1.signer).mint(nftOwner1.address, tokenId));
+
+    const applyAirdropEncodedData = bayc.interface.encodeFunctionData("transferFrom", [
+      nftOwner1.address,
+      nftOwner2.address,
+      tokenId,
+    ]);
+
+    await expect(
+      bBAYC.connect(claimAdminSigner).executeAirdrop(bayc.address, applyAirdropEncodedData)
+    ).to.be.revertedWith("BNFT: airdrop can not be underlying asset");
+
+    await expect(
+      bBAYC.connect(claimAdminSigner).executeAirdrop(bBAYC.address, applyAirdropEncodedData)
+    ).to.be.revertedWith("BNFT: airdrop can not be self address");
+  });
+
+  it("Execute airdrop using correct contract", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
     const nftOwner = users[0];
     const claimAdminAddr = await bBAYC.claimAdmin();
     const claimAdminSigner = await getEthersSignerByAddress(claimAdminAddr);
 
-    await waitForTx(await bayc.setApprovalForAll(_mockBNFTMinter.address, true));
+    await waitForTx(await bayc.connect(nftOwner.signer).setApprovalForAll(_mockBNFTMinter.address, true));
 
     const tokenId = testEnv.tokenIdTracker++;
-    await waitForTx(await bayc.mint(tokenId));
+    await waitForTx(await bayc.connect(nftOwner.signer).mint(tokenId));
 
-    await waitForTx(await _mockBNFTMinter.mint(nftOwner.address, tokenId));
+    await waitForTx(await _mockBNFTMinter.connect(nftOwner.signer).mint(nftOwner.address, tokenId));
 
     const mockAirdropERC20Address = await _mockAirdropProject.erc20Token();
     const mockAirdropERC20Token = await getMintableERC20(mockAirdropERC20Address);
