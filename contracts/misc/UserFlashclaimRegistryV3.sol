@@ -29,10 +29,12 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
   mapping(address => EnumerableSetUpgradeable.AddressSet) private _airdropContractWhiteList;
   address public addressProvider;
   address public stakeManager;
+  mapping(address => EnumerableSetUpgradeable.AddressSet) private _airdropTokenWhiteList;
 
   event ReceiverV3ImplementionUpdated(address indexed receiverV3Implemention);
   event AirdropContractWhiteListChanged(address indexed nftAsset, address indexed airdropContract, bool flag);
   event ReceiverCreated(address indexed user, address indexed receiver, uint256 version);
+  event AirdropTokenWhiteListChanged(address indexed nftAsset, address indexed airdropToken, bool flag);
 
   function initialize(
     address bnftRegistry_,
@@ -67,6 +69,20 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     }
 
     emit AirdropContractWhiteListChanged(nftAsset, airdropContract, flag);
+  }
+
+  function setAirdropTokenWhiteList(
+    address nftAsset,
+    address airdropToken,
+    bool flag
+  ) public onlyOwner {
+    if (flag) {
+      _airdropTokenWhiteList[nftAsset].add(airdropToken);
+    } else {
+      _airdropTokenWhiteList[nftAsset].remove(airdropToken);
+    }
+
+    emit AirdropTokenWhiteListChanged(nftAsset, airdropToken, flag);
   }
 
   /**
@@ -191,6 +207,10 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     return _airdropContractWhiteList[nftAsset].contains(airdropContract);
   }
 
+  function isAirdropTokenInWhiteList(address nftAsset, address airdropToken) public view returns (bool) {
+    return _airdropTokenWhiteList[nftAsset].contains(airdropToken);
+  }
+
   function isNftFlashLoanLocked(address nftAsset, uint256 tokenId) public view returns (bool) {
     (address bnftProxy, ) = IBNFTRegistry(bnftRegistry).getBNFTAddresses(nftAsset);
     require(bnftProxy != address(0), "invalid nft asset");
@@ -212,10 +232,14 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
 
   function _checkValidAirdropContract(address nftAsset, bytes calldata params) internal view {
     // decode parameters
-    (, , , address airdropContract, , ) = abi.decode(
+    (, address[] memory airdropTokenAddresses, , address airdropContract, , ) = abi.decode(
       params,
       (uint256[], address[], uint256[], address, bytes, uint256)
     );
     require(isAirdropContractInWhiteList(nftAsset, airdropContract) == true, "invalid airdrop contract");
+
+    for (uint256 i = 0; i < airdropTokenAddresses.length; i++) {
+      require(isAirdropTokenInWhiteList(nftAsset, airdropTokenAddresses[i]) == true, "invalid airdrop token");
+    }
   }
 }
