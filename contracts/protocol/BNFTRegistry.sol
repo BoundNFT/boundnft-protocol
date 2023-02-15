@@ -224,6 +224,7 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   }
 
   function setDelegateCashContract(address newDelegateCash) public virtual onlyOwner {
+    require(newDelegateCash != address(0), "BNFTR: new contract is the zero address");
     address oldDelegateCash = _delegateCashContract;
     _delegateCashContract = newDelegateCash;
     emit DelegateCashUpdated(oldDelegateCash, newDelegateCash);
