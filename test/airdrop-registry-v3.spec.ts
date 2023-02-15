@@ -19,7 +19,7 @@ import { getEthersSignerByAddress } from "../helpers/contracts-helpers";
 
 const { expect } = require("chai");
 
-makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
+makeSuite("FlashClaim: Registry V3", (testEnv: TestEnv) => {
   let _flashClaimRegistryV3 = {} as UserFlashclaimRegistryV3;
   let _mockLendPoolLoan = {} as MockLendPoolLoan;
   let _mockStakeManager = {} as MockStakeManager;
@@ -70,13 +70,8 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
     const receiverAddress = await _flashClaimRegistryV3.getUserReceiver(user2.address);
     expect(receiverAddress).to.be.equal(receiverV3Address);
 
-    const lastVersionReceiver = await _flashClaimRegistryV3.getUserReceiverLatestVersion(user2.address);
-    expect(lastVersionReceiver[0]).to.be.equal(await _flashClaimRegistryV3.VERSION());
-    expect(lastVersionReceiver[1]).to.be.equal(receiverV3Address);
-
-    const allVersionReceivers = await _flashClaimRegistryV3.getUserReceiverAllVersions(user2.address);
-    expect(allVersionReceivers[0][0]).to.be.equal(await _flashClaimRegistryV3.VERSION());
-    expect(allVersionReceivers[1][0]).to.be.equal(receiverV3Address);
+    const receiverAddress2 = await _flashClaimRegistryV3.userReceivers(user2.address);
+    expect(receiverAddress2).to.be.equal(receiverV3Address);
   });
 
   it("User 2 tries to create V3 receiver but already has V3 receiver. (revert expected)", async () => {
@@ -114,6 +109,20 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
     const mockErc721Token = await _mockAirdropProject1.erc721Token();
     await _flashClaimRegistryV3.connect(ownerSigner).setAirdropTokenWhiteList(bayc.address, mockErc721Token, true);
     expect(await _flashClaimRegistryV3.isAirdropTokenInWhiteList(bayc.address, mockErc721Token)).to.be.equal(true);
+
+    // airdrop common addresses
+    await _flashClaimRegistryV3
+      .connect(ownerSigner)
+      .setAirdropCommonAddressWhiteList([_mockAirdropProject1.address], true);
+    expect(await _flashClaimRegistryV3.isAirdropCommonAddressInWhiteList(_mockAirdropProject1.address)).to.be.equal(
+      true
+    );
+
+    await _flashClaimRegistryV3.connect(ownerSigner).setAirdropCommonAddressWhiteList([mockErc20Token], true);
+    expect(await _flashClaimRegistryV3.isAirdropCommonAddressInWhiteList(mockErc20Token)).to.be.equal(true);
+
+    await _flashClaimRegistryV3.connect(ownerSigner).setAirdropCommonAddressWhiteList([mockErc721Token], true);
+    expect(await _flashClaimRegistryV3.isAirdropCommonAddressInWhiteList(mockErc721Token)).to.be.equal(true);
   });
 
   it("User 2 tries to flash loan with invalid airdrop contract. (revert expected)", async () => {

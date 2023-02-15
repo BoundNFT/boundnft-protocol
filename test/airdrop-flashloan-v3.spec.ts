@@ -1,6 +1,10 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { MockBNFTMinter } from "../types/MockBNFTMinter";
-import { deployMockAirdrop, deployMockBNFTMinter } from "../helpers/contracts-deployments";
+import {
+  deployMockAirdrop,
+  deployMockBNFTMinter,
+  deployUserFlashclaimRegistryV3,
+} from "../helpers/contracts-deployments";
 import {
   AirdropFlashLoanReceiverV3,
   AirdropFlashLoanReceiverV3Factory,
@@ -8,6 +12,13 @@ import {
   MintableERC20,
   MintableERC721,
   MockAirdropProject,
+  MockLendPoolAddressesProvider,
+  MockLendPoolAddressesProviderFactory,
+  MockLendPoolLoan,
+  MockLendPoolLoanFactory,
+  MockStakeManager,
+  MockStakeManagerFactory,
+  UserFlashclaimRegistryV3,
 } from "../types";
 import { getMintableERC1155, getMintableERC20, getMintableERC721 } from "../helpers/contracts-getters";
 import { ethers } from "ethers";
@@ -16,7 +27,13 @@ import { getEthersSignerByAddress } from "../helpers/contracts-helpers";
 
 const { expect } = require("chai");
 
-makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
+makeSuite("FlashClaim: Receiver V3", (testEnv: TestEnv) => {
+  let _flashClaimRegistryV3 = {} as UserFlashclaimRegistryV3;
+  let _mockLendPoolLoan = {} as MockLendPoolLoan;
+  let _mockStakeManager = {} as MockStakeManager;
+  let _mockAddressProvider = {} as MockLendPoolAddressesProvider;
+  let _mockReceiverV3Impl = {} as AirdropFlashLoanReceiverV3;
+
   let _airdropFlashLoanReceiver = {} as AirdropFlashLoanReceiverV3;
   let _mockAirdropProject = {} as MockAirdropProject;
   let _mockBNFTMinter = {} as MockBNFTMinter;
@@ -29,8 +46,27 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
   before(async () => {
     const { bayc, bBAYC, bnftRegistry } = testEnv;
 
+    _mockLendPoolLoan = await new MockLendPoolLoanFactory(testEnv.deployer.signer).deploy(bnftRegistry.address);
+    _mockStakeManager = await new MockStakeManagerFactory(testEnv.deployer.signer).deploy(bnftRegistry.address);
+
+    _mockAddressProvider = await new MockLendPoolAddressesProviderFactory(testEnv.deployer.signer).deploy();
+    await waitForTx(await _mockAddressProvider.setLendPoolLoan(_mockLendPoolLoan.address));
+
+    _mockReceiverV3Impl = await new AirdropFlashLoanReceiverV3Factory(testEnv.deployer.signer).deploy();
+    _flashClaimRegistryV3 = await deployUserFlashclaimRegistryV3();
+    await waitForTx(
+      await _flashClaimRegistryV3.initialize(
+        bnftRegistry.address,
+        _mockAddressProvider.address,
+        _mockStakeManager.address,
+        _mockReceiverV3Impl.address
+      )
+    );
+
     _airdropFlashLoanReceiver = await new AirdropFlashLoanReceiverV3Factory(testEnv.deployer.signer).deploy();
-    await waitForTx(await _airdropFlashLoanReceiver.initialize(testEnv.users[0].address, bnftRegistry.address));
+    await waitForTx(
+      await _airdropFlashLoanReceiver.initialize(testEnv.users[0].address, _flashClaimRegistryV3.address)
+    );
 
     _mockAirdropProject = await deployMockAirdrop([bnftRegistry.address]);
     _mockBNFTMinter = await deployMockBNFTMinter([bayc.address, bBAYC.address]);
@@ -41,6 +77,13 @@ makeSuite("Airdrop: FlashLoan V3", (testEnv: TestEnv) => {
     mockAirdropERC721Token = await getMintableERC721(mockAirdropERC721Address);
     const mockAirdropERC1155Address = await _mockAirdropProject.erc1155Token();
     mockAirdropERC1155Token = await getMintableERC1155(mockAirdropERC1155Address);
+
+    await waitForTx(
+      await _flashClaimRegistryV3.setAirdropCommonAddressWhiteList(
+        [_mockAirdropProject.address, mockAirdropERC20Address, mockAirdropERC721Address, mockAirdropERC1155Address],
+        true
+      )
+    );
   });
 
   afterEach(async () => {});

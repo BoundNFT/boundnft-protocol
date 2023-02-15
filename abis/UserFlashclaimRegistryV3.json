@@ -5,6 +5,25 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "commonAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "flag",
+        "type": "bool"
+      }
+    ],
+    "name": "AirdropCommonAddressWhiteListChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "nftAsset",
         "type": "address"
       },
@@ -22,6 +41,31 @@
       }
     ],
     "name": "AirdropContractWhiteListChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "nftAsset",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "airdropToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "flag",
+        "type": "bool"
+      }
+    ],
+    "name": "AirdropTokenWhiteListChanged",
     "type": "event"
   },
   {
@@ -170,6 +214,32 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getBNFTRegistry",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCurrentReceiverVersion",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -179,54 +249,6 @@
     ],
     "name": "getUserReceiver",
     "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getUserReceiverAllVersions",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getUserReceiverLatestVersion",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
       {
         "internalType": "address",
         "name": "",
@@ -268,6 +290,25 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "commonAddress",
+        "type": "address"
+      }
+    ],
+    "name": "isAirdropCommonAddressInWhiteList",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "nftAsset",
         "type": "address"
       },
@@ -278,6 +319,30 @@
       }
     ],
     "name": "isAirdropContractInWhiteList",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "nftAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "airdropToken",
+        "type": "address"
+      }
+    ],
+    "name": "isAirdropTokenInWhiteList",
     "outputs": [
       {
         "internalType": "bool",
@@ -348,6 +413,24 @@
   {
     "inputs": [
       {
+        "internalType": "address[]",
+        "name": "commonAddresses",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "flag",
+        "type": "bool"
+      }
+    ],
+    "name": "setAirdropCommonAddressWhiteList",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "nftAsset",
         "type": "address"
@@ -364,6 +447,29 @@
       }
     ],
     "name": "setAirdropContractWhiteList",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "nftAsset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "airdropToken",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "flag",
+        "type": "bool"
+      }
+    ],
+    "name": "setAirdropTokenWhiteList",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -442,6 +548,24 @@
         "type": "address"
       }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "airdropContract",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "airdropTokenAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "validateAirdropCommonAddressess",
+    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   }
