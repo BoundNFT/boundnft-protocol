@@ -84,7 +84,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
     _setClaimAdmin(claimAdmin_);
 
-    _bnftRegistry = bnftRegistry_;
+    _setBNFTRegistry(bnftRegistry_);
 
     emit Initialized(underlyingAsset_);
   }
@@ -165,14 +165,6 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   /**
-   * @dev Throws if called by any account other than the owner.
-   */
-  modifier onlyOwnerOrRegistry() {
-    require((owner() == _msgSender()) || (getBNFTRegistry() == _msgSender()), "BNFT: caller without permission");
-    _;
-  }
-
-  /**
    * @dev Returns the address of the current bnft registry.
    */
   function getBNFTRegistry() public view virtual returns (address) {
@@ -185,6 +177,10 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    */
   function setBNFTRegistry(address newRegistry) public virtual onlyOwner {
     require(newRegistry != address(0), "BNFT: new registry is the zero address");
+    _setBNFTRegistry(newRegistry);
+  }
+
+  function _setBNFTRegistry(address newRegistry) internal virtual {
     _bnftRegistry = newRegistry;
   }
 
