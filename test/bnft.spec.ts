@@ -152,7 +152,7 @@ makeSuite("BNFT: Contract Address", (testEnv: TestEnv) => {
     const testRegistry = await new BNFTRegistryFactory(await getDeploySigner()).deploy();
 
     await expect(bBAYC.connect(user5.signer).setBNFTRegistry(testRegistry.address)).to.be.revertedWith(
-      "BNFT: caller without permission"
+      "BNFT: caller is not the owner"
     );
   });
 
