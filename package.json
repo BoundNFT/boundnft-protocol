@@ -1,7 +1,7 @@
 {
-  "name": "@bnft/bnft-protocol",
+  "name": "@boundnft/boundnft-protocol",
   "version": "1.0.0",
-  "description": "BNFT Protocol smart contracts",
+  "description": "BoundNFT Protocol smart contracts",
   "files": [
     "contracts",
     "artifacts"
