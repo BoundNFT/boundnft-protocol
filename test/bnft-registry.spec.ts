@@ -185,12 +185,8 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
 
     const delegateCash = await new MockDelegationRegistryFactory(await getDeploySigner()).deploy();
 
-    const oldContract = await bnftRegistry.getDelegateCashContract();
-
     await waitForTx(await bnftRegistry.setDelegateCashContract(delegateCash.address));
     const newContract = await bnftRegistry.getDelegateCashContract();
     expect(newContract).to.equal(delegateCash.address);
-
-    await waitForTx(await bnftRegistry.setDelegateCashContract(oldContract));
   });
 });

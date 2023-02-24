@@ -86,7 +86,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
     _setClaimAdmin(claimAdmin_);
 
-    _bnftRegistry = bnftRegistry_;
+    _setBNFTRegistry(bnftRegistry_);
 
     emit Initialized(underlyingAsset_);
   }
@@ -155,7 +155,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * @dev Set claim admin of the contract to a new account (`newAdmin`).
    * Can only be called by the current owner.
    */
-  function setClaimAdmin(address newAdmin) public virtual onlyOwnerOrRegistry {
+  function setClaimAdmin(address newAdmin) public virtual {
     require(newAdmin != address(0), "BNFT: new admin is the zero address");
     _setClaimAdmin(newAdmin);
   }
@@ -164,14 +164,6 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address oldAdmin = _claimAdmin;
     _claimAdmin = newAdmin;
     emit ClaimAdminUpdated(oldAdmin, newAdmin);
-  }
-
-  /**
-   * @dev Throws if called by any account other than the owner.
-   */
-  modifier onlyOwnerOrRegistry() {
-    require((owner() == _msgSender()) || (getBNFTRegistry() == _msgSender()), "BNFT: caller without permission");
-    _;
   }
 
   /**
@@ -185,8 +177,12 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * @dev Set bnft registry contract address.
    * Can only be called by the current owner.
    */
-  function setBNFTRegistry(address newRegistry) public virtual onlyOwnerOrRegistry {
+  function setBNFTRegistry(address newRegistry) public virtual onlyOwner {
     require(newRegistry != address(0), "BNFT: new registry is the zero address");
+    _setBNFTRegistry(newRegistry);
+  }
+
+  function _setBNFTRegistry(address newRegistry) internal virtual {
     _bnftRegistry = newRegistry;
   }
 
@@ -406,6 +402,14 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     return IENSReverseRegistrar(registrar).setName(name);
   }
 
+  /**
+    @dev Changes the nesting flag. Only for Moonbirds.
+    * Some users can bypass the nesting and deposit birds to BNFT contract.
+     */
+  function toggleMoonirdsNesting(uint256[] calldata tokenIds) public nonReentrant onlyOwner {
+    IMoonbirds(_underlyingAsset).toggleNesting(tokenIds);
+  }
+
   function hasDelegateCashForToken(uint256 tokenId) public view override returns (bool) {
     return _hasDelegateCashes[tokenId];
   }
@@ -432,14 +436,6 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
       delegateContract.delegateForToken(tokenOwner, _underlyingAsset, tokenId, false);
       _hasDelegateCashes[tokenId] = false;
     }
-  }
-
-  /**
-    @dev Changes the nesting flag. Only for Moonbirds.
-    * Some users can bypass the nesting and deposit birds to BNFT contract.
-     */
-  function toggleMoonirdsNesting(uint256[] calldata tokenIds) public nonReentrant onlyOwner {
-    IMoonbirds(_underlyingAsset).toggleNesting(tokenIds);
   }
 
   function onERC721Received(
