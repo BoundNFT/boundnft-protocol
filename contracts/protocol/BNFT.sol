@@ -155,7 +155,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * @dev Set claim admin of the contract to a new account (`newAdmin`).
    * Can only be called by the current owner.
    */
-  function setClaimAdmin(address newAdmin) public virtual {
+  function setClaimAdmin(address newAdmin) public virtual onlyOwner {
     require(newAdmin != address(0), "BNFT: new admin is the zero address");
     _setClaimAdmin(newAdmin);
   }
