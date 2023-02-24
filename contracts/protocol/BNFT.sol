@@ -2,8 +2,10 @@
 pragma solidity 0.8.4;
 
 import {IBNFT} from "../interfaces/IBNFT.sol";
+import {IBNFTRegistry} from "../interfaces/IBNFTRegistry.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
 import {IENSReverseRegistrar} from "../interfaces/IENSReverseRegistrar.sol";
+import {IDelegationRegistry} from "../interfaces/IDelegationRegistry.sol";
 
 import {IMoonbirds} from "../interfaces/IMoonbirds.sol";
 
@@ -39,6 +41,9 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   mapping(address => mapping(address => bool)) private _flashLoanOperatorApprovals;
   // Mapping from minter & token ID to flash loan operator locking address
   mapping(address => mapping(uint256 => EnumerableSetUpgradeable.AddressSet)) private _flashLoanOperatorLockings;
+  address private _bnftRegistry;
+  // Mapping from token to delegate cash
+  mapping(uint256 => bool) private _hasDelegateCashes;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -70,7 +75,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     string calldata bNftName,
     string calldata bNftSymbol,
     address owner_,
-    address claimAdmin_
+    address claimAdmin_,
+    address bnftRegistry_
   ) external override initializer {
     __ERC721_init(bNftName, bNftSymbol);
 
@@ -79,6 +85,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     _transferOwnership(owner_);
 
     _setClaimAdmin(claimAdmin_);
+
+    _setBNFTRegistry(bnftRegistry_);
 
     emit Initialized(underlyingAsset_);
   }
@@ -159,6 +167,26 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   /**
+   * @dev Returns the address of the current bnft registry.
+   */
+  function getBNFTRegistry() public view virtual returns (address) {
+    return _bnftRegistry;
+  }
+
+  /**
+   * @dev Set bnft registry contract address.
+   * Can only be called by the current owner.
+   */
+  function setBNFTRegistry(address newRegistry) public virtual onlyOwner {
+    require(newRegistry != address(0), "BNFT: new registry is the zero address");
+    _setBNFTRegistry(newRegistry);
+  }
+
+  function _setBNFTRegistry(address newRegistry) internal virtual {
+    _bnftRegistry = newRegistry;
+  }
+
+  /**
    * @dev Mints bNFT token to the user address
    *
    * Requirements:
@@ -199,6 +227,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     require(_minters[tokenId] == _msgSender(), "BNFT: caller is not minter");
 
     address tokenOwner = ERC721Upgradeable.ownerOf(tokenId);
+
+    _removeDelegateCashForToken(tokenOwner, tokenId);
 
     _burn(tokenId);
 
@@ -378,6 +408,34 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
      */
   function toggleMoonirdsNesting(uint256[] calldata tokenIds) public nonReentrant onlyOwner {
     IMoonbirds(_underlyingAsset).toggleNesting(tokenIds);
+  }
+
+  function hasDelegateCashForToken(uint256 tokenId) public view override returns (bool) {
+    return _hasDelegateCashes[tokenId];
+  }
+
+  function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) public override nonReentrant {
+    IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
+
+    for (uint256 i = 0; i < tokenIds.length; i++) {
+      address tokenOwner = ERC721Upgradeable.ownerOf(tokenIds[i]);
+      require(tokenOwner == _msgSender(), "BNFT: caller is not owner");
+
+      delegateContract.delegateForToken(tokenOwner, _underlyingAsset, tokenIds[i], value);
+
+      _hasDelegateCashes[tokenIds[i]] = value;
+    }
+  }
+
+  function _removeDelegateCashForToken(address tokenOwner, uint256 tokenId) internal {
+    if (_hasDelegateCashes[tokenId]) {
+      IDelegationRegistry delegateContract = IDelegationRegistry(
+        IBNFTRegistry(_bnftRegistry).getDelegateCashContract()
+      );
+
+      delegateContract.delegateForToken(tokenOwner, _underlyingAsset, tokenId, false);
+      _hasDelegateCashes[tokenId] = false;
+    }
   }
 
   function onERC721Received(

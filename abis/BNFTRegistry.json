@@ -105,6 +105,25 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "oldDelegateCash",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newDelegateCash",
+        "type": "address"
+      }
+    ],
+    "name": "DelegateCashUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "genericImpl",
         "type": "address"
       }
@@ -414,6 +433,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getDelegateCashContract",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -491,6 +523,19 @@
       }
     ],
     "name": "setClaimAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newDelegateCash",
+        "type": "address"
+      }
+    ],
+    "name": "setDelegateCashContract",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

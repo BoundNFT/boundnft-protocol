@@ -91,6 +91,7 @@ task("verify:general", "Verify general contracts at Etherscan")
         poolConfig.BNftSymbolPrefix + nftSymbol,
         registryOwnerAddress,
         claimAdminAddress,
+        bnftRegistryProxy.address,
       ]);
       await verifyContract(eContractid.BNFTUpgradeableProxy, bnftTokenProxy, [
         bnftGenericImpl.address,
@@ -165,6 +166,7 @@ task("verify:bnft", "Verify bnft contracts at Etherscan")
       poolConfig.BNftSymbolPrefix + nftSymbol,
       registryOwnerAddress,
       claimAdminAddress,
+      bnftRegistryProxy.address,
     ]);
     await verifyContract(eContractid.BNFTUpgradeableProxy, bnftTokenProxy, [
       bnftGenericImpl.address,
