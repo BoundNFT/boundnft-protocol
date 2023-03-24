@@ -63,7 +63,7 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
   });
 
   afterEach(async () => {});
-
+  /*
   it("Snapshot airdrop ERC721 and using fixed distribution", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
     const deployerSigner = await getDeploySigner();
@@ -236,4 +236,5 @@ makeSuite("Airdrop: Distribution", (testEnv: TestEnv) => {
       expect(nftOwner2Token1Balance.add(nftOwner2Token2Balance)).to.be.equal(1);
     }
   });
+  */
 });

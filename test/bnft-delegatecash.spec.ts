@@ -37,59 +37,65 @@ makeSuite("BNFT: Delegate Cash", (testEnv: TestEnv) => {
     const { bBAYC, users } = testEnv;
     const user5 = users[5];
 
-    await expect(bBAYC.connect(user5.signer).setDelegateCashForToken([cachedTokenId1], true)).to.be.revertedWith(
-      "BNFT: caller is not owner"
-    );
+    await expect(
+      bBAYC.connect(user5.signer)["setDelegateCashForToken(uint256[],bool)"]([cachedTokenId1], true)
+    ).to.be.revertedWith("BNFT: caller is not owner");
   });
 
   it("Successful to set delegate cash for tokens", async () => {
     const { bBAYC, users } = testEnv;
     const user0 = users[0];
+    const user1 = users[1];
 
-    await waitForTx(await bBAYC.connect(user0.signer).setDelegateCashForToken([cachedTokenId1, cachedTokenId2], true));
+    await waitForTx(
+      await bBAYC.connect(user0.signer)["setDelegateCashForToken(uint256[],bool)"]([cachedTokenId1], true)
+    );
+    await waitForTx(
+      await bBAYC
+        .connect(user0.signer)
+        ["setDelegateCashForToken(address,uint256[],bool)"](user1.address, [cachedTokenId2], true)
+    );
     const hasCheck1 = await bBAYC.hasDelegateCashForToken(cachedTokenId1);
     const hasCheck2 = await bBAYC.hasDelegateCashForToken(cachedTokenId2);
     expect(hasCheck1).to.be.equal(true);
-    expect(hasCheck1).to.be.equal(true);
+    expect(hasCheck2).to.be.equal(true);
 
-    const check1 = await mockDelegateCash.checkDelegateForToken(
-      user0.address,
-      bBAYC.address,
-      await bBAYC.underlyingAsset(),
-      cachedTokenId1
-    );
-    const check2 = await mockDelegateCash.checkDelegateForToken(
-      user0.address,
-      bBAYC.address,
-      await bBAYC.underlyingAsset(),
-      cachedTokenId2
-    );
+    const delegateAddr1 = await bBAYC.getDelegateCashForToken(cachedTokenId1);
+    const delegateAddr2 = await bBAYC.getDelegateCashForToken(cachedTokenId2);
+    expect(delegateAddr1).to.be.equal(user0.address);
+    expect(delegateAddr2).to.be.equal(user1.address);
+  });
 
-    expect(check1).to.be.equal(true);
-    expect(check2).to.be.equal(true);
+  it("Failed to change delegate cash for tokens (revert expect)", async () => {
+    const { bBAYC, users } = testEnv;
+    const user0 = users[0];
+    const user5 = users[5];
+
+    await expect(
+      bBAYC
+        .connect(user0.signer)
+        ["setDelegateCashForToken(address,uint256[],bool)"](user5.address, [cachedTokenId1], true)
+    ).to.be.revertedWith("BNFT: delegate not same");
   });
 
   it("Successful to unset delegate cash for tokens", async () => {
     const { bBAYC, users } = testEnv;
     const user0 = users[0];
+    const user1 = users[1];
 
-    await waitForTx(await bBAYC.connect(user0.signer).setDelegateCashForToken([cachedTokenId1], false));
-
-    const check1 = await mockDelegateCash.checkDelegateForToken(
-      user0.address,
-      bBAYC.address,
-      await bBAYC.underlyingAsset(),
-      cachedTokenId1
-    );
-    const check2 = await mockDelegateCash.checkDelegateForToken(
-      user0.address,
-      bBAYC.address,
-      await bBAYC.underlyingAsset(),
-      cachedTokenId2
+    await waitForTx(
+      await bBAYC.connect(user0.signer)["setDelegateCashForToken(uint256[],bool)"]([cachedTokenId1], false)
     );
 
-    expect(check1).to.be.equal(false);
-    expect(check2).to.be.equal(true);
+    const hasCheck1 = await bBAYC.hasDelegateCashForToken(cachedTokenId1);
+    const hasCheck2 = await bBAYC.hasDelegateCashForToken(cachedTokenId2);
+    expect(hasCheck1).to.be.equal(false);
+    expect(hasCheck2).to.be.equal(true);
+
+    const delegateAddr1 = await bBAYC.getDelegateCashForToken(cachedTokenId1);
+    const delegateAddr2 = await bBAYC.getDelegateCashForToken(cachedTokenId2);
+    expect(delegateAddr1).to.be.equal(ZERO_ADDRESS);
+    expect(delegateAddr2).to.be.equal(user1.address);
   });
 
   it("Successful to remove delegate cash when burn", async () => {
@@ -98,20 +104,47 @@ makeSuite("BNFT: Delegate Cash", (testEnv: TestEnv) => {
 
     await waitForTx(await mockMinterInstance.connect(user0.signer).burn(cachedTokenId2));
 
-    const check1 = await mockDelegateCash.checkDelegateForToken(
-      user0.address,
-      bBAYC.address,
-      await bBAYC.underlyingAsset(),
-      cachedTokenId1
-    );
-    const check2 = await mockDelegateCash.checkDelegateForToken(
-      user0.address,
-      bBAYC.address,
-      await bBAYC.underlyingAsset(),
-      cachedTokenId1
+    const hasCheck1 = await bBAYC.hasDelegateCashForToken(cachedTokenId1);
+    const hasCheck2 = await bBAYC.hasDelegateCashForToken(cachedTokenId2);
+    expect(hasCheck1).to.be.equal(false);
+    expect(hasCheck2).to.be.equal(false);
+
+    const delegateAddr1 = await bBAYC.getDelegateCashForToken(cachedTokenId1);
+    const delegateAddr2 = await bBAYC.getDelegateCashForToken(cachedTokenId2);
+    expect(delegateAddr1).to.be.equal(ZERO_ADDRESS);
+    expect(delegateAddr2).to.be.equal(ZERO_ADDRESS);
+  });
+
+  it("Successful to set delegate cash for tokens again", async () => {
+    const { bBAYC, users } = testEnv;
+    const user0 = users[0];
+    const user5 = users[5];
+
+    // set to user0
+    await waitForTx(
+      await bBAYC
+        .connect(user0.signer)
+        ["setDelegateCashForToken(address,uint256[],bool)"](user0.address, [cachedTokenId1], true)
     );
 
-    expect(check1).to.be.equal(false);
-    expect(check2).to.be.equal(false);
+    // unset to user0
+    await waitForTx(
+      await bBAYC
+        .connect(user0.signer)
+        ["setDelegateCashForToken(address,uint256[],bool)"](user0.address, [cachedTokenId1], false)
+    );
+
+    // set to user5
+    await waitForTx(
+      await bBAYC
+        .connect(user0.signer)
+        ["setDelegateCashForToken(address,uint256[],bool)"](user5.address, [cachedTokenId1], true)
+    );
+
+    const hasCheck1 = await bBAYC.hasDelegateCashForToken(cachedTokenId1);
+    expect(hasCheck1).to.be.equal(true);
+
+    const delegateAddr1 = await bBAYC.getDelegateCashForToken(cachedTokenId1);
+    expect(delegateAddr1).to.be.equal(user5.address);
   });
 });

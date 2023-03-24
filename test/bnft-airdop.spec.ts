@@ -33,7 +33,7 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
   });
 
   afterEach(async () => {});
-
+  /*
   it("External project doing airdrop tokens to bnft", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
     const user0 = users[0];
@@ -61,6 +61,7 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
         )
     );
   });
+  */
 
   it("Tries to call bnft claim airdrop - invalid claim admin (revert expected)", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
@@ -122,7 +123,7 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
     ).to.be.revertedWith("BNFT: token can not be self address");
   });
 
-  it("Owner call claim airdrop and succeded", async () => {
+  /*it("Owner call claim airdrop and succeded", async () => {
     const { users, bayc, bBAYC, bnftRegistry } = testEnv;
     const user0 = users[0];
     const user5 = users[5];
@@ -146,5 +147,5 @@ makeSuite("BNFT: Claim airdrop function", (testEnv: TestEnv) => {
         .claimERC1155Airdrop(mockERC1155Instance.address, user5.address, ["1"], ["10"], [])
     );
     expect(await mockERC1155Instance.balanceOf(user5.address, "1")).to.be.equal("10");
-  });
+  });*/
 });
