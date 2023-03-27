@@ -25,15 +25,16 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpg
  **/
 contract AirdropFlashLoanReceiverV3 is
   IFlashLoanReceiver,
-  IAirdropFlashLoanReceiverV3,
   ReentrancyGuardUpgradeable,
   OwnableUpgradeable,
   ERC721HolderUpgradeable,
-  ERC1155HolderUpgradeable
+  ERC1155HolderUpgradeable,
+  IAirdropFlashLoanReceiverV3
 {
-  address public claimRegistry;
+  address public bnftRegistry; // obsolete
   mapping(bytes32 => bool) public airdropClaimRecords;
-  uint256 public constant VERSION = 301;
+  uint256 public constant override VERSION = 301;
+  address public claimRegistry;
 
   event ApproveERC20(address indexed token, address indexed spender, uint256 amount);
   event ApproveERC721(address indexed token, address indexed operator, uint256 amount);
@@ -50,6 +51,7 @@ contract AirdropFlashLoanReceiverV3 is
     require(claimRegistry_ != address(0), "zero registry address");
 
     claimRegistry = claimRegistry_;
+    bnftRegistry = IUserFlashclaimRegistryV3(claimRegistry).getBNFTRegistry();
 
     _transferOwnership(owner_);
   }

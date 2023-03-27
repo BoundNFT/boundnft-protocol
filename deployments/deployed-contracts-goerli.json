@@ -90,11 +90,11 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "AirdropFlashLoanReceiverV3Impl": {
-    "address": "0x6925388958B0c249750284996264CAb8A267DbdC",
+    "address": "0x1602389CA763c0e9B4c9c2c1220db475f3dDF829",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "UserFlashclaimRegistryV3Impl": {
-    "address": "0x9b22498f134BC8faB7412DeBdE535Eb9F14EbE79",
+    "address": "0xF7185E705daE22F53B73A5F502a5e78EcF908bF4",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "UserFlashclaimRegistryV3": {

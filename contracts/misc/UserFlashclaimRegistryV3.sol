@@ -16,8 +16,6 @@ import "./IStakeManager.sol";
 import "./IUserFlashclaimRegistryV3.sol";
 import "./IAirdropFlashLoanReceiverV3.sol";
 
-import "hardhat/console.sol";
-
 contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradeable, IUserFlashclaimRegistryV3 {
   using ClonesUpgradeable for address;
   using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -108,7 +106,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
     if (existReceiver != address(0)) {
       // no need to create new receiver fo the same version
       require(
-        getCurrentReceiverVersion() != IAirdropFlashLoanReceiverV3(existReceiver).getVersion(),
+        getCurrentReceiverVersion() != IAirdropFlashLoanReceiverV3(existReceiver).VERSION(),
         "user already has a receiver"
       );
 
@@ -202,7 +200,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
   function getUserReceiver(address user) public view override returns (address) {
     address existReceiver = userReceiversV3[user];
     if (existReceiver != address(0)) {
-      if (getCurrentReceiverVersion() != IAirdropFlashLoanReceiverV3(existReceiver).getVersion()) {
+      if (getCurrentReceiverVersion() != IAirdropFlashLoanReceiverV3(existReceiver).VERSION()) {
         return address(0);
       }
     }
@@ -211,7 +209,7 @@ contract UserFlashclaimRegistryV3 is OwnableUpgradeable, ReentrancyGuardUpgradea
   }
 
   function getCurrentReceiverVersion() public view override returns (uint256) {
-    return IAirdropFlashLoanReceiverV3(receiverV3Implemention).getVersion();
+    return IAirdropFlashLoanReceiverV3(receiverV3Implemention).VERSION();
   }
 
   function getBNFTRegistry() public view override returns (address) {
