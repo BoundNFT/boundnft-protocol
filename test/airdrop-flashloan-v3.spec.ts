@@ -460,6 +460,8 @@ makeSuite("FlashClaim: Receiver V3", (testEnv: TestEnv) => {
     const receiverOwnerAddress = await _airdropFlashLoanReceiver.owner();
     const receiverOwnerSigner = await getEthersSignerByAddress(receiverOwnerAddress);
 
+    await waitForTx(await _flashClaimRegistryV3.setAirdropCommonAddressWhiteList([user3.address], true));
+
     console.log("nft owner transfer token to receiver");
     await waitForTx(
       await mockAirdropERC20Token.connect(nftOwner.signer).transfer(_airdropFlashLoanReceiver.address, 1)

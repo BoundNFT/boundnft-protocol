@@ -210,6 +210,8 @@ contract AirdropFlashLoanReceiverV3 is
     address spender,
     uint256 amount
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(spender, new address[](0));
+
     IERC20Upgradeable(token).approve(spender, amount);
     emit ApproveERC20(token, spender, amount);
   }
@@ -229,6 +231,8 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     uint256 tokenId
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(operator, new address[](0));
+
     IERC721Upgradeable(token).approve(operator, tokenId);
     emit ApproveERC721(token, operator, tokenId);
   }
@@ -238,6 +242,8 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     bool approved
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(operator, new address[](0));
+
     IERC721Upgradeable(token).setApprovalForAll(operator, approved);
     emit ApproveERC721ForAll(token, operator, approved);
   }
@@ -257,6 +263,8 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     bool approved
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(operator, new address[](0));
+
     IERC1155Upgradeable(token).setApprovalForAll(operator, approved);
     emit ApproveERC1155ForAll(token, operator, approved);
   }
