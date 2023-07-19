@@ -44,7 +44,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   address private _bnftRegistry;
   // Mapping from token to delegate cash
   mapping(uint256 => bool) private _hasDelegateCashes;
-  mapping(uint256 => address) private _delegateAddresses;
+  mapping(uint256 => address) private _delegateAddresses; // obsoleted
   bool private _isDoingClaimAirdrop;
 
   /**
@@ -417,16 +417,16 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   function hasDelegateCashForToken(uint256 tokenId) public view override returns (bool) {
-    return _hasDelegateCashes[tokenId];
+    if (!_hasDelegateCashes[tokenId]) {
+      return false;
+    }
+    address[] memory delegates = getDelegateCashForToken(tokenId);
+    return (delegates.length > 0);
   }
 
-  function getDelegateCashForToken(uint256 tokenId) public view override returns (address) {
-    address currentDelegate = _delegateAddresses[tokenId];
-    // Special case for the compatible with the old version
-    if ((currentDelegate == address(0)) && (_hasDelegateCashes[tokenId])) {
-      currentDelegate = ownerOf(tokenId);
-    }
-    return currentDelegate;
+  function getDelegateCashForToken(uint256 tokenId) public view override returns (address[] memory) {
+    IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
+    return delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenId);
   }
 
   function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) public override nonReentrant {
@@ -452,39 +452,31 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
       address tokenOwner = ERC721Upgradeable.ownerOf(tokenIds[i]);
       require(tokenOwner == _msgSender(), "BNFT: caller is not owner");
 
-      address oldDelegate = _delegateAddresses[tokenIds[i]];
-      // Special case for the compatible with the old version
-      if ((_hasDelegateCashes[tokenIds[i]]) && (oldDelegate == address(0))) {
-        oldDelegate = tokenOwner;
-      }
-      require((oldDelegate == address(0)) || (oldDelegate == delegate), "BNFT: delegate not same");
-
       delegateContract.delegateForToken(delegate, _underlyingAsset, tokenIds[i], value);
 
-      _hasDelegateCashes[tokenIds[i]] = value;
+      // to save gas for token which don't have any delegate cash when burn
       if (value) {
-        _delegateAddresses[tokenIds[i]] = delegate;
-      } else {
-        _delegateAddresses[tokenIds[i]] = address(0);
+        _hasDelegateCashes[tokenIds[i]] = true;
       }
     }
   }
 
-  function _removeDelegateCashForToken(address tokenOwner, uint256 tokenId) internal {
+  function _removeDelegateCashForToken(
+    address, /*tokenOwner*/
+    uint256 tokenId
+  ) internal {
     if (_hasDelegateCashes[tokenId]) {
       IDelegationRegistry delegateContract = IDelegationRegistry(
         IBNFTRegistry(_bnftRegistry).getDelegateCashContract()
       );
 
-      address oldDelegate = _delegateAddresses[tokenId];
-      // Special case for the compatible with the old version
-      if (oldDelegate == address(0)) {
-        oldDelegate = tokenOwner;
+      address[] memory oldDelegates = delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenId);
+      for (uint256 i = 0; i < oldDelegates.length; i++) {
+        delegateContract.delegateForToken(oldDelegates[i], _underlyingAsset, tokenId, false);
       }
 
-      delegateContract.delegateForToken(oldDelegate, _underlyingAsset, tokenId, false);
+      // all delegate cash has been removed
       _hasDelegateCashes[tokenId] = false;
-      _delegateAddresses[tokenId] = address(0);
     }
   }
 

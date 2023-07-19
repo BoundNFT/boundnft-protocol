@@ -149,7 +149,7 @@ interface IBNFT {
 
   function hasDelegateCashForToken(uint256 tokenId) external view returns (bool);
 
-  function getDelegateCashForToken(uint256 tokenId) external view returns (address);
+  function getDelegateCashForToken(uint256 tokenId) external view returns (address[] memory);
 
   function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) external;
 
