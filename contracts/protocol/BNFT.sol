@@ -446,6 +446,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256[] calldata tokenIds,
     bool value
   ) internal {
+    require(delegate != address(0), "BNFT: delegate is the zero address");
     IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
 
     for (uint256 i = 0; i < tokenIds.length; i++) {
