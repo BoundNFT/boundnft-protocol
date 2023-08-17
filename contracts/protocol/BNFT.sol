@@ -45,7 +45,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   // Mapping from token to delegate cash
   mapping(uint256 => bool) private _hasDelegateCashes;
   mapping(uint256 => address) private _delegateAddresses; // obsoleted
-  bool private _isDoingClaimAirdrop;
+  bool private _isIgnoreCheckSenderOnRecv;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -394,12 +394,12 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     require(airdropContract != address(0), "BNFT: invalid airdrop contract address");
     require(airdropParams.length >= 4, "BNFT: invalid airdrop parameters");
 
-    _isDoingClaimAirdrop = true;
+    _isIgnoreCheckSenderOnRecv = true;
 
     // call project aidrop contract
     AddressUpgradeable.functionCall(airdropContract, airdropParams, "call airdrop method failed");
 
-    _isDoingClaimAirdrop = false;
+    _isIgnoreCheckSenderOnRecv = false;
 
     emit ExecuteAirdrop(airdropContract);
   }
@@ -490,7 +490,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     from;
     tokenId;
     data;
-    if (!_isDoingClaimAirdrop) {
+    if (!_isIgnoreCheckSenderOnRecv) {
       require(_msgSender() == address(_underlyingAsset), "BNFT: not acceptable erc721");
     }
     return IERC721ReceiverUpgradeable.onERC721Received.selector;
@@ -508,7 +508,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     id;
     value;
     data;
-    if (!_isDoingClaimAirdrop) {
+    if (!_isIgnoreCheckSenderOnRecv) {
       require(_msgSender() == address(_underlyingAsset), "BNFT: not acceptable erc1155");
     }
     return IERC1155ReceiverUpgradeable.onERC1155Received.selector;
@@ -526,7 +526,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     ids;
     values;
     data;
-    if (!_isDoingClaimAirdrop) {
+    if (!_isIgnoreCheckSenderOnRecv) {
       require(_msgSender() == address(_underlyingAsset), "BNFT: not acceptable erc1155");
     }
     return IERC1155ReceiverUpgradeable.onERC1155BatchReceived.selector;
