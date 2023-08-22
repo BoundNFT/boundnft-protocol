@@ -20,4 +20,17 @@ interface IDelegationRegistry {
     uint256 tokenId,
     bool value
   ) external;
+
+  /**
+   * @notice Returns an array of contract-level delegates for a given vault's token
+   * @param vault The cold wallet who issued the delegation
+   * @param contract_ The address for the contract holding the token
+   * @param tokenId The token id for the token you're delegating
+   * @return addresses Array of contract-level delegates for a given vault's token
+   */
+  function getDelegatesForToken(
+    address vault,
+    address contract_,
+    uint256 tokenId
+  ) external view returns (address[] memory);
 }

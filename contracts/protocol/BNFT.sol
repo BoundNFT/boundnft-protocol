@@ -44,6 +44,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   address private _bnftRegistry;
   // Mapping from token to delegate cash
   mapping(uint256 => bool) private _hasDelegateCashes;
+  mapping(uint256 => address) private _delegateAddresses; // obsoleted
+  bool private _isIgnoreCheckSenderOnRecv;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -392,8 +394,12 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     require(airdropContract != address(0), "BNFT: invalid airdrop contract address");
     require(airdropParams.length >= 4, "BNFT: invalid airdrop parameters");
 
+    _isIgnoreCheckSenderOnRecv = true;
+
     // call project aidrop contract
     AddressUpgradeable.functionCall(airdropContract, airdropParams, "call airdrop method failed");
+
+    _isIgnoreCheckSenderOnRecv = false;
 
     emit ExecuteAirdrop(airdropContract);
   }
@@ -411,29 +417,66 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   }
 
   function hasDelegateCashForToken(uint256 tokenId) public view override returns (bool) {
-    return _hasDelegateCashes[tokenId];
+    if (!_hasDelegateCashes[tokenId]) {
+      return false;
+    }
+    address[] memory delegates = getDelegateCashForToken(tokenId);
+    return (delegates.length > 0);
+  }
+
+  function getDelegateCashForToken(uint256 tokenId) public view override returns (address[] memory) {
+    IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
+    return delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenId);
   }
 
   function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) public override nonReentrant {
+    _setDelegateCashForToken(_msgSender(), tokenIds, value);
+  }
+
+  function setDelegateCashForToken(
+    address delegate,
+    uint256[] calldata tokenIds,
+    bool value
+  ) public override nonReentrant {
+    _setDelegateCashForToken(delegate, tokenIds, value);
+  }
+
+  function _setDelegateCashForToken(
+    address delegate,
+    uint256[] calldata tokenIds,
+    bool value
+  ) internal {
+    require(delegate != address(0), "BNFT: delegate is the zero address");
     IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
 
     for (uint256 i = 0; i < tokenIds.length; i++) {
       address tokenOwner = ERC721Upgradeable.ownerOf(tokenIds[i]);
       require(tokenOwner == _msgSender(), "BNFT: caller is not owner");
 
-      delegateContract.delegateForToken(tokenOwner, _underlyingAsset, tokenIds[i], value);
+      delegateContract.delegateForToken(delegate, _underlyingAsset, tokenIds[i], value);
 
-      _hasDelegateCashes[tokenIds[i]] = value;
+      // to save gas for token which don't have any delegate cash when burn
+      if (value) {
+        _hasDelegateCashes[tokenIds[i]] = true;
+      }
     }
   }
 
-  function _removeDelegateCashForToken(address tokenOwner, uint256 tokenId) internal {
+  function _removeDelegateCashForToken(
+    address, /*tokenOwner*/
+    uint256 tokenId
+  ) internal {
     if (_hasDelegateCashes[tokenId]) {
       IDelegationRegistry delegateContract = IDelegationRegistry(
         IBNFTRegistry(_bnftRegistry).getDelegateCashContract()
       );
 
-      delegateContract.delegateForToken(tokenOwner, _underlyingAsset, tokenId, false);
+      address[] memory oldDelegates = delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenId);
+      for (uint256 i = 0; i < oldDelegates.length; i++) {
+        delegateContract.delegateForToken(oldDelegates[i], _underlyingAsset, tokenId, false);
+      }
+
+      // all delegate cash has been removed
       _hasDelegateCashes[tokenId] = false;
     }
   }
@@ -443,11 +486,14 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     address from,
     uint256 tokenId,
     bytes calldata data
-  ) external pure override returns (bytes4) {
+  ) external view override returns (bytes4) {
     operator;
     from;
     tokenId;
     data;
+    if (!_isIgnoreCheckSenderOnRecv) {
+      require(_msgSender() == address(_underlyingAsset), "BNFT: not acceptable erc721");
+    }
     return IERC721ReceiverUpgradeable.onERC721Received.selector;
   }
 
@@ -457,12 +503,15 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256 id,
     uint256 value,
     bytes calldata data
-  ) external pure override returns (bytes4) {
+  ) external view override returns (bytes4) {
     operator;
     from;
     id;
     value;
     data;
+    if (!_isIgnoreCheckSenderOnRecv) {
+      require(_msgSender() == address(_underlyingAsset), "BNFT: not acceptable erc1155");
+    }
     return IERC1155ReceiverUpgradeable.onERC1155Received.selector;
   }
 
@@ -472,12 +521,15 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     uint256[] calldata ids,
     uint256[] calldata values,
     bytes calldata data
-  ) external pure override returns (bytes4) {
+  ) external view override returns (bytes4) {
     operator;
     from;
     ids;
     values;
     data;
+    if (!_isIgnoreCheckSenderOnRecv) {
+      require(_msgSender() == address(_underlyingAsset), "BNFT: not acceptable erc1155");
+    }
     return IERC1155ReceiverUpgradeable.onERC1155BatchReceived.selector;
   }
 
