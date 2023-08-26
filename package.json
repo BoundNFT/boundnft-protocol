@@ -1,10 +1,13 @@
 {
   "name": "@boundnft/boundnft-protocol",
-  "version": "1.0.0",
+  "version": "1.0.10",
   "description": "BoundNFT Protocol smart contracts",
   "files": [
+    "abis",
+    "configs",
     "contracts",
-    "artifacts"
+    "artifacts",
+    "types"
   ],
   "scripts": {
     "run-env": "npm i --force && tail -f /dev/null",
