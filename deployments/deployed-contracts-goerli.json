@@ -12,7 +12,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "MintableERC721": {
-    "address": "0x49EdA925C67387b4597F4b41817Aaade0542EeD5",
+    "address": "0x66C76ad9E0817052af99feA126ff96383A118e46",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BAYC": {
@@ -106,6 +106,10 @@
   },
   "MockAirdropProject": {
     "address": "0xF352e70f8374719359F0a296d87981F6169d7C08",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "PPG": {
+    "address": "0x66C76ad9E0817052af99feA126ff96383A118e46",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
