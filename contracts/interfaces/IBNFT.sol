@@ -147,6 +147,8 @@ interface IBNFT {
 
   function getFlashLoanLocked(uint256 tokenId, address minter) external view returns (address[] memory);
 
+  // V1 Delegate Cash
+
   function hasDelegateCashForToken(uint256 tokenId) external view returns (bool);
 
   function getDelegateCashForToken(uint256 tokenId) external view returns (address[] memory);
@@ -158,6 +160,22 @@ interface IBNFT {
     uint256[] calldata tokenIds,
     bool value
   ) external;
+
+  // V2 Delegate Cash
+
+  function hasDelegateCashForTokenV2(uint256 tokenId) external view returns (bool);
+
+  function getDelegateCashForTokenV2(uint256 tokenId) external view returns (address[] memory);
+
+  function setDelegateCashForTokenV2(uint256[] calldata tokenIds, bool value) external;
+
+  function setDelegateCashForTokenV2(
+    address delegate,
+    uint256[] calldata tokenIds,
+    bool value
+  ) external;
+
+  // Airdrop
 
   function claimERC20Airdrop(
     address token,

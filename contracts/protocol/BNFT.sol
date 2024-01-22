@@ -6,6 +6,7 @@ import {IBNFTRegistry} from "../interfaces/IBNFTRegistry.sol";
 import {IFlashLoanReceiver} from "../interfaces/IFlashLoanReceiver.sol";
 import {IENSReverseRegistrar} from "../interfaces/IENSReverseRegistrar.sol";
 import {IDelegationRegistry} from "../interfaces/IDelegationRegistry.sol";
+import {IDelegateRegistryV2} from "../interfaces/IDelegateRegistryV2.sol";
 
 import {IMoonbirds} from "../interfaces/IMoonbirds.sol";
 
@@ -28,6 +29,7 @@ import {IERC1155ReceiverUpgradeable} from "@openzeppelin/contracts-upgradeable/t
  **/
 contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable, IERC1155ReceiverUpgradeable {
   using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+  using EnumerableSetUpgradeable for EnumerableSetUpgradeable.Bytes32Set;
 
   address private _underlyingAsset;
   // Mapping from token ID to minter address
@@ -46,6 +48,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   mapping(uint256 => bool) private _hasDelegateCashes;
   mapping(uint256 => address) private _delegateAddresses; // obsoleted
   bool private _isIgnoreCheckSenderOnRecv;
+  mapping(uint256 => EnumerableSetUpgradeable.Bytes32Set) private _delegateCashV2Hashes;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -416,6 +419,10 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     IMoonbirds(_underlyingAsset).toggleNesting(tokenIds);
   }
 
+  /**
+   * -----------  V1 Delegate Cash -----------
+   */
+
   function hasDelegateCashForToken(uint256 tokenId) public view override returns (bool) {
     if (!_hasDelegateCashes[tokenId]) {
       return false;
@@ -462,10 +469,71 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     }
   }
 
+  /**
+   * -----------  V2 Delegate Cash -----------
+   */
+
+  function hasDelegateCashForTokenV2(uint256 tokenId) public view override returns (bool) {
+    bytes32[] memory v2Hashes = _delegateCashV2Hashes[tokenId].values();
+    return (v2Hashes.length > 0);
+  }
+
+  function getDelegateCashForTokenV2(uint256 tokenId) public view override returns (address[] memory) {
+    IDelegateRegistryV2 delegateContractV2 = IDelegateRegistryV2(
+      IBNFTRegistry(_bnftRegistry).getDelegateCashContractV2()
+    );
+
+    bytes32[] memory v2Hashes = _delegateCashV2Hashes[tokenId].values();
+    IDelegateRegistryV2.Delegation[] memory delegates = delegateContractV2.getDelegationsFromHashes(v2Hashes);
+    address[] memory delegateAddrs = new address[](delegates.length);
+    for (uint256 i = 0; i < delegates.length; i++) {
+      delegateAddrs[i] = delegates[i].to;
+    }
+
+    return delegateAddrs;
+  }
+
+  function setDelegateCashForTokenV2(uint256[] calldata tokenIds, bool value) public override nonReentrant {
+    _setDelegateCashForTokenV2(_msgSender(), tokenIds, value);
+  }
+
+  function setDelegateCashForTokenV2(
+    address delegate,
+    uint256[] calldata tokenIds,
+    bool value
+  ) public override nonReentrant {
+    _setDelegateCashForTokenV2(delegate, tokenIds, value);
+  }
+
+  function _setDelegateCashForTokenV2(
+    address delegate,
+    uint256[] calldata tokenIds,
+    bool value
+  ) internal {
+    require(delegate != address(0), "BNFT: delegate is the zero address");
+    IDelegateRegistryV2 delegateContractV2 = IDelegateRegistryV2(
+      IBNFTRegistry(_bnftRegistry).getDelegateCashContractV2()
+    );
+
+    for (uint256 i = 0; i < tokenIds.length; i++) {
+      address tokenOwner = ERC721Upgradeable.ownerOf(tokenIds[i]);
+      require(tokenOwner == _msgSender(), "BNFT: caller is not owner");
+
+      bytes32 v2Hash = delegateContractV2.delegateERC721(delegate, _underlyingAsset, tokenIds[i], "", value);
+
+      if (value) {
+        _delegateCashV2Hashes[tokenIds[i]].add(v2Hash);
+      } else {
+        _delegateCashV2Hashes[tokenIds[i]].remove(v2Hash);
+      }
+    }
+  }
+
   function _removeDelegateCashForToken(
     address, /*tokenOwner*/
     uint256 tokenId
   ) internal {
+    // V1 Delegate Cash
     if (_hasDelegateCashes[tokenId]) {
       IDelegationRegistry delegateContract = IDelegationRegistry(
         IBNFTRegistry(_bnftRegistry).getDelegateCashContract()
@@ -478,6 +546,23 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
 
       // all delegate cash has been removed
       _hasDelegateCashes[tokenId] = false;
+    }
+
+    // V2 Delegate Cash
+    bytes32[] memory v2Hashes = _delegateCashV2Hashes[tokenId].values();
+    if (v2Hashes.length > 0) {
+      IDelegateRegistryV2 delegateContractV2 = IDelegateRegistryV2(
+        IBNFTRegistry(_bnftRegistry).getDelegateCashContractV2()
+      );
+
+      IDelegateRegistryV2.Delegation[] memory oldDelegates = delegateContractV2.getDelegationsFromHashes(v2Hashes);
+      for (uint256 i = 0; i < oldDelegates.length; i++) {
+        delegateContractV2.delegateERC721(oldDelegates[i].to, _underlyingAsset, tokenId, "", false);
+      }
+
+      for (uint256 i = 0; i < v2Hashes.length; i++) {
+        _delegateCashV2Hashes[tokenId].remove(v2Hashes[i]);
+      }
     }
   }
 
