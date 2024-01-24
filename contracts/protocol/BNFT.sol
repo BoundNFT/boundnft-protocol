@@ -45,10 +45,9 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   mapping(address => mapping(uint256 => EnumerableSetUpgradeable.AddressSet)) private _flashLoanOperatorLockings;
   address private _bnftRegistry;
   // Mapping from token to delegate cash
-  mapping(uint256 => bool) private _hasDelegateCashes;
-  mapping(uint256 => address) private _delegateAddresses; // obsoleted
+  mapping(uint256 => bool) private __hasDelegateCashes; // obsoleted
+  mapping(uint256 => address) private __delegateAddresses; // obsoleted
   bool private _isIgnoreCheckSenderOnRecv;
-  mapping(uint256 => EnumerableSetUpgradeable.Bytes32Set) private _delegateCashV2Hashes;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -232,8 +231,6 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
     require(_minters[tokenId] == _msgSender(), "BNFT: caller is not minter");
 
     address tokenOwner = ERC721Upgradeable.ownerOf(tokenId);
-
-    _removeDelegateCashForToken(tokenOwner, tokenId);
 
     _burn(tokenId);
 
@@ -423,14 +420,6 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * -----------  V1 Delegate Cash -----------
    */
 
-  function hasDelegateCashForToken(uint256 tokenId) public view override returns (bool) {
-    if (!_hasDelegateCashes[tokenId]) {
-      return false;
-    }
-    address[] memory delegates = getDelegateCashForToken(tokenId);
-    return (delegates.length > 0);
-  }
-
   function getDelegateCashForToken(uint256 tokenId) public view override returns (address[] memory) {
     IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
     return delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenId);
@@ -461,11 +450,6 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
       require(tokenOwner == _msgSender(), "BNFT: caller is not owner");
 
       delegateContract.delegateForToken(delegate, _underlyingAsset, tokenIds[i], value);
-
-      // to save gas for token which don't have any delegate cash when burn
-      if (value) {
-        _hasDelegateCashes[tokenIds[i]] = true;
-      }
     }
   }
 
@@ -473,21 +457,26 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * -----------  V2 Delegate Cash -----------
    */
 
-  function hasDelegateCashForTokenV2(uint256 tokenId) public view override returns (bool) {
-    bytes32[] memory v2Hashes = _delegateCashV2Hashes[tokenId].values();
-    return (v2Hashes.length > 0);
-  }
-
   function getDelegateCashForTokenV2(uint256 tokenId) public view override returns (address[] memory) {
     IDelegateRegistryV2 delegateContractV2 = IDelegateRegistryV2(
       IBNFTRegistry(_bnftRegistry).getDelegateCashContractV2()
     );
 
-    bytes32[] memory v2Hashes = _delegateCashV2Hashes[tokenId].values();
-    IDelegateRegistryV2.Delegation[] memory delegates = delegateContractV2.getDelegationsFromHashes(v2Hashes);
-    address[] memory delegateAddrs = new address[](delegates.length);
-    for (uint256 i = 0; i < delegates.length; i++) {
-      delegateAddrs[i] = delegates[i].to;
+    IDelegateRegistryV2.Delegation[] memory delegations = delegateContractV2.getOutgoingDelegations(address(this));
+    uint256 delegateNum = 0;
+    for (uint256 i = 0; i < delegations.length; i++) {
+      if (delegations[i].tokenId == tokenId) {
+        delegateNum++;
+      }
+    }
+
+    address[] memory delegateAddrs = new address[](delegateNum);
+    uint256 addrIdx = 0;
+    for (uint256 i = 0; i < delegations.length; i++) {
+      if (delegations[i].tokenId == tokenId) {
+        delegateAddrs[addrIdx] = delegations[i].to;
+        addrIdx++;
+      }
     }
 
     return delegateAddrs;
@@ -519,50 +508,7 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
       address tokenOwner = ERC721Upgradeable.ownerOf(tokenIds[i]);
       require(tokenOwner == _msgSender(), "BNFT: caller is not owner");
 
-      bytes32 v2Hash = delegateContractV2.delegateERC721(delegate, _underlyingAsset, tokenIds[i], "", value);
-
-      if (value) {
-        _delegateCashV2Hashes[tokenIds[i]].add(v2Hash);
-      } else {
-        _delegateCashV2Hashes[tokenIds[i]].remove(v2Hash);
-      }
-    }
-  }
-
-  function _removeDelegateCashForToken(
-    address, /*tokenOwner*/
-    uint256 tokenId
-  ) internal {
-    // V1 Delegate Cash
-    if (_hasDelegateCashes[tokenId]) {
-      IDelegationRegistry delegateContract = IDelegationRegistry(
-        IBNFTRegistry(_bnftRegistry).getDelegateCashContract()
-      );
-
-      address[] memory oldDelegates = delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenId);
-      for (uint256 i = 0; i < oldDelegates.length; i++) {
-        delegateContract.delegateForToken(oldDelegates[i], _underlyingAsset, tokenId, false);
-      }
-
-      // all delegate cash has been removed
-      _hasDelegateCashes[tokenId] = false;
-    }
-
-    // V2 Delegate Cash
-    bytes32[] memory v2Hashes = _delegateCashV2Hashes[tokenId].values();
-    if (v2Hashes.length > 0) {
-      IDelegateRegistryV2 delegateContractV2 = IDelegateRegistryV2(
-        IBNFTRegistry(_bnftRegistry).getDelegateCashContractV2()
-      );
-
-      IDelegateRegistryV2.Delegation[] memory oldDelegates = delegateContractV2.getDelegationsFromHashes(v2Hashes);
-      for (uint256 i = 0; i < oldDelegates.length; i++) {
-        delegateContractV2.delegateERC721(oldDelegates[i].to, _underlyingAsset, tokenId, "", false);
-      }
-
-      for (uint256 i = 0; i < v2Hashes.length; i++) {
-        _delegateCashV2Hashes[tokenId].remove(v2Hashes[i]);
-      }
+      delegateContractV2.delegateERC721(delegate, _underlyingAsset, tokenIds[i], "", value);
     }
   }
 

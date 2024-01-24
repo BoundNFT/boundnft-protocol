@@ -28,20 +28,33 @@ contract MockDelegationRegistryV2 is IDelegateRegistryV2 {
     if (enable) {
       allDelegations[delegationHash] = Delegation(DelegationType.ERC721, to, msg.sender, rights, contract_, tokenId, 0);
 
-      outgoingDelegationHashes[to].add(delegationHash);
-      incomingDelegationHashes[msg.sender].add(delegationHash);
+      outgoingDelegationHashes[msg.sender].add(delegationHash);
+      incomingDelegationHashes[to].add(delegationHash);
     } else {
       delete allDelegations[delegationHash];
 
-      outgoingDelegationHashes[to].remove(delegationHash);
-      incomingDelegationHashes[msg.sender].remove(delegationHash);
+      outgoingDelegationHashes[msg.sender].remove(delegationHash);
+      incomingDelegationHashes[to].remove(delegationHash);
     }
+  }
+
+  function getOutgoingDelegations(address from) external view override returns (Delegation[] memory delegations) {
+    bytes32[] memory delegationHashes = outgoingDelegationHashes[from].values();
+    return _getDelegationsFromHashes(delegationHashes);
   }
 
   function getDelegationsFromHashes(bytes32[] calldata delegationHashes)
     public
     view
     override
+    returns (Delegation[] memory delegations)
+  {
+    return _getDelegationsFromHashes(delegationHashes);
+  }
+
+  function _getDelegationsFromHashes(bytes32[] memory delegationHashes)
+    private
+    view
     returns (Delegation[] memory delegations)
   {
     delegations = new Delegation[](delegationHashes.length);

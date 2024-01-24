@@ -70,11 +70,6 @@ makeSuite("BNFT: Delegate Cash V2", (testEnv: TestEnv) => {
         ["setDelegateCashForTokenV2(address,uint256[],bool)"](user2.address, [cachedTokenId2], true)
     );
 
-    const hasCheck1 = await bBAYC.hasDelegateCashForTokenV2(cachedTokenId1);
-    const hasCheck2 = await bBAYC.hasDelegateCashForTokenV2(cachedTokenId2);
-    expect(hasCheck1).to.be.equal(true);
-    expect(hasCheck2).to.be.equal(true);
-
     const delegateAddrs1 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId1);
     const delegateAddrs2 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId2);
     expect(delegateAddrs1.length).to.be.equal(2);
@@ -103,13 +98,9 @@ makeSuite("BNFT: Delegate Cash V2", (testEnv: TestEnv) => {
         ["setDelegateCashForTokenV2(address,uint256[],bool)"](user2.address, [cachedTokenId2], false)
     );
 
-    const hasCheck1 = await bBAYC.hasDelegateCashForTokenV2(cachedTokenId1);
-    const hasCheck2 = await bBAYC.hasDelegateCashForTokenV2(cachedTokenId2);
-    expect(hasCheck1).to.be.equal(true);
-    expect(hasCheck2).to.be.equal(true);
-
     const delegateAddrs1 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId1);
     const delegateAddrs2 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId2);
+
     expect(delegateAddrs1.length).to.be.equal(1);
     expect(delegateAddrs1[0]).to.be.equal(user2.address);
 
@@ -117,9 +108,10 @@ makeSuite("BNFT: Delegate Cash V2", (testEnv: TestEnv) => {
     expect(delegateAddrs2[0]).to.be.equal(user1.address);
   });
 
-  it("Successful to remove delegate cash when burn", async () => {
+  it("Don't remove delegate cash when burn", async () => {
     const { bBAYC, users } = testEnv;
     const user0 = users[0];
+    const user1 = users[1];
     const user2 = users[2];
 
     await waitForTx(
@@ -129,42 +121,31 @@ makeSuite("BNFT: Delegate Cash V2", (testEnv: TestEnv) => {
     );
     await waitForTx(await mockMinterInstance.connect(user0.signer).burn(cachedTokenId2));
 
-    const hasCheck1 = await bBAYC.hasDelegateCashForTokenV2(cachedTokenId1);
-    const hasCheck2 = await bBAYC.hasDelegateCashForTokenV2(cachedTokenId2);
-    expect(hasCheck1).to.be.equal(true);
-    expect(hasCheck2).to.be.equal(false);
-
     const delegateAddrs1 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId1);
     const delegateAddrs2 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId2);
+
     expect(delegateAddrs1.length).to.be.equal(1);
-    expect(delegateAddrs2.length).to.be.equal(0);
+    expect(delegateAddrs1[0]).to.be.equal(user2.address);
+
+    expect(delegateAddrs2.length).to.be.equal(2);
+    expect(delegateAddrs2[0]).to.be.equal(user1.address);
+    expect(delegateAddrs2[1]).to.be.equal(user2.address);
   });
 
-  it("Successful to set delegate cash for tokens again", async () => {
+  it("Get same delegate cash when mint again", async () => {
     const { bBAYC, users } = testEnv;
     const user0 = users[0];
+    const user1 = users[1];
     const user2 = users[2];
-    const user5 = users[5];
 
-    // unset to user2
     await waitForTx(
-      await bBAYC
-        .connect(user0.signer)
-        ["setDelegateCashForTokenV2(address,uint256[],bool)"](user2.address, [cachedTokenId1], false)
+      await mockMinterInstance.connect(testEnv.users[0].signer).mint(testEnv.users[0].address, cachedTokenId2)
     );
 
-    // set to user5
-    await waitForTx(
-      await bBAYC
-        .connect(user0.signer)
-        ["setDelegateCashForTokenV2(address,uint256[],bool)"](user5.address, [cachedTokenId1], true)
-    );
+    const delegateAddrs2 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId2);
 
-    const hasCheck1 = await bBAYC.hasDelegateCashForTokenV2(cachedTokenId1);
-    expect(hasCheck1).to.be.equal(true);
-
-    const delegateAddrs1 = await bBAYC.getDelegateCashForTokenV2(cachedTokenId1);
-    expect(delegateAddrs1.length).to.be.equal(1);
-    expect(delegateAddrs1[0]).to.be.equal(user5.address);
+    expect(delegateAddrs2.length).to.be.equal(2);
+    expect(delegateAddrs2[0]).to.be.equal(user1.address);
+    expect(delegateAddrs2[1]).to.be.equal(user2.address);
   });
 });

@@ -55,6 +55,13 @@ interface IDelegateRegistryV2 {
    */
 
   /**
+   * @notice Returns all enabled delegations an address has given out
+   * @param from The address to retrieve delegations for
+   * @return delegations Array of Delegation structs
+   */
+  function getOutgoingDelegations(address from) external view returns (Delegation[] memory delegations);
+
+  /**
    * @notice Returns the delegations for a given array of delegation hashes
    * @param delegationHashes is an array of hashes that correspond to delegations
    * @return delegations Array of Delegation structs, return empty structs for nonexistent or revoked delegations
