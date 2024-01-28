@@ -45,8 +45,8 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
   mapping(address => mapping(uint256 => EnumerableSetUpgradeable.AddressSet)) private _flashLoanOperatorLockings;
   address private _bnftRegistry;
   // Mapping from token to delegate cash
-  mapping(uint256 => bool) private __hasDelegateCashes; // obsoleted
-  mapping(uint256 => address) private __delegateAddresses; // obsoleted
+  mapping(uint256 => bool) private _hasDelegateCashes; // obsoleted
+  mapping(uint256 => address) private _delegateAddresses; // obsoleted
   bool private _isIgnoreCheckSenderOnRecv;
 
   /**
