@@ -50,7 +50,7 @@
     "address": "0x89a60BB6cE83D4514dA956165664Ba6Ee4c15687"
   },
   "BNFT": {
-    "address": "0xF4f1134FECfB7696E64aA67AC6C6D6296dECd80f",
+    "address": "0x3d7754fB47D1e92F2A305811A40511940806F307",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {

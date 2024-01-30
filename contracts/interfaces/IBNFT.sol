@@ -149,7 +149,7 @@ interface IBNFT {
 
   // V1 Delegate Cash
 
-  function getDelegateCashForToken(uint256 tokenId) external view returns (address[] memory);
+  function getDelegateCashForToken(uint256[] calldata tokenIds) external view returns (address[][] memory);
 
   function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) external;
 
@@ -161,7 +161,7 @@ interface IBNFT {
 
   // V2 Delegate Cash
 
-  function getDelegateCashForTokenV2(uint256 tokenId) external view returns (address[] memory);
+  function getDelegateCashForTokenV2(uint256[] calldata tokenIds) external view returns (address[][] memory);
 
   function setDelegateCashForTokenV2(uint256[] calldata tokenIds, bool value) external;
 

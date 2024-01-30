@@ -58,28 +58,29 @@ contract BNFTMultipleDelegateForkTest is Test {
     BNFT bnftCloneX = BNFT(bnftProxyAddr);
 
     uint256 clonexTokenId = 2099;
-    address[] memory oldDelegates = bnftCloneX.getDelegateCashForToken(clonexTokenId);
-    assertEq(oldDelegates.length, 0, "oldDelegates not empty");
-
-    // config new delegates
     uint256[] memory clonexTokenIdList = new uint256[](1);
     clonexTokenIdList[0] = clonexTokenId;
+
+    address[][] memory oldDelegates = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    assertEq(oldDelegates[0].length, 0, "oldDelegates not empty");
+
+    // config new delegates
 
     address testDelegateUser1 = getNextUserAddress();
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
     bnftCloneX.setDelegateCashForToken(testDelegateUser1, clonexTokenIdList, true);
 
-    address[] memory curDelegates1 = bnftCloneX.getDelegateCashForToken(clonexTokenId);
-    assertEq(curDelegates1.length, 1, "curDelegates1 not match");
-    assertEq(curDelegates1[0], testDelegateUser1, "curDelegates1 index 0 not match");
+    address[][] memory curDelegates1 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    assertEq(curDelegates1[0].length, 1, "curDelegates1 not match");
+    assertEq(curDelegates1[0][0], testDelegateUser1, "curDelegates1 index 0 not match");
 
     address testDelegateUser2 = getNextUserAddress();
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
     bnftCloneX.setDelegateCashForToken(testDelegateUser2, clonexTokenIdList, true);
 
-    address[] memory curDelegates2 = bnftCloneX.getDelegateCashForToken(clonexTokenId);
-    assertEq(curDelegates2.length, 2, "curDelegates2 not match");
-    assertEq(curDelegates2[1], testDelegateUser2, "curDelegates2 index 1 not match");
+    address[][] memory curDelegates2 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    assertEq(curDelegates2[0].length, 2, "curDelegates2 not match");
+    assertEq(curDelegates2[0][1], testDelegateUser2, "curDelegates2 index 1 not match");
 
     // remove all delegates
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
@@ -88,21 +89,21 @@ contract BNFTMultipleDelegateForkTest is Test {
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
     bnftCloneX.setDelegateCashForToken(testDelegateUser2, clonexTokenIdList, false);
 
-    address[] memory curDelegates3 = bnftCloneX.getDelegateCashForToken(clonexTokenId);
-    assertEq(curDelegates3.length, 0, "curDelegates3 not match");
+    address[][] memory curDelegates3 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    assertEq(curDelegates3[0].length, 0, "curDelegates3 not match");
 
     // burn NFT
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
     bnftCloneX.setDelegateCashForToken(testDelegateUser1, clonexTokenIdList, true);
 
-    address[] memory curDelegates4 = bnftCloneX.getDelegateCashForToken(clonexTokenId);
-    assertEq(curDelegates4.length, 1, "curDelegates4 not match");
+    address[][] memory curDelegates4 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    assertEq(curDelegates4[0].length, 1, "curDelegates4 not match");
 
     vm.prank(bnftCloneX.minterOf(clonexTokenId));
     bnftCloneX.burn(clonexTokenId);
 
-    address[] memory curDelegates5 = bnftCloneX.getDelegateCashForToken(clonexTokenId);
-    assertEq(curDelegates5.length, 0, "curDelegates5 not match");
+    address[][] memory curDelegates5 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    assertEq(curDelegates5[0].length, 0, "curDelegates5 not match");
   }
 
   function getNextUserAddress() public returns (address payable) {

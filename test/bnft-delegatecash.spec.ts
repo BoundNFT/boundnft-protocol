@@ -70,8 +70,10 @@ makeSuite("BNFT: Delegate Cash", (testEnv: TestEnv) => {
         ["setDelegateCashForToken(address,uint256[],bool)"](user2.address, [cachedTokenId2], true)
     );
 
-    const delegateAddrs1 = await bBAYC.getDelegateCashForToken(cachedTokenId1);
-    const delegateAddrs2 = await bBAYC.getDelegateCashForToken(cachedTokenId2);
+    const delegateAddrs = await bBAYC.getDelegateCashForToken([cachedTokenId1, cachedTokenId2]);
+    const delegateAddrs1 = delegateAddrs[0];
+    const delegateAddrs2 = delegateAddrs[1];
+
     expect(delegateAddrs1.length).to.be.equal(2);
     expect(delegateAddrs1[0]).to.be.equal(user0.address);
     expect(delegateAddrs2[1]).to.be.equal(user2.address);
@@ -98,8 +100,10 @@ makeSuite("BNFT: Delegate Cash", (testEnv: TestEnv) => {
         ["setDelegateCashForToken(address,uint256[],bool)"](user2.address, [cachedTokenId2], false)
     );
 
-    const delegateAddrs1 = await bBAYC.getDelegateCashForToken(cachedTokenId1);
-    const delegateAddrs2 = await bBAYC.getDelegateCashForToken(cachedTokenId2);
+    const delegateAddrs = await bBAYC.getDelegateCashForToken([cachedTokenId1, cachedTokenId2]);
+    const delegateAddrs1 = delegateAddrs[0];
+    const delegateAddrs2 = delegateAddrs[1];
+
     expect(delegateAddrs1.length).to.be.equal(1);
     expect(delegateAddrs1[0]).to.be.equal(user2.address);
 
@@ -120,8 +124,10 @@ makeSuite("BNFT: Delegate Cash", (testEnv: TestEnv) => {
     );
     await waitForTx(await mockMinterInstance.connect(user0.signer).burn(cachedTokenId2));
 
-    const delegateAddrs1 = await bBAYC.getDelegateCashForToken(cachedTokenId1);
-    const delegateAddrs2 = await bBAYC.getDelegateCashForToken(cachedTokenId2);
+    const delegateAddrs = await bBAYC.getDelegateCashForToken([cachedTokenId1, cachedTokenId2]);
+    const delegateAddrs1 = delegateAddrs[0];
+    const delegateAddrs2 = delegateAddrs[1];
+
     expect(delegateAddrs1.length).to.be.equal(1);
     expect(delegateAddrs1[0]).to.be.equal(user2.address);
 
@@ -140,7 +146,8 @@ makeSuite("BNFT: Delegate Cash", (testEnv: TestEnv) => {
       await mockMinterInstance.connect(testEnv.users[0].signer).mint(testEnv.users[0].address, cachedTokenId2)
     );
 
-    const delegateAddrs2 = await bBAYC.getDelegateCashForToken(cachedTokenId2);
+    const delegateAddrs = await bBAYC.getDelegateCashForToken([cachedTokenId1, cachedTokenId2]);
+    const delegateAddrs2 = delegateAddrs[1];
 
     expect(delegateAddrs2.length).to.be.equal(2);
     expect(delegateAddrs2[0]).to.be.equal(user1.address);

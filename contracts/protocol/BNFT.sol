@@ -420,9 +420,15 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * -----------  V1 Delegate Cash -----------
    */
 
-  function getDelegateCashForToken(uint256 tokenId) public view override returns (address[] memory) {
+  function getDelegateCashForToken(uint256[] calldata tokenIds) public view override returns (address[][] memory) {
     IDelegationRegistry delegateContract = IDelegationRegistry(IBNFTRegistry(_bnftRegistry).getDelegateCashContract());
-    return delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenId);
+
+    address[][] memory delegateAddrs = new address[][](tokenIds.length);
+    for (uint256 i = 0; i < tokenIds.length; i++) {
+      delegateAddrs[i] = delegateContract.getDelegatesForToken(address(this), _underlyingAsset, tokenIds[i]);
+    }
+
+    return delegateAddrs;
   }
 
   function setDelegateCashForToken(uint256[] calldata tokenIds, bool value) public override nonReentrant {
@@ -457,25 +463,32 @@ contract BNFT is IBNFT, ERC721EnumerableUpgradeable, IERC721ReceiverUpgradeable,
    * -----------  V2 Delegate Cash -----------
    */
 
-  function getDelegateCashForTokenV2(uint256 tokenId) public view override returns (address[] memory) {
+  function getDelegateCashForTokenV2(uint256[] calldata tokenIds) public view override returns (address[][] memory) {
     IDelegateRegistryV2 delegateContractV2 = IDelegateRegistryV2(
       IBNFTRegistry(_bnftRegistry).getDelegateCashContractV2()
     );
 
-    IDelegateRegistryV2.Delegation[] memory delegations = delegateContractV2.getOutgoingDelegations(address(this));
-    uint256 delegateNum = 0;
-    for (uint256 i = 0; i < delegations.length; i++) {
-      if (delegations[i].tokenId == tokenId) {
-        delegateNum++;
-      }
-    }
+    IDelegateRegistryV2.Delegation[] memory allOutDelegations = delegateContractV2.getOutgoingDelegations(
+      address(this)
+    );
 
-    address[] memory delegateAddrs = new address[](delegateNum);
-    uint256 addrIdx = 0;
-    for (uint256 i = 0; i < delegations.length; i++) {
-      if (delegations[i].tokenId == tokenId) {
-        delegateAddrs[addrIdx] = delegations[i].to;
-        addrIdx++;
+    address[][] memory delegateAddrs = new address[][](tokenIds.length);
+
+    for (uint256 i = 0; i < tokenIds.length; i++) {
+      uint256 delegateNum = 0;
+      for (uint256 j = 0; j < allOutDelegations.length; j++) {
+        if (allOutDelegations[j].tokenId == tokenIds[i]) {
+          delegateNum++;
+        }
+      }
+
+      delegateAddrs[i] = new address[](delegateNum);
+      uint256 addrIdx = 0;
+      for (uint256 j = 0; j < allOutDelegations.length; j++) {
+        if (allOutDelegations[j].tokenId == tokenIds[i]) {
+          delegateAddrs[i][addrIdx] = allOutDelegations[j].to;
+          addrIdx++;
+        }
       }
     }
 
