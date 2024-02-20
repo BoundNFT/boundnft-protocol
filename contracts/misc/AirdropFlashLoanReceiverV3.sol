@@ -83,10 +83,10 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     bytes calldata params
   ) external override returns (bool) {
-    initiator;
-
     ExecuteOperationLocalVars memory vars;
     address targetOwner = owner();
+
+    require((initiator == targetOwner) || (initiator == claimRegistry), "invalid initiator");
 
     // check caller and owner
     address bnftRegistry = IUserFlashclaimRegistryV3(claimRegistry).getBNFTRegistry();
