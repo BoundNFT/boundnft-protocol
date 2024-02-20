@@ -1,8 +1,9 @@
 import { TestEnv, makeSuite } from "./helpers/make-suite";
 import { ZERO_ADDRESS } from "../helpers/constants";
 import { deployMintableERC721, deployGenericBNFTImpl } from "../helpers/contracts-deployments";
-import { getBNFT, getIErc721Detailed } from "../helpers/contracts-getters";
+import { getBNFT, getDeploySigner, getIErc721Detailed } from "../helpers/contracts-getters";
 import { waitForTx } from "../helpers/misc-utils";
+import { MockDelegationRegistryFactory } from "../types";
 
 const { expect } = require("chai");
 
@@ -166,5 +167,26 @@ makeSuite("BNFTRegistry", (testEnv: TestEnv) => {
     expect(newAdmin).to.equal(claimAdmin.address);
 
     await waitForTx(await bnftRegistry.setClaimAdmin(oldAdmin));
+  });
+
+  it("Manage delegate cash contract without permission (revert expect)", async () => {
+    const { bnftRegistry, users } = testEnv;
+    const user5 = users[5];
+
+    const delegateCash = await new MockDelegationRegistryFactory(await getDeploySigner()).deploy();
+
+    await expect(bnftRegistry.connect(user5.signer).setDelegateCashContract(delegateCash.address)).to.be.revertedWith(
+      "Ownable: caller is not the owner"
+    );
+  });
+
+  it("Manage delegate cash contract", async () => {
+    const { bnftRegistry, users } = testEnv;
+
+    const delegateCash = await new MockDelegationRegistryFactory(await getDeploySigner()).deploy();
+
+    await waitForTx(await bnftRegistry.setDelegateCashContract(delegateCash.address));
+    const newContract = await bnftRegistry.getDelegateCashContract();
+    expect(newContract).to.equal(delegateCash.address);
   });
 });

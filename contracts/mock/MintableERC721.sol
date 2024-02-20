@@ -12,8 +12,12 @@ import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/
 contract MintableERC721 is Ownable, ERC721Enumerable {
   string public baseURI;
   mapping(address => uint256) public mintCounts;
+  uint256 maxSupply;
+  uint256 maxTokenId;
 
   constructor(string memory name, string memory symbol) Ownable() ERC721(name, symbol) {
+    maxSupply = 10000;
+    maxTokenId = maxSupply - 1;
     baseURI = "https://MintableERC721/";
   }
 
@@ -23,7 +27,8 @@ contract MintableERC721 is Ownable, ERC721Enumerable {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(uint256 tokenId) public returns (bool) {
-    require(tokenId < 10000, "exceed mint limit");
+    require(tokenId <= maxTokenId, "exceed max token id");
+    require(totalSupply() + 1 <= maxSupply, "exceed max supply");
 
     mintCounts[_msgSender()] += 1;
     require(mintCounts[_msgSender()] <= 100, "exceed mint limit");
@@ -33,6 +38,9 @@ contract MintableERC721 is Ownable, ERC721Enumerable {
   }
 
   function privateMint(uint256 tokenId) public onlyOwner returns (bool) {
+    require(tokenId <= maxTokenId, "exceed max token id");
+    require(totalSupply() + 1 <= maxSupply, "exceed max supply");
+
     _mint(_msgSender(), tokenId);
     return true;
   }
@@ -43,5 +51,13 @@ contract MintableERC721 is Ownable, ERC721Enumerable {
 
   function setBaseURI(string memory baseURI_) public onlyOwner {
     baseURI = baseURI_;
+  }
+
+  function setMaxSupply(uint256 maxSupply_) public onlyOwner {
+    maxSupply = maxSupply_;
+  }
+
+  function setMaxTokenId(uint256 maxTokenId_) public onlyOwner {
+    maxTokenId = maxTokenId_;
   }
 }

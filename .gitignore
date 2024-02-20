@@ -38,3 +38,7 @@ node_modules
 cache
 artifacts
 storage_layout
+
+# Foundry
+cache_forge
+out

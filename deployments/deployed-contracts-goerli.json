@@ -12,7 +12,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "MintableERC721": {
-    "address": "0x49EdA925C67387b4597F4b41817Aaade0542EeD5",
+    "address": "0x66C76ad9E0817052af99feA126ff96383A118e46",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BAYC": {
@@ -50,11 +50,11 @@
     "address": "0x89a60BB6cE83D4514dA956165664Ba6Ee4c15687"
   },
   "BNFT": {
-    "address": "0x67B08a6791673F14039358137150c4f1A1CBFa9c",
+    "address": "0x1aDF8093E66d8A48F97bCf1bA174845Ec013bBE3",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BNFTRegistryImpl": {
-    "address": "0x4327B65CE2455F062B6Aa54c349491d4912390cf"
+    "address": "0x046b8C18BdC3573A42768912d19fE250031423cF"
   },
   "BNFTRegistry": {
     "address": "0x37A76Db446bDB3EF1b73112a8D5E6868de06464f"
@@ -106,6 +106,10 @@
   },
   "MockAirdropProject": {
     "address": "0xF352e70f8374719359F0a296d87981F6169d7C08",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "PPG": {
+    "address": "0x66C76ad9E0817052af99feA126ff96383A118e46",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }

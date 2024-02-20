@@ -22,6 +22,7 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
   uint256 private constant _ENTERED = 1;
   uint256 private _status;
   address private _claimAdmin;
+  address private _delegateCashContract;
 
   /**
    * @dev Prevents a contract from calling itself, directly or indirectly.
@@ -69,6 +70,10 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
 
   function allBNFTAssetLength() external view override returns (uint256) {
     return bNftAssetLists.length;
+  }
+
+  function getDelegateCashContract() public view override returns (address) {
+    return _delegateCashContract;
   }
 
   function initialize(
@@ -218,6 +223,13 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
     emit ClaimAdminUpdated(oldAdmin, newAdmin);
   }
 
+  function setDelegateCashContract(address newDelegateCash) public virtual onlyOwner {
+    require(newDelegateCash != address(0), "BNFTR: new contract is the zero address");
+    address oldDelegateCash = _delegateCashContract;
+    _delegateCashContract = newDelegateCash;
+    emit DelegateCashUpdated(oldDelegateCash, newDelegateCash);
+  }
+
   function _createProxyAndInitWithImpl(address nftAsset, address bNftImpl) internal returns (address bNftProxy) {
     bytes memory initParams = _buildInitParams(nftAsset);
 
@@ -244,7 +256,8 @@ contract BNFTRegistry is IBNFTRegistry, Initializable, OwnableUpgradeable {
       bNftName,
       bNftSymbol,
       owner(),
-      claimAdmin()
+      claimAdmin(),
+      address(this)
     );
   }
 
