@@ -7,14 +7,14 @@
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFT": {
-    "address": "0x59428622E995946dE439521D5996E4A42D42ccbc",
+    "address": "0xA1903649d890e769fA6Be59eB0A4D46456198923",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "BNFTRegistryImpl": {
-    "address": "0xE9CD64fA21b589d8e94A70300CFA5e1652a0e951"
+    "address": "0x43969c778ee61bc2F7d7af25E04F5DfaDc5BcBaf"
   },
   "BNFTRegistry": {
-    "address": "0x79d922DD382E42A156bC0A354861cDBC4F09110d",
+    "address": "0x43969c778ee61bc2F7d7af25E04F5DfaDc5BcBaf",
     "deployer": "0x868964fa49a6fd6e116FE82c8f4165904406f479"
   },
   "AirdropFlashLoanReceiver": {

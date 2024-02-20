@@ -16,7 +16,7 @@ import "../../contracts/libraries/BNFTUpgradeableProxy.sol";
 import "../../contracts/protocol/BNFTRegistry.sol";
 import "../../contracts/protocol/BNFT.sol";
 
-contract BNFTMultipleDelegateForkTest is Test {
+contract BNFTDelegateV2ForkTest is Test {
   using SafeERC20 for IERC20;
 
   bytes32 internal nextUser = keccak256(abi.encodePacked("user address"));
@@ -30,80 +30,92 @@ contract BNFTMultipleDelegateForkTest is Test {
   // NFT reserve related addresses
   address constant maycTokenAddress = 0x60E4d786628Fea6478F785A6d7e704777c86a7c6;
   address constant clonexTokenAddress = 0x49cF6f5d44E70224e2E23fDcdd2C053F30aDA28B;
+  address constant delegateV2Address = 0x00000000000000447e69651d841bD8D104Bed493;
   // contracts
   BNFTProxyAdmin public proxyAdminPool;
   BNFTRegistry public bnftRegistry;
 
   // how to run this testcase
   // url: https://eth-mainnet.g.alchemy.com/v2/xxx
-  // forge test --match-contract BNFTMultipleDelegateForkTest --fork-url https://RPC --fork-block-number 17933075
+  // forge test --match-contract BNFTDelegateV2ForkTest --fork-url https://RPC --fork-block-number 19260200
 
   function setUp() public {
     proxyAdminPool = BNFTProxyAdmin(proxyAdminAddress);
     bnftRegistry = BNFTRegistry(bnftRegistryAddress);
   }
 
-  function testFork_UpgradeAllBoundNFTs() public {
-    // upgrade all bound NFTs
-    BNFT impl = new BNFT();
+  function testFork_Upgrade() public {
+    // upgrade registry
+    BNFTRegistry registryImpl = new BNFTRegistry();
+    vm.prank(timelockController7DAddress);
+    proxyAdminPool.upgrade(BNFTUpgradeableProxy(payable(bnftRegistryAddress)), address(registryImpl));
 
     vm.prank(timelockController7DAddress);
-    bnftRegistry.setBNFTGenericImpl(address(impl));
+    bnftRegistry.setDelegateCashContractV2(delegateV2Address);
+
+    // upgrade all bnfts
+    BNFT bnftImpl = new BNFT();
+
+    vm.prank(timelockController7DAddress);
+    bnftRegistry.setBNFTGenericImpl(address(bnftImpl));
 
     vm.prank(timelockController7DAddress);
     bnftRegistry.batchUpgradeAllBNFT();
 
     // check results
+    address delegateV2AddrCheck = bnftRegistry.getDelegateCashContractV2();
+    assertEq(delegateV2AddrCheck, delegateV2Address, "delegate v2 not match");
+
     (address bnftProxyAddr, ) = bnftRegistry.getBNFTAddresses(clonexTokenAddress);
     BNFT bnftCloneX = BNFT(bnftProxyAddr);
 
-    uint256 clonexTokenId = 2099;
+    uint256 clonexTokenId = 3410;
     uint256[] memory clonexTokenIdList = new uint256[](1);
     clonexTokenIdList[0] = clonexTokenId;
 
-    address[][] memory oldDelegates = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    address[][] memory oldDelegates = bnftCloneX.getDelegateCashForTokenV2(clonexTokenIdList);
     assertEq(oldDelegates[0].length, 0, "oldDelegates not empty");
 
     // config new delegates
 
     address testDelegateUser1 = getNextUserAddress();
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
-    bnftCloneX.setDelegateCashForToken(testDelegateUser1, clonexTokenIdList, true);
+    bnftCloneX.setDelegateCashForTokenV2(testDelegateUser1, clonexTokenIdList, true);
 
-    address[][] memory curDelegates1 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    address[][] memory curDelegates1 = bnftCloneX.getDelegateCashForTokenV2(clonexTokenIdList);
     assertEq(curDelegates1[0].length, 1, "curDelegates1 not match");
     assertEq(curDelegates1[0][0], testDelegateUser1, "curDelegates1 index 0 not match");
 
     address testDelegateUser2 = getNextUserAddress();
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
-    bnftCloneX.setDelegateCashForToken(testDelegateUser2, clonexTokenIdList, true);
+    bnftCloneX.setDelegateCashForTokenV2(testDelegateUser2, clonexTokenIdList, true);
 
-    address[][] memory curDelegates2 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    address[][] memory curDelegates2 = bnftCloneX.getDelegateCashForTokenV2(clonexTokenIdList);
     assertEq(curDelegates2[0].length, 2, "curDelegates2 not match");
     assertEq(curDelegates2[0][1], testDelegateUser2, "curDelegates2 index 1 not match");
 
     // remove all delegates
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
-    bnftCloneX.setDelegateCashForToken(testDelegateUser1, clonexTokenIdList, false);
+    bnftCloneX.setDelegateCashForTokenV2(testDelegateUser1, clonexTokenIdList, false);
 
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
-    bnftCloneX.setDelegateCashForToken(testDelegateUser2, clonexTokenIdList, false);
+    bnftCloneX.setDelegateCashForTokenV2(testDelegateUser2, clonexTokenIdList, false);
 
-    address[][] memory curDelegates3 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    address[][] memory curDelegates3 = bnftCloneX.getDelegateCashForTokenV2(clonexTokenIdList);
     assertEq(curDelegates3[0].length, 0, "curDelegates3 not match");
 
-    // burn NFT
+    // burn
     vm.prank(bnftCloneX.ownerOf(clonexTokenId));
-    bnftCloneX.setDelegateCashForToken(testDelegateUser1, clonexTokenIdList, true);
+    bnftCloneX.setDelegateCashForTokenV2(testDelegateUser1, clonexTokenIdList, true);
 
-    address[][] memory curDelegates4 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
+    address[][] memory curDelegates4 = bnftCloneX.getDelegateCashForTokenV2(clonexTokenIdList);
     assertEq(curDelegates4[0].length, 1, "curDelegates4 not match");
 
     vm.prank(bnftCloneX.minterOf(clonexTokenId));
     bnftCloneX.burn(clonexTokenId);
 
-    address[][] memory curDelegates5 = bnftCloneX.getDelegateCashForToken(clonexTokenIdList);
-    assertEq(curDelegates5[0].length, 0, "curDelegates5 not match");
+    address[][] memory curDelegates5 = bnftCloneX.getDelegateCashForTokenV2(clonexTokenIdList);
+    assertEq(curDelegates5[0].length, 1, "curDelegates5 not match");
   }
 
   function getNextUserAddress() public returns (address payable) {

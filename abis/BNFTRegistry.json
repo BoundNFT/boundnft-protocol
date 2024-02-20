@@ -124,6 +124,25 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "oldDelegateCash",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newDelegateCash",
+        "type": "address"
+      }
+    ],
+    "name": "DelegateCashV2Updated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "genericImpl",
         "type": "address"
       }
@@ -446,6 +465,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getDelegateCashContractV2",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -536,6 +568,19 @@
       }
     ],
     "name": "setDelegateCashContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newDelegateCash",
+        "type": "address"
+      }
+    ],
+    "name": "setDelegateCashContractV2",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
