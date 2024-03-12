@@ -19,7 +19,7 @@ import { getEthersSignerByAddress } from "../helpers/contracts-helpers";
 
 const { expect } = require("chai");
 
-makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
+makeSuite("FlashClaim: Registry V3", (testEnv: TestEnv) => {
   let _flashClaimRegistryV3 = {} as UserFlashclaimRegistryV3;
   let _mockLendPoolLoan = {} as MockLendPoolLoan;
   let _mockStakeManager = {} as MockStakeManager;
@@ -70,13 +70,8 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
     const receiverAddress = await _flashClaimRegistryV3.getUserReceiver(user2.address);
     expect(receiverAddress).to.be.equal(receiverV3Address);
 
-    const lastVersionReceiver = await _flashClaimRegistryV3.getUserReceiverLatestVersion(user2.address);
-    expect(lastVersionReceiver[0]).to.be.equal(await _flashClaimRegistryV3.VERSION());
-    expect(lastVersionReceiver[1]).to.be.equal(receiverV3Address);
-
-    const allVersionReceivers = await _flashClaimRegistryV3.getUserReceiverAllVersions(user2.address);
-    expect(allVersionReceivers[0][0]).to.be.equal(await _flashClaimRegistryV3.VERSION());
-    expect(allVersionReceivers[1][0]).to.be.equal(receiverV3Address);
+    const receiverAddress2 = await _flashClaimRegistryV3.userReceivers(user2.address);
+    expect(receiverAddress2).to.be.equal(receiverV3Address);
   });
 
   it("User 2 tries to create V3 receiver but already has V3 receiver. (revert expected)", async () => {
@@ -103,6 +98,31 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
     await _flashClaimRegistryV3
       .connect(ownerSigner)
       .setAirdropContractWhiteList(bayc.address, _mockAirdropProject1.address, true);
+    expect(
+      await _flashClaimRegistryV3.isAirdropContractInWhiteList(bayc.address, _mockAirdropProject1.address)
+    ).to.be.equal(true);
+
+    const mockErc20Token = await _mockAirdropProject1.erc20Token();
+    await _flashClaimRegistryV3.connect(ownerSigner).setAirdropTokenWhiteList(bayc.address, mockErc20Token, true);
+    expect(await _flashClaimRegistryV3.isAirdropTokenInWhiteList(bayc.address, mockErc20Token)).to.be.equal(true);
+
+    const mockErc721Token = await _mockAirdropProject1.erc721Token();
+    await _flashClaimRegistryV3.connect(ownerSigner).setAirdropTokenWhiteList(bayc.address, mockErc721Token, true);
+    expect(await _flashClaimRegistryV3.isAirdropTokenInWhiteList(bayc.address, mockErc721Token)).to.be.equal(true);
+
+    // airdrop common addresses
+    await _flashClaimRegistryV3
+      .connect(ownerSigner)
+      .setAirdropCommonAddressWhiteList([_mockAirdropProject1.address], true);
+    expect(await _flashClaimRegistryV3.isAirdropCommonAddressInWhiteList(_mockAirdropProject1.address)).to.be.equal(
+      true
+    );
+
+    await _flashClaimRegistryV3.connect(ownerSigner).setAirdropCommonAddressWhiteList([mockErc20Token], true);
+    expect(await _flashClaimRegistryV3.isAirdropCommonAddressInWhiteList(mockErc20Token)).to.be.equal(true);
+
+    await _flashClaimRegistryV3.connect(ownerSigner).setAirdropCommonAddressWhiteList([mockErc721Token], true);
+    expect(await _flashClaimRegistryV3.isAirdropCommonAddressInWhiteList(mockErc721Token)).to.be.equal(true);
   });
 
   it("User 2 tries to flash loan with invalid airdrop contract. (revert expected)", async () => {
@@ -138,6 +158,41 @@ makeSuite("Airdrop: Registry V3", (testEnv: TestEnv) => {
     await expect(
       _flashClaimRegistryV3.connect(user2.signer).flashLoan(bayc.address, [tokenId], receiverEncodedData)
     ).to.be.revertedWith("invalid airdrop contract");
+  });
+
+  it("User 2 tries to flash loan with invalid airdrop token. (revert expected)", async () => {
+    const { users, bayc } = testEnv;
+    const user2 = users[2];
+    const user5 = users[5];
+
+    await waitForTx(await bayc.connect(user2.signer).setApprovalForAll(_mockLendPoolLoan.address, true));
+    testEnv.tokenIdTracker++;
+    const tokenId = testEnv.tokenIdTracker.toString();
+    await waitForTx(await bayc.connect(user2.signer).mint(tokenId));
+    await waitForTx(await _mockLendPoolLoan.connect(user2.signer).createLoan(bayc.address, user2.address, tokenId));
+
+    const applyAirdropEncodedData = _mockAirdropProject1.interface.encodeFunctionData("nativeApplyAirdrop", [
+      bayc.address,
+      tokenId,
+    ]);
+    console.log("applyAirdropEncodedData:", applyAirdropEncodedData);
+
+    const user2ReceiverAddress = await _flashClaimRegistryV3.getUserReceiver(user2.address);
+    const user2Receiver = await getAirdropFlashLoanReceiverV3(user2ReceiverAddress);
+
+    const receiverEncodedData = await user2Receiver.encodeFlashLoanParams(
+      [1],
+      [await _mockAirdropProject2.erc20Token()],
+      [0],
+      _mockAirdropProject1.address,
+      applyAirdropEncodedData,
+      0
+    );
+    console.log("receiverEncodedData:", receiverEncodedData);
+
+    await expect(
+      _flashClaimRegistryV3.connect(user2.signer).flashLoan(bayc.address, [tokenId], receiverEncodedData)
+    ).to.be.revertedWith("invalid airdrop token");
   });
 
   it("User 3 tries to flash loan with invalid token owner. (revert expected)", async () => {

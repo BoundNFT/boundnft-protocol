@@ -5,6 +5,9 @@ import "../interfaces/IFlashLoanReceiver.sol";
 import "../interfaces/IBNFT.sol";
 import "../interfaces/IBNFTRegistry.sol";
 
+import "./IUserFlashclaimRegistryV3.sol";
+import "./IAirdropFlashLoanReceiverV3.sol";
+
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
@@ -25,27 +28,30 @@ contract AirdropFlashLoanReceiverV3 is
   ReentrancyGuardUpgradeable,
   OwnableUpgradeable,
   ERC721HolderUpgradeable,
-  ERC1155HolderUpgradeable
+  ERC1155HolderUpgradeable,
+  IAirdropFlashLoanReceiverV3
 {
-  address public bnftRegistry;
+  address public bnftRegistry; // obsolete
   mapping(bytes32 => bool) public airdropClaimRecords;
-  uint256 public constant VERSION = 3;
+  uint256 public constant override VERSION = 301;
+  address public claimRegistry;
 
   event ApproveERC20(address indexed token, address indexed spender, uint256 amount);
   event ApproveERC721(address indexed token, address indexed operator, uint256 amount);
   event ApproveERC721ForAll(address indexed token, address indexed operator, bool approved);
   event ApproveERC1155ForAll(address indexed token, address indexed operator, bool approved);
 
-  function initialize(address owner_, address bnftRegistry_) public initializer {
+  function initialize(address owner_, address claimRegistry_) public override initializer {
     __ReentrancyGuard_init();
     __Ownable_init();
     __ERC721Holder_init();
     __ERC1155Holder_init();
 
     require(owner_ != address(0), "zero owner address");
-    require(bnftRegistry_ != address(0), "zero registry address");
+    require(claimRegistry_ != address(0), "zero registry address");
 
-    bnftRegistry = bnftRegistry_;
+    claimRegistry = claimRegistry_;
+    bnftRegistry = IUserFlashclaimRegistryV3(claimRegistry).getBNFTRegistry();
 
     _transferOwnership(owner_);
   }
@@ -77,12 +83,13 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     bytes calldata params
   ) external override returns (bool) {
-    initiator;
-
     ExecuteOperationLocalVars memory vars;
     address targetOwner = owner();
 
+    require((initiator == targetOwner) || (initiator == claimRegistry), "invalid initiator");
+
     // check caller and owner
+    address bnftRegistry = IUserFlashclaimRegistryV3(claimRegistry).getBNFTRegistry();
     (address bnftProxy, ) = IBNFTRegistry(bnftRegistry).getBNFTAddresses(nftAsset);
     require(bnftProxy == msg.sender, "caller not bnft");
 
@@ -105,6 +112,11 @@ contract AirdropFlashLoanReceiverV3 is
 
     require(vars.airdropContract != address(0), "invalid airdrop contract address");
     require(vars.airdropParams.length >= 4, "invalid airdrop parameters");
+
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(
+      vars.airdropContract,
+      vars.airdropTokenAddresses
+    );
 
     // allow operator transfer borrowed nfts back to bnft
     for (uint256 idIdx = 0; idIdx < nftTokenIds.length; idIdx++) {
@@ -189,6 +201,8 @@ contract AirdropFlashLoanReceiverV3 is
 
     require(address(this).balance >= ethValue, "insufficient eth");
 
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(targetContract, new address[](0));
+
     // call project claim contract
     AddressUpgradeable.functionCallWithValue(targetContract, callParams, ethValue, "call method failed");
   }
@@ -198,6 +212,8 @@ contract AirdropFlashLoanReceiverV3 is
     address spender,
     uint256 amount
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(spender, new address[](0));
+
     IERC20Upgradeable(token).approve(spender, amount);
     emit ApproveERC20(token, spender, amount);
   }
@@ -217,6 +233,8 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     uint256 tokenId
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(operator, new address[](0));
+
     IERC721Upgradeable(token).approve(operator, tokenId);
     emit ApproveERC721(token, operator, tokenId);
   }
@@ -226,6 +244,8 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     bool approved
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(operator, new address[](0));
+
     IERC721Upgradeable(token).setApprovalForAll(operator, approved);
     emit ApproveERC721ForAll(token, operator, approved);
   }
@@ -245,6 +265,8 @@ contract AirdropFlashLoanReceiverV3 is
     address operator,
     bool approved
   ) external nonReentrant onlyOwner {
+    IUserFlashclaimRegistryV3(claimRegistry).validateAirdropCommonAddressess(operator, new address[](0));
+
     IERC1155Upgradeable(token).setApprovalForAll(operator, approved);
     emit ApproveERC1155ForAll(token, operator, approved);
   }
@@ -312,6 +334,10 @@ contract AirdropFlashLoanReceiverV3 is
     bytes calldata params
   ) public pure returns (bytes32) {
     return keccak256(abi.encodePacked(initiator, nftAsset, nftTokenIds, params));
+  }
+
+  function getVersion() public view override returns (uint256) {
+    return VERSION;
   }
 
   receive() external payable {}

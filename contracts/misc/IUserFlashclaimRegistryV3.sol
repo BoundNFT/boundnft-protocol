@@ -12,7 +12,11 @@ interface IUserFlashclaimRegistryV3 {
 
   function getUserReceiver(address user) external view returns (address);
 
-  function getUserReceiverLatestVersion(address user) external view returns (uint256, address);
+  function getCurrentReceiverVersion() external view returns (uint256);
 
-  function getUserReceiverAllVersions(address user) external view returns (uint256[] memory, address[] memory);
+  function getBNFTRegistry() external view returns (address);
+
+  function validateAirdropCommonAddressess(address airdropContract, address[] calldata airdropTokenAddresses)
+    external
+    view;
 }
