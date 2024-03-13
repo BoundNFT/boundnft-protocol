@@ -15,11 +15,11 @@ task("verify:mock-nfts", "Verify mock nft contracts at Etherscan")
     const poolConfig = loadPoolConfig(pool);
 
     const allMockNfts = await getAllMockedNfts();
-    console.log("allMockNfts:", allMockNfts);
+    //console.log("allMockNfts:", allMockNfts);
 
     for (const symbol of Object.keys(allMockNfts)) {
       const mockNftToken = allMockNfts[symbol];
-      console.log("\n- Verifying Mocked ${symbol}...\n");
+      console.log(`\n- Verifying Mocked ${symbol}...\n`);
       await verifyContract(eContractid.MintableERC721, mockNftToken, [
         await mockNftToken.name(),
         await mockNftToken.symbol(),

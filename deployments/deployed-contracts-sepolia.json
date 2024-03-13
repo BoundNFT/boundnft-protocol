@@ -1,0 +1,68 @@
+{
+  "CryptoPunksMarket": {
+    "address": "0x554309B0888c37139D6E31aBAe30B4502915B5DB",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "WrappedPunk": {
+    "address": "0x647dc527Bd7dFEE4DD468cE6fC62FC50fa42BD8b",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "WPUNKS": {
+    "address": "0x647dc527Bd7dFEE4DD468cE6fC62FC50fa42BD8b",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MintableERC721": {
+    "address": "0xd51fC3376F6D7C86D8639d5ec238327ab0EE69e3",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BAYC": {
+    "address": "0xE15A78992dd4a9d6833eA7C9643650d3b0a2eD2B",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "DOODLE": {
+    "address": "0x28cCcd47Aa3FFb42D77e395Fba7cdAcCeA884d5A",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MAYC": {
+    "address": "0xD0ff8ae7E3D9591605505D3db9C33b96c4809CDC",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "CLONEX": {
+    "address": "0x3BD0A71D39E67fc49D5A6645550f2bc95F5cb398",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AZUKI": {
+    "address": "0x292F693048208184320C01e0C223D624268e5EE7",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "SDOODLE": {
+    "address": "0xd51fC3376F6D7C86D8639d5ec238327ab0EE69e3",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "ProxyAdmin": {
+    "address": "0xc31078cC745daE8f577EdBa2803405CE571cb9f8",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "ProxyAdminWithoutTimelock": {
+    "address": "0x2945CCC255d31b452Fb4a3F77bd2Ed64A18AbF72",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BNFT": {
+    "address": "0xe5B57C193f4638E7DefDBB1F0Cc720D4B736ED61",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BNFTRegistryImpl": {
+    "address": "0xC2778b51D5D620C8e2946A0d8D30e3b09176673c"
+  },
+  "BNFTRegistry": {
+    "address": "0x694b86Deef7C2C06d4C40A07a5995815C444170D",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BoundPunkGatewayImpl": {
+    "address": "0x3285c31a1aDC8E21E6E6b67bF28a95Bbd1622393"
+  },
+  "BoundPunkGateway": {
+    "address": "0x1c3A772154D640bbc4879cFdB2C8310a9a8D795E",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  }
+}

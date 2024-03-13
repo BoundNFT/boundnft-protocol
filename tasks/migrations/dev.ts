@@ -38,9 +38,6 @@ task("bend:dev", "Deploy development enviroment")
     console.log("\n\nDeploy boundpunk gateway");
     await localBRE.run("full:deploy-boundpunk-gateway", { verify, pool: POOL_NAME });
 
-    console.log("\n\nDeploy airdrop flashloan");
-    await localBRE.run("full:deploy-airdrop-flashloan", { verify, pool: POOL_NAME });
-
     console.log("\n\nFinished migration");
     printContracts();
   });
