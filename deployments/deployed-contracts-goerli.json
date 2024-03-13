@@ -12,7 +12,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "MintableERC721": {
-    "address": "0x66C76ad9E0817052af99feA126ff96383A118e46",
+    "address": "0xE2Be2bD8Bd093320b83B73763e12F1f6fDE23FB9",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BAYC": {
@@ -110,6 +110,10 @@
   },
   "PPG": {
     "address": "0x66C76ad9E0817052af99feA126ff96383A118e46",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "MIL": {
+    "address": "0xE2Be2bD8Bd093320b83B73763e12F1f6fDE23FB9",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
