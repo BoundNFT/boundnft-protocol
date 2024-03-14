@@ -12,7 +12,7 @@
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "MintableERC721": {
-    "address": "0xd51fC3376F6D7C86D8639d5ec238327ab0EE69e3",
+    "address": "0xE8636AFf2F1Cf508988b471d7e221e1B83873FD9",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   },
   "BAYC": {
@@ -63,6 +63,10 @@
   },
   "BoundPunkGateway": {
     "address": "0x1c3A772154D640bbc4879cFdB2C8310a9a8D795E",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "BAKC": {
+    "address": "0xE8636AFf2F1Cf508988b471d7e221e1B83873FD9",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
