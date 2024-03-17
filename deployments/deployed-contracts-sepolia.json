@@ -80,5 +80,12 @@
   "AirdropFlashLoanReceiverV3Impl": {
     "address": "0x6267494c5AA96f883467D2c0b2E0C67d43718acC",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropDistributionImpl": {
+    "address": "0xf7Aa08BeF8598B9F264FC3E8E977b8545292CFDb"
+  },
+  "AirdropDistribution": {
+    "address": "0x59fb4BA8077a86846924C82F084fb8aeE3875df2",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
