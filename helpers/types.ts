@@ -7,6 +7,7 @@ export interface SymbolMap<T> {
 export type eNetwork = eEthereumNetwork;
 
 export enum eEthereumNetwork {
+  sepolia = "sepolia",
   goerli = "goerli",
   rinkeby = "rinkeby",
   main = "main",
@@ -95,6 +96,7 @@ export interface iParamsPerNetworkAll<T> extends iEthereumParamsPerNetwork<T> {}
 
 export interface iEthereumParamsPerNetwork<T> {
   [eEthereumNetwork.coverage]: T;
+  [eEthereumNetwork.sepolia]: T;
   [eEthereumNetwork.goerli]: T;
   [eEthereumNetwork.rinkeby]: T;
   [eEthereumNetwork.main]: T;

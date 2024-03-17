@@ -1,6 +1,12 @@
 import { task } from "hardhat/config";
 import { loadPoolConfig, ConfigNames } from "../../helpers/configuration";
-import { getAllMockedNfts, getBNFTRegistryProxy, getMockAirdropProject } from "../../helpers/contracts-getters";
+import {
+  getAllMockedNfts,
+  getBNFTRegistryProxy,
+  getCryptoPunksMarket,
+  getMockAirdropProject,
+  getWrappedPunk,
+} from "../../helpers/contracts-getters";
 import { verifyContract, getParamPerNetwork } from "../../helpers/contracts-helpers";
 import { eContractid, eNetwork, ICommonConfiguration } from "../../helpers/types";
 
@@ -15,11 +21,11 @@ task("verify:mock-nfts", "Verify mock nft contracts at Etherscan")
     const poolConfig = loadPoolConfig(pool);
 
     const allMockNfts = await getAllMockedNfts();
-    console.log("allMockNfts:", allMockNfts);
+    //console.log("allMockNfts:", allMockNfts);
 
     for (const symbol of Object.keys(allMockNfts)) {
       const mockNftToken = allMockNfts[symbol];
-      console.log("\n- Verifying Mocked ${symbol}...\n");
+      console.log(`\n- Verifying Mocked ${symbol}...\n`);
       await verifyContract(eContractid.MintableERC721, mockNftToken, [
         await mockNftToken.name(),
         await mockNftToken.symbol(),
@@ -43,3 +49,22 @@ task("verify:mock-airdrops", "Verify mock airdrop contracts at Etherscan").setAc
 
   console.log("Finished verifications.");
 });
+
+task("verify:mock-cryptopunks", "Verify mock cryptopunks contracts at Etherscan")
+  .addParam("pool", `Pool name to retrieve configuration, supported: ${Object.values(ConfigNames)}`)
+  .setAction(async ({ pool }, localDRE) => {
+    await localDRE.run("set-DRE");
+    const network = localDRE.network.name as eNetwork;
+    if (network.includes("main")) {
+      throw new Error("Mocks not used at mainnet configuration.");
+    }
+    const poolConfig = loadPoolConfig(pool);
+
+    const cryptopunks = await getCryptoPunksMarket();
+    await verifyContract(eContractid.CryptoPunksMarket, cryptopunks, []);
+
+    const wpunks = await getWrappedPunk();
+    await verifyContract(eContractid.WrappedPunk, wpunks, [cryptopunks.address]);
+
+    console.log("Finished verifications.");
+  });
