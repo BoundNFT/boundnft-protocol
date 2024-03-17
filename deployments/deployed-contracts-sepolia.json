@@ -68,5 +68,17 @@
   "BAKC": {
     "address": "0xE8636AFf2F1Cf508988b471d7e221e1B83873FD9",
     "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3Impl": {
+    "address": "0x773C332D651C60aBe9aDb369970534d017df30e9",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "UserFlashclaimRegistryV3": {
+    "address": "0x742cF461228043aA70883608E2841416d666357c",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
+  },
+  "AirdropFlashLoanReceiverV3Impl": {
+    "address": "0x6267494c5AA96f883467D2c0b2E0C67d43718acC",
+    "deployer": "0xafF5C36642385b6c7Aaf7585eC785aB2316b5db6"
   }
 }
